@@ -20,6 +20,8 @@ namespace OOP_3S_Lab234
 
         protected Texture2D texture_;
 
+        protected float smoothTimer = 0;
+
         public Vector2 Coords
         {
             get { return coords_; }
