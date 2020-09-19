@@ -28,6 +28,8 @@ namespace OOP_3S_Lab234
                 !Keyboard.GetState().IsKeyDown(Keys.Left) &&
                 !Keyboard.GetState().IsKeyDown(Keys.Right);
 
+            Vector2 temp = velocity_;
+
             if (noKeyPressed)
             {
                 if (Position.Y > 0 + Texture.Height / 2 && Position.Y < resolution.Y &&
@@ -42,32 +44,32 @@ namespace OOP_3S_Lab234
             }
             else
             {
-                Debug.WriteLine(Position);
-                Debug.WriteLine(velocity_);
-                if (Position.Y - 1.0f * Speed * delta > 0 + Texture.Height / 2 && Keyboard.GetState().IsKeyDown(Keys.Up))
+                if (Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
-                    rotateAngle_ = 0.0f;
                     velocity_.Y -= 1.0f;
                 }
-                if (Position.Y < resolution.Y - Texture.Height / 2 && Keyboard.GetState().IsKeyDown(Keys.Down) )
+                if (Keyboard.GetState().IsKeyDown(Keys.Down) )
                 {
-                    rotateAngle_ = (float)Math.PI;
                     velocity_.Y += 1.0f;
                 }
-                if (Position.X > 0 + Texture.Width / 2 && Keyboard.GetState().IsKeyDown(Keys.Left))
+                if (Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
-                    rotateAngle_ = -(float)Math.PI / 2.0f;
                     velocity_.X -= 1.0f;
                 }
-                if (Position.X < resolution.X - Texture.Width / 2 && Keyboard.GetState().IsKeyDown(Keys.Right))
+                if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
-                    rotateAngle_ = (float)Math.PI / 2.0f;
                     velocity_.X += 1.0f;
                 }
+                rotateAngle_ = (float)Math.Atan2(velocity_.Y - temp.Y, velocity_.X - temp.X) + (float)Math.PI / 2;
                 if(velocity_ != Vector2.Zero)
                 {
                     velocity_.Normalize();
                 }
+                Vector2 offset = velocity_ * Speed * delta;
+                if (Position.Y + offset.Y < Texture.Height / 2 ||
+                    Position.Y + offset.Y > resolution.Y - Texture.Height / 2) { velocity_.Y = 0; }
+                if (Position.X + offset.X < Texture.Height / 2 ||
+                    Position.X + offset.X > resolution.X - Texture.Height / 2) { velocity_.X = 0; }
             }
             Position += velocity_ * Speed * delta;
         }
