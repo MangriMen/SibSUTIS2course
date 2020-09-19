@@ -82,7 +82,7 @@ namespace OOP_3S_Lab234
                 Color.White,
                 0f,
                 new Vector2(test.Texture.Width / 2, test.Texture.Height / 2),
-                new Vector2(4, 4),
+                Vector2.One,
                 SpriteEffects.None,
                 0f);
             _spriteBatch.End();

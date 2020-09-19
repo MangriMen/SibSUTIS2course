@@ -19,8 +19,6 @@ namespace OOP_3S_Lab234
             Coords = spawnPoint;
         }
 
-        public float step = 1;
-
         public void Update(GameTime gameTime, Vector2 resolution)
         {
             bool noKeyPressed = !Keyboard.GetState().IsKeyDown(Keys.Up) &&
@@ -34,19 +32,19 @@ namespace OOP_3S_Lab234
             }
             else
             {
-                if (coords_.Y > 0 + Texture.Height * 4 / 2 && Keyboard.GetState().IsKeyDown(Keys.Up))
+                if (coords_.Y > 0 + Texture.Height / 2 && Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
                     velocity_.Y -= 1.0f;
                 }
-                if (coords_.Y < resolution.Y - Texture.Height * 4 / 2 && Keyboard.GetState().IsKeyDown(Keys.Down) )
+                if (coords_.Y < resolution.Y - Texture.Height / 2 && Keyboard.GetState().IsKeyDown(Keys.Down) )
                 {
                     velocity_.Y += 1.0f;
                 }
-                if (coords_.X > 0 + Texture.Width * 4 / 2 && Keyboard.GetState().IsKeyDown(Keys.Left))
+                if (coords_.X > 0 + Texture.Width / 2 && Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
                     velocity_.X -= 1.0f;
                 }
-                if (coords_.X < resolution.X - Texture.Width * 4 / 2 && Keyboard.GetState().IsKeyDown(Keys.Right))
+                if (coords_.X < resolution.X - Texture.Width / 2 && Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
                     velocity_.X += 1.0f;
                 }
