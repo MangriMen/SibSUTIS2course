@@ -80,7 +80,7 @@ namespace OOP_3S_Lab234
                 test.Coords,
                 null,
                 Color.White,
-                0f,
+                test.RotateAngle,
                 new Vector2(test.Texture.Width / 2, test.Texture.Height / 2),
                 Vector2.One,
                 SpriteEffects.None,

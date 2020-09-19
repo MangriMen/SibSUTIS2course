@@ -18,12 +18,19 @@ namespace OOP_3S_Lab234
 
         protected int speed_ = new int();
 
+        protected float rotateAngle_ = new float();
+
         protected Texture2D texture_;
 
         public Vector2 Coords
         {
             get { return coords_; }
             set { coords_ = value; }
+        }
+        public float RotateAngle
+        {
+            get { return rotateAngle_; }
+            set { rotateAngle_ = value; }
         }
         public int Speed
         {
