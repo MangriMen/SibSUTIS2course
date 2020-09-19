@@ -24,6 +24,10 @@ namespace OOP_3S_Lab234
 
         protected Texture2D texture_;
 
+        protected Texture2D cabin_;
+
+        protected Texture2D jet_;
+
         public Vector2 Position
         {
             get { return position_; }
@@ -43,6 +47,16 @@ namespace OOP_3S_Lab234
         {
             get { return texture_; }
             set { texture_ = value; }
+        }
+        public Texture2D Cabin
+        {
+            get { return cabin_; }
+            set { cabin_ = value; }
+        }
+        public Texture2D Jet
+        {
+            get { return jet_; }
+            set { jet_ = value; }
         }
 
         public Shuttle()
@@ -75,7 +89,7 @@ namespace OOP_3S_Lab234
             }
         }
 
-        public void Update(GameTime gameTime, Vector2 resolution)
+        public virtual void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 

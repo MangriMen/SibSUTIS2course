@@ -19,7 +19,7 @@ namespace OOP_3S_Lab234
             Position = spawnPoint;
         }
 
-        public new void Update(GameTime gameTime, Vector2 resolution)
+        public override void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
