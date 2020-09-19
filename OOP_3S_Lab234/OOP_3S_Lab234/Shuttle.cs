@@ -7,6 +7,8 @@ using System.Text;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
+using System.Diagnostics;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace OOP_3S_Lab234
 {
@@ -43,24 +45,49 @@ namespace OOP_3S_Lab234
             set { texture_ = value; }
         }
 
-        public void Update(GameTime gameTime)
+        public Shuttle()
         {
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+            Speed = 0;
+            position_ = new Vector2(0, 0);
+            velocity_ = new Vector2(0, 0);
+        }
+
+        public Shuttle(int speed, Vector2 spawnPoint)
+        {
+            Speed = speed;
+            position_ = spawnPoint;
+            velocity_ = new Vector2(0.5f, 0.5f);
+        }
+
+        protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)
+        {
+            bool typeB = type == "player" ? false : true;
+            if (Position.Y + offset.Y < Texture.Height / 2 ||
+                Position.Y + offset.Y > resolution.Y - Texture.Height / 2)
             {
-                position_.Y -= Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                velocity_.Y = Convert.ToInt32(typeB) * -velocity_.Y;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+
+            if (Position.X + offset.X < Texture.Height / 2 ||
+                Position.X + offset.X > resolution.X - Texture.Height / 2)
             {
-                position_.Y += Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                velocity_.X = Convert.ToInt32(typeB) * -velocity_.X;
             }
-            if (Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-                position_.X -= Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            if (Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                position_.X += Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
+        }
+
+        public void Update(GameTime gameTime, Vector2 resolution)
+        {
+            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            Vector2 prevPos = Position;
+
+            if (velocity_ != Vector2.Zero) { velocity_.Normalize(); }
+
+            BorderCollision(velocity_ * Speed * delta, resolution, "bot");
+
+            position_ += velocity_ * Speed * delta;
+
+            rotateAngle_ = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
         }
     }
 }

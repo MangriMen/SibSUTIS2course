@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 
 namespace OOP_3S_Lab234
 {
@@ -8,7 +9,9 @@ namespace OOP_3S_Lab234
     {
         Vector2 resolution;
         Texture2D backgoundTexture;
-        Mini_Shuttle test;
+        Player player;
+        static uint numberOfClones = 2;
+        Shuttle[] clones = new Shuttle[numberOfClones];
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -22,8 +25,6 @@ namespace OOP_3S_Lab234
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             // Screen mode
             _graphics.IsFullScreen = false;
 
@@ -37,14 +38,21 @@ namespace OOP_3S_Lab234
                 resolution.X = 1280;
                 resolution.Y = 720;
             }
+
             // Screen resolution
             _graphics.PreferredBackBufferWidth = (int)resolution.X;
             _graphics.PreferredBackBufferHeight = (int)resolution.Y;
 
             _graphics.ApplyChanges();
 
-            test = new Mini_Shuttle(new Vector2(_graphics.PreferredBackBufferWidth / 2, 
+            player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, 
                 _graphics.PreferredBackBufferHeight / 2));
+
+            Random random = new Random();
+            for (int i = 0; i < numberOfClones; i++)
+            {
+                clones[i] = new Shuttle(random.Next(100, 300), new Vector2(random.Next(100, (int)resolution.X - 100), random.Next(100, (int)(resolution.Y - 100))));
+            }
 
             base.Initialize();
         }
@@ -53,10 +61,16 @@ namespace OOP_3S_Lab234
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
             backgoundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
-            test.Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
+            player.Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
+
+            String[] bodies = new String[4] { "bugBody", "gamepadBody", "horseshoeBody", "massiveBody" };
+            Random random = new Random();
+            for (int i = 0; i < numberOfClones; i++)
+            {
+                clones[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + bodies[random.Next(0, 4)]);
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -64,8 +78,12 @@ namespace OOP_3S_Lab234
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            test.Update(gameTime, resolution);
+            player.Update(gameTime, resolution);
+            
+            for (int i = 0; i < numberOfClones; i++)
+            {
+                clones[i].Update(gameTime, resolution);
+            }
 
             base.Update(gameTime);
         }
@@ -73,19 +91,32 @@ namespace OOP_3S_Lab234
         protected override void Draw(GameTime gameTime)
         {
 
-            // TODO: Add your drawing code here
             _spriteBatch.Begin();
             _spriteBatch.Draw(backgoundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
-            _spriteBatch.Draw(
-                test.Texture,
-                test.Position,
+            for (int i = 0; i < numberOfClones; i++)
+            {
+                _spriteBatch.Draw(
+                clones[i].Texture,
+                clones[i].Position,
                 null,
                 Color.White,
-                test.RotateAngle,
-                new Vector2(test.Texture.Width / 2, test.Texture.Height / 2),
+                clones[i].RotateAngle,
+                new Vector2(clones[i].Texture.Width / 2, clones[i].Texture.Height / 2),
                 Vector2.One,
                 SpriteEffects.None,
                 0f
+                );
+            }
+            _spriteBatch.Draw(
+                player.Texture,
+                player.Position,
+                null,
+                Color.White,
+                player.RotateAngle,
+                new Vector2(player.Texture.Width / 2, player.Texture.Height / 2),
+                Vector2.One,
+                SpriteEffects.None,
+                1f
             );
             _spriteBatch.End();
 

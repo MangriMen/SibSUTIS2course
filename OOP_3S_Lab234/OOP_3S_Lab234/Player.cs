@@ -11,15 +11,15 @@ using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace OOP_3S_Lab234
 {
-    class Mini_Shuttle : Shuttle
+    class Player : Shuttle
     {
-        public Mini_Shuttle(Vector2 spawnPoint)
+        public Player(Vector2 spawnPoint)
         {
             Speed = 200;
             Position = spawnPoint;
         }
 
-        public void Update(GameTime gameTime, Vector2 resolution)
+        public new void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -28,7 +28,7 @@ namespace OOP_3S_Lab234
                 !Keyboard.GetState().IsKeyDown(Keys.Left) &&
                 !Keyboard.GetState().IsKeyDown(Keys.Right);
 
-            Vector2 temp = velocity_;
+            Vector2 temp = Position;
 
             if (noKeyPressed)
             {
@@ -60,18 +60,17 @@ namespace OOP_3S_Lab234
                 {
                     velocity_.X += 1.0f;
                 }
-                rotateAngle_ = (float)Math.Atan2(velocity_.Y - temp.Y, velocity_.X - temp.X) + (float)Math.PI / 2;
                 if(velocity_ != Vector2.Zero)
                 {
                     velocity_.Normalize();
                 }
                 Vector2 offset = velocity_ * Speed * delta;
-                if (Position.Y + offset.Y < Texture.Height / 2 ||
-                    Position.Y + offset.Y > resolution.Y - Texture.Height / 2) { velocity_.Y = 0; }
-                if (Position.X + offset.X < Texture.Height / 2 ||
-                    Position.X + offset.X > resolution.X - Texture.Height / 2) { velocity_.X = 0; }
+                BorderCollision(offset, resolution, "player");
             }
+
             Position += velocity_ * Speed * delta;
+
+            rotateAngle_ = (float)Math.Atan2(Position.Y - temp.Y, Position.X - temp.X) + (float)Math.PI / 2;
         }
     }
 }
