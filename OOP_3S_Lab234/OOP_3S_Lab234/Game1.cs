@@ -25,6 +25,8 @@ namespace OOP_3S_Lab234
 
         protected override void Initialize()
         {
+            _graphics.GraphicsProfile = GraphicsProfile.HiDef;
+
             // Screen mode
             _graphics.IsFullScreen = false;
 
@@ -42,6 +44,9 @@ namespace OOP_3S_Lab234
             // Screen resolution
             _graphics.PreferredBackBufferWidth = (int)resolution.X;
             _graphics.PreferredBackBufferHeight = (int)resolution.Y;
+
+            _graphics.PreferMultiSampling = true;
+            GraphicsDevice.PresentationParameters.MultiSampleCount = 8;
 
             _graphics.ApplyChanges();
 
