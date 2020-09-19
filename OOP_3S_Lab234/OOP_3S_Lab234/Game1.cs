@@ -56,7 +56,7 @@ namespace OOP_3S_Lab234
             // TODO: use this.Content to load your game content here
             backgoundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
-            test.Texture = Content.Load<Texture2D>("Images/Shuttles/Test_shuttle");
+            test.Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
         }
 
         protected override void Update(GameTime gameTime)
