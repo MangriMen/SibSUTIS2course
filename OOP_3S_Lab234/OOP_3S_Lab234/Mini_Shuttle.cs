@@ -16,12 +16,13 @@ namespace OOP_3S_Lab234
         public Mini_Shuttle(Vector2 spawnPoint)
         {
             Speed = 200;
-            Coords = spawnPoint;
+            Position = spawnPoint;
         }
 
         public void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
             bool noKeyPressed = !Keyboard.GetState().IsKeyDown(Keys.Up) &&
                 !Keyboard.GetState().IsKeyDown(Keys.Down) &&
                 !Keyboard.GetState().IsKeyDown(Keys.Left) &&
@@ -29,36 +30,46 @@ namespace OOP_3S_Lab234
 
             if (noKeyPressed)
             {
-                velocity_ *= 0.95f;
+                if (Position.Y > 0 + Texture.Height / 2 && Position.Y < resolution.Y &&
+                    Position.X > 0 + Texture.Width / 2 && Position.X < resolution.X)
+                {
+                    velocity_ *= 0.95f;
+                }
+                else
+                {
+                    velocity_ *= 0;
+                }
             }
             else
             {
-                if (coords_.Y > 0 + Texture.Height / 2 && Keyboard.GetState().IsKeyDown(Keys.Up))
+                Debug.WriteLine(Position);
+                Debug.WriteLine(velocity_);
+                if (Position.Y - 1.0f * Speed * delta > 0 + Texture.Height / 2 && Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
                     rotateAngle_ = 0.0f;
                     velocity_.Y -= 1.0f;
                 }
-                if (coords_.Y < resolution.Y - Texture.Height / 2 && Keyboard.GetState().IsKeyDown(Keys.Down) )
+                if (Position.Y < resolution.Y - Texture.Height / 2 && Keyboard.GetState().IsKeyDown(Keys.Down) )
                 {
                     rotateAngle_ = (float)Math.PI;
                     velocity_.Y += 1.0f;
                 }
-                if (coords_.X > 0 + Texture.Width / 2 && Keyboard.GetState().IsKeyDown(Keys.Left))
+                if (Position.X > 0 + Texture.Width / 2 && Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
                     rotateAngle_ = -(float)Math.PI / 2.0f;
                     velocity_.X -= 1.0f;
                 }
-                if (coords_.X < resolution.X - Texture.Width / 2 && Keyboard.GetState().IsKeyDown(Keys.Right))
+                if (Position.X < resolution.X - Texture.Width / 2 && Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
                     rotateAngle_ = (float)Math.PI / 2.0f;
                     velocity_.X += 1.0f;
                 }
-                if (velocity_ != Vector2.Zero)
+                if(velocity_ != Vector2.Zero)
                 {
                     velocity_.Normalize();
                 }
             }
-            coords_ += velocity_ * Speed * delta;
+            Position += velocity_ * Speed * delta;
         }
     }
 }

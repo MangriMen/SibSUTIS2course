@@ -14,7 +14,7 @@ namespace OOP_3S_Lab234
     {
         protected Vector2 velocity_ = Vector2.Zero;
 
-        protected Vector2 coords_ = Vector2.Zero;
+        protected Vector2 position_ = Vector2.Zero;
 
         protected int speed_ = new int();
 
@@ -22,10 +22,10 @@ namespace OOP_3S_Lab234
 
         protected Texture2D texture_;
 
-        public Vector2 Coords
+        public Vector2 Position
         {
-            get { return coords_; }
-            set { coords_ = value; }
+            get { return position_; }
+            set { position_ = value; }
         }
         public float RotateAngle
         {
@@ -47,19 +47,19 @@ namespace OOP_3S_Lab234
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
             {
-                coords_.Y -= Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                position_.Y -= Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
             {
-                coords_.Y += Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                position_.Y += Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Left))
             {
-                coords_.X -= Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                position_.X -= Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Right))
             {
-                coords_.X += Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                position_.X += Speed * (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
         }
     }

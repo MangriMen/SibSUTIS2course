@@ -76,15 +76,17 @@ namespace OOP_3S_Lab234
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
             _spriteBatch.Draw(backgoundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
-            _spriteBatch.Draw(test.Texture,
-                test.Coords,
+            _spriteBatch.Draw(
+                test.Texture,
+                test.Position,
                 null,
                 Color.White,
                 test.RotateAngle,
                 new Vector2(test.Texture.Width / 2, test.Texture.Height / 2),
                 Vector2.One,
                 SpriteEffects.None,
-                0f);
+                0f
+            );
             _spriteBatch.End();
 
             base.Draw(gameTime);
