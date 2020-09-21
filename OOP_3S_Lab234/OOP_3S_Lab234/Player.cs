@@ -7,6 +7,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Numerics;
 using System.Text;
+using OOP_3S_Lab234.Utils;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
 namespace OOP_3S_Lab234
@@ -23,10 +24,8 @@ namespace OOP_3S_Lab234
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            bool noKeyPressed = !Keyboard.GetState().IsKeyDown(Keys.Up) &&
-                !Keyboard.GetState().IsKeyDown(Keys.Down) &&
-                !Keyboard.GetState().IsKeyDown(Keys.Left) &&
-                !Keyboard.GetState().IsKeyDown(Keys.Right);
+            bool noKeyPressed = !(Kb.getDown(Keys.Up) || Kb.getDown(Keys.Down) || Kb.getDown(Keys.Left) || Kb.getDown(Keys.Right) ||
+                Kb.getDown(Keys.W) || Kb.getDown(Keys.S) || Kb.getDown(Keys.A) || Kb.getDown(Keys.D));
 
             Vector2 temp = Position;
 
@@ -44,19 +43,19 @@ namespace OOP_3S_Lab234
             }
             else
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Up) || Keyboard.GetState().IsKeyDown(Keys.W))
+                if (Kb.getDown(Keys.Up) || Kb.getDown(Keys.W))
                 {
                     velocity_.Y -= 1.0f;
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.Down) || Keyboard.GetState().IsKeyDown(Keys.S))
+                if (Kb.getDown(Keys.Down) || Kb.getDown(Keys.S))
                 {
                     velocity_.Y += 1.0f;
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.A))
+                if (Kb.getDown(Keys.Left) || Kb.getDown(Keys.A))
                 {
                     velocity_.X -= 1.0f;
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.Right) || Keyboard.GetState().IsKeyDown(Keys.D))
+                if (Kb.getDown(Keys.Right) || Kb.getDown(Keys.D))
                 {
                     velocity_.X += 1.0f;
                 }
