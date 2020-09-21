@@ -10,6 +10,14 @@ namespace OOP_3S_Lab234
     public class ASpaceOutside : Game
     {
         Vector2 resolution;
+        enum GameState
+        {
+            MainMenu,
+            Gameplay,
+        }
+
+        readonly GameState _state = GameState.MainMenu;
+
         Texture2D backgoundTexture;
         Player player;
         static uint numberOfClones = 5;
@@ -68,6 +76,7 @@ namespace OOP_3S_Lab234
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            MainMenu.Texture = Content.Load<Texture2D>("Images/Backgrounds/menu");
             backgoundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
             player.Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
@@ -91,17 +100,54 @@ namespace OOP_3S_Lab234
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            player.Update(gameTime, resolution);
-            
-            for (int i = 0; i < numberOfClones; i++)
+            switch (_state)
             {
-                clones[i].Update(gameTime, resolution);
+                case GameState.MainMenu:
+                    UpdateMainMenu(gameTime);
+                    break;
+                case GameState.Gameplay:
+                    UpdateGameplay(gameTime);
+                    break;
             }
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
+        {
+            switch (_state)
+            {
+                case GameState.MainMenu:
+                    DrawMainMenu();
+                    break;
+                case GameState.Gameplay:
+                    DrawGameplay();
+                    break;
+            }
+            base.Draw(gameTime);
+        }
+
+        protected void UpdateMainMenu(GameTime gameTime)
+        {
+
+        }
+        protected void DrawMainMenu()
+        {
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(MainMenu.Texture, GraphicsDevice.Viewport.Bounds, Color.White);
+            _spriteBatch.End();
+        }
+
+        protected void UpdateGameplay(GameTime gameTime)
+        {
+            player.Update(gameTime, resolution);
+
+            for (int i = 0; i < numberOfClones; i++)
+            {
+                clones[i].Update(gameTime, resolution);
+            }
+        }
+        protected void DrawGameplay()
         {
             bool jetOffset = false;
 
@@ -186,8 +232,6 @@ namespace OOP_3S_Lab234
                 1f
             );
             _spriteBatch.End();
-
-            base.Draw(gameTime);
         }
     }
 }
