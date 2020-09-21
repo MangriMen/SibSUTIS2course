@@ -44,19 +44,19 @@ namespace OOP_3S_Lab234
             }
             else
             {
-                if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                if (Keyboard.GetState().IsKeyDown(Keys.Up) || Keyboard.GetState().IsKeyDown(Keys.W))
                 {
                     velocity_.Y -= 1.0f;
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.Down) )
+                if (Keyboard.GetState().IsKeyDown(Keys.Down) || Keyboard.GetState().IsKeyDown(Keys.S))
                 {
                     velocity_.Y += 1.0f;
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                if (Keyboard.GetState().IsKeyDown(Keys.Left) || Keyboard.GetState().IsKeyDown(Keys.A))
                 {
                     velocity_.X -= 1.0f;
                 }
-                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                if (Keyboard.GetState().IsKeyDown(Keys.Right) || Keyboard.GetState().IsKeyDown(Keys.D))
                 {
                     velocity_.X += 1.0f;
                 }

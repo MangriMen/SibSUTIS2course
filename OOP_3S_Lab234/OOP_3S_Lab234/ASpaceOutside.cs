@@ -7,18 +7,18 @@ using System.Text.Json;
 
 namespace OOP_3S_Lab234
 {
-    public class Game1 : Game
+    public class ASpaceOutside : Game
     {
         Vector2 resolution;
         Texture2D backgoundTexture;
         Player player;
         static uint numberOfClones = 5;
-        Shuttle[] clones = new Shuttle[numberOfClones];
+        Enemy[] clones = new Enemy[numberOfClones];
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        public Game1()
+        public ASpaceOutside()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
@@ -58,7 +58,7 @@ namespace OOP_3S_Lab234
             Random random = new Random();
             for (int i = 0; i < numberOfClones; i++)
             {
-                clones[i] = new Shuttle(random.Next(100, 300), new Vector2(random.Next(100, (int)resolution.X - 100), random.Next(100, (int)(resolution.Y - 100))));
+                clones[i] = new Enemy(random.Next(100, 300), new Vector2(random.Next(100, (int)resolution.X - 100), random.Next(100, (int)(resolution.Y - 100))));
             }
 
             base.Initialize();

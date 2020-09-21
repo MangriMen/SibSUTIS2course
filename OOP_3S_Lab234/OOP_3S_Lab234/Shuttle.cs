@@ -12,7 +12,7 @@ using Microsoft.VisualBasic.CompilerServices;
 
 namespace OOP_3S_Lab234
 {
-    class Shuttle
+    abstract class Shuttle
     {
         protected Vector2 velocity_ = Vector2.Zero;
 
@@ -59,19 +59,7 @@ namespace OOP_3S_Lab234
             set { jet_ = value; }
         }
 
-        public Shuttle()
-        {
-            Speed = 0;
-            position_ = new Vector2(0, 0);
-            velocity_ = new Vector2(0, 0);
-        }
-
-        public Shuttle(int speed, Vector2 spawnPoint)
-        {
-            Speed = speed;
-            position_ = spawnPoint;
-            velocity_ = new Vector2(0.5f, 0.5f);
-        }
+        
 
         protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)
         {
@@ -91,17 +79,6 @@ namespace OOP_3S_Lab234
 
         public virtual void Update(GameTime gameTime, Vector2 resolution)
         {
-            float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            Vector2 prevPos = Position;
-
-            if (velocity_ != Vector2.Zero) { velocity_.Normalize(); }
-
-            BorderCollision(velocity_ * Speed * delta, resolution, "bot");
-
-            position_ += velocity_ * Speed * delta;
-
-            rotateAngle_ = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
         }
     }
 }

@@ -7,7 +7,7 @@ namespace OOP_3S_Lab234
         [STAThread]
         static void Main()
         {
-            using (var game = new Game1())
+            using (var game = new ASpaceOutside())
                 game.Run();
         }
     }
