@@ -112,7 +112,7 @@ namespace OOP_3S_Lab234
                 clones[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(0, 6)]);
             }
 
-            Timer timer = new Timer(new TimerCallback(GameLoaded), null, 3000, -1);
+            Timer timer = new Timer(new TimerCallback(GameLoaded), null, 2000, Timeout.Infinite);
         }
 
         private void GameLoaded(object obj)
@@ -128,7 +128,6 @@ namespace OOP_3S_Lab234
             switch (State)
             {
                 case GameState.LoadingStart:
-                    Debug.WriteLine("Kek");
                     break;
                 case GameState.MainMenu:
                     MainMenu.Update(gameTime);
