@@ -4,21 +4,26 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace OOP_3S_Lab234
 {
     public class ASpaceOutside : Game
     {
-        Vector2 resolution;
-        enum GameState
+        public enum GameState
         {
+            LoadingStart,
             MainMenu,
             Gameplay,
         }
 
-        readonly GameState _state = GameState.MainMenu;
+        public static GameState State { get; set; }
+
+        Vector2 resolution;
 
         Texture2D backgoundTexture;
+        Texture2D loadingScreen;
         Player player;
         static uint numberOfClones = 5;
         Enemy[] clones = new Enemy[numberOfClones];
@@ -36,6 +41,8 @@ namespace OOP_3S_Lab234
         protected override void Initialize()
         {
             _graphics.GraphicsProfile = GraphicsProfile.HiDef;
+
+            Window.Title = "A Space Outside!";
 
             // Screen mode
             _graphics.IsFullScreen = false;
@@ -60,6 +67,8 @@ namespace OOP_3S_Lab234
 
             _graphics.ApplyChanges();
 
+            //State = GameState.MainMenu;
+
             player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, 
                 _graphics.PreferredBackBufferHeight / 2));
 
@@ -76,6 +85,15 @@ namespace OOP_3S_Lab234
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            loadingScreen = Content.Load<Texture2D>("Images/Backgrounds/bootloader");
+
+            Thread bgLoad = new Thread(new ThreadStart(LoadGame));
+            bgLoad.IsBackground = true;
+            bgLoad.Start();
+        }
+
+        protected void LoadGame()
+        {
             MainMenu.Texture = Content.Load<Texture2D>("Images/Backgrounds/menu");
             backgoundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
@@ -93,6 +111,13 @@ namespace OOP_3S_Lab234
                 clones[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[random.Next(0, 4)]);
                 clones[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(0, 6)]);
             }
+
+            Timer timer = new Timer(new TimerCallback(GameLoaded), null, 3000, -1);
+        }
+
+        private void GameLoaded(object obj)
+        {
+            State = GameState.MainMenu;
         }
 
         protected override void Update(GameTime gameTime)
@@ -100,10 +125,13 @@ namespace OOP_3S_Lab234
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            switch (_state)
+            switch (State)
             {
+                case GameState.LoadingStart:
+                    Debug.WriteLine("Kek");
+                    break;
                 case GameState.MainMenu:
-                    UpdateMainMenu(gameTime);
+                    MainMenu.Update(gameTime);
                     break;
                 case GameState.Gameplay:
                     UpdateGameplay(gameTime);
@@ -115,27 +143,21 @@ namespace OOP_3S_Lab234
 
         protected override void Draw(GameTime gameTime)
         {
-            switch (_state)
+            switch (State)
             {
+                case GameState.LoadingStart:
+                    _spriteBatch.Begin();
+                    _spriteBatch.Draw(loadingScreen, GraphicsDevice.Viewport.Bounds, Color.White);
+                    _spriteBatch.End();
+                    break;
                 case GameState.MainMenu:
-                    DrawMainMenu();
+                    MainMenu.Draw(_spriteBatch, GraphicsDevice);
                     break;
                 case GameState.Gameplay:
                     DrawGameplay();
                     break;
             }
             base.Draw(gameTime);
-        }
-
-        protected void UpdateMainMenu(GameTime gameTime)
-        {
-
-        }
-        protected void DrawMainMenu()
-        {
-            _spriteBatch.Begin();
-            _spriteBatch.Draw(MainMenu.Texture, GraphicsDevice.Viewport.Bounds, Color.White);
-            _spriteBatch.End();
         }
 
         protected void UpdateGameplay(GameTime gameTime)

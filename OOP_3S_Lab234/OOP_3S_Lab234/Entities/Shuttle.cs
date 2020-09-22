@@ -59,8 +59,6 @@ namespace OOP_3S_Lab234
             set { jet_ = value; }
         }
 
-        
-
         protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)
         {
             bool typeB = type == "player" ? false : true;
