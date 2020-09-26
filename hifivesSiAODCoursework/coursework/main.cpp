@@ -16,27 +16,31 @@ public:
         int rightBorder = 20;
         FillNode(opendFileStream, size);
 
-        cout << "What do you whant to do?\n\n" 
+        cout << "A Company Database.\n\n" 
              << "Enter the appropriate number:\n" 
-             << "\"0\" for exiting program." 
-             << "\"1\" for" 
-             << "\"2\" for";
+             << "\"1\" to print workers information\n"
+             << "\"2\" to select the next 20 workers\n"
+             << "\"3\" to print information about all employees\n"
+             << "\"0\" for exiting program.\n";
         for (EVER) {
             cin >> chooseNumber;
             switch (chooseNumber) {
                 case 0: {
                     return;
                 }
+                case 3: {
+                    //и темп добавить
+                    //или это выглядит очень плохо и лучше ещё раз функцию вызвать чем писать такое
+                    leftBorder = 0;
+                    rightBorder = size;
+                }
                 case 1: {
+                    PrintNode(leftBorder, rightBorder);
+                } break;
+                case 2: {
                     leftBorder = rightBorder;
                     rightBorder += 20;
                     cout << "Next workers will be in numeric range of (" << leftBorder << ", " << rightBorder << ")\n\n";
-                } break;
-                case 2: {
-                    PrintNode(leftBorder, rightBorder);
-                } break;
-                case 3: {
-                    PrintNode(leftBorder, rightBorder);
                 } break;
                 default: {
                     cout << "\n\nError: unsupported argument entered\n\n"; 
@@ -48,13 +52,14 @@ public:
 
 protected:
     void PrintNode(int leftBorder, int rightBorder) {
+        cout << "\t" << "Full name: " << "\t\t\t\t" << "Dep. No: " << "\t" 
+             << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
         for (int i = leftBorder; i < rightBorder; i++) {
-            cout << "Employee " << i + 1 << ":" << endl;
-            cout << "\t" << "Full name: " << this[i].employeeFullName << endl;
-            cout << "\t" << "Deparment number: " << this[i].departmentNumber << endl;
-            cout << "\t" << "Place: " << this[i].post << endl;
-            cout << "\t" << "Birthdate: " << this[i].birthDate << endl;
-            cout << endl;
+            cout << i + 1 << ")";
+            cout << "\t" << this[i].employeeFullName;
+            cout << "\t\t" << this[i].departmentNumber;
+            cout << "\t\t" << this[i].post;
+            cout << "\t" << this[i].birthDate << endl << endl;
         }
     }
 
