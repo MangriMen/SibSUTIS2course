@@ -10,17 +10,23 @@ public:
     char post[22];
     char birthDate[10];
 
-    void ShowMenu(ifstream& opendFileStream, int size) {
+    void ShowMenu(ifstream& opendFileStream, int size = 0) {
         int chooseNumber = 0;
         int leftBorder = 0;
         int rightBorder = 20;
-        FillNode(opendFileStream, size);
+        int tempLeftBorder = 0;
+        int tempRightBorder = 0;
+
+        for (int i = 0; i < size; ++i) {
+            this[i].nodeFill(opendFileStream);
+        }
 
         cout << "A Company Database.\n\n" 
              << "Enter the appropriate number:\n" 
              << "\"1\" to print workers information\n"
              << "\"2\" to select the next 20 workers\n"
              << "\"3\" to print information about all employees\n"
+             << "\"4\" to search information about specific employees\n"
              << "\"0\" for exiting program.\n";
         for (EVER) {
             cin >> chooseNumber;
@@ -29,18 +35,32 @@ public:
                     return;
                 }
                 case 3: {
-                    //и темп добавить
-                    //или это выглядит очень плохо и лучше ещё раз функцию вызвать чем писать такое
+                    tempLeftBorder = leftBorder;
+                    tempRightBorder = rightBorder;
                     leftBorder = 0;
                     rightBorder = size;
                 }
                 case 1: {
-                    PrintNode(leftBorder, rightBorder);
+                    cout << "\t" << "Full name: " << "\t\t\t\t" << "Dep. No: " << "\t"
+                        << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
+                    for (int i = leftBorder; i < rightBorder; i++) {
+                        cout << i + 1 << ")";
+                        this[i].nodePrint();
+                    }
+                    leftBorder = tempLeftBorder;
+                    rightBorder = tempRightBorder;
                 } break;
                 case 2: {
-                    leftBorder = rightBorder;
-                    rightBorder += 20;
-                    cout << "Next workers will be in numeric range of (" << leftBorder << ", " << rightBorder << ")\n\n";
+                    if (rightBorder < size) {
+                        leftBorder = rightBorder;
+                        rightBorder += 20;
+                        cout << "Next workers will be in numeric range of (" << leftBorder << ", " << rightBorder << ")\n\n";
+                    } else {
+                        cout << "Final range achived.";
+                    }
+                } break;
+                case 4: {
+                    //here be sort
                 } break;
                 default: {
                     cout << "\n\nError: unsupported argument entered\n\n"; 
@@ -51,29 +71,22 @@ public:
 
 
 protected:
-    void PrintNode(int leftBorder, int rightBorder) {
-        cout << "\t" << "Full name: " << "\t\t\t\t" << "Dep. No: " << "\t" 
-             << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-        for (int i = leftBorder; i < rightBorder; i++) {
-            cout << i + 1 << ")";
-            cout << "\t" << this[i].employeeFullName;
-            cout << "\t\t" << this[i].departmentNumber;
-            cout << "\t\t" << this[i].post;
-            cout << "\t" << this[i].birthDate << endl << endl;
-        }
+    void nodePrint() {
+        cout << "\t" << this->employeeFullName;
+        cout << "\t\t" << this->departmentNumber;
+        cout << "\t\t" << this->post;
+        cout << "\t" << this->birthDate << endl << endl;
     }
 
-    void FillNode(ifstream& opendFileStream, int size) {
+    void nodeFill(ifstream& opendFileStream) {
         short int* temp = new short int[sizeof(short int)];
-
-        for (int i = 0; i < size; i++) {
-            opendFileStream.read(this[i].employeeFullName, sizeof(this[i].employeeFullName));
-            for (int j = 0; j < sizeof(this[i].departmentNumber); j++) { temp[j] = opendFileStream.get(); }
-            this[i].departmentNumber = temp[0] + temp[1];
-            opendFileStream.read(this[i].post, sizeof(this[i].post));
-            opendFileStream.read(this[i].birthDate, sizeof(this[i].birthDate));
-        }
+        opendFileStream.read(this->employeeFullName, sizeof(this->employeeFullName));
+        for (int j = 0; j < sizeof(this->departmentNumber); j++) { temp[j] = opendFileStream.get(); }
+        this->departmentNumber = temp[0] + temp[1];
+        opendFileStream.read(this->post, sizeof(this->post));
+        opendFileStream.read(this->birthDate, sizeof(this->birthDate));
     }
+
 };
 
 int main() {
@@ -83,7 +96,7 @@ int main() {
     dbFile.clear();
     dbFile.seekg(0, ios_base::beg);
     int nodesNumber = length / sizeof(DatabaseNode);
-    DatabaseNode* node = new DatabaseNode[nodesNumber];
+    DatabaseNode* nodes = new DatabaseNode[nodesNumber];
 
     if (!dbFile) {
         dbFile.clear();
@@ -91,10 +104,10 @@ int main() {
         return 23;
     }
 
-    node->ShowMenu(dbFile, nodesNumber);
+    nodes->ShowMenu(dbFile, nodesNumber);
 
     dbFile.clear();
-    delete[] node;
+    delete[] nodes;
 }
 
 /*
