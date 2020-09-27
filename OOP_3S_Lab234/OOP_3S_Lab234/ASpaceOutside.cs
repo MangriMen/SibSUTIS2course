@@ -6,6 +6,9 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using OOP_3S_Lab234.Entities;
+using System.Drawing;
+using Color = Microsoft.Xna.Framework.Color;
 
 namespace OOP_3S_Lab234
 {
@@ -25,11 +28,14 @@ namespace OOP_3S_Lab234
         Texture2D backgoundTexture;
         Texture2D loadingScreen;
         Player player;
-        static uint numberOfClones = 5;
-        Enemy[] clones = new Enemy[numberOfClones];
+        BugEnemy[] clonesBug = new BugEnemy[6];
+        GamepadEnemy[] clonesGamepad = new GamepadEnemy[3];
+        MassiveEnemy[] clonesMassive = new MassiveEnemy[2];
+        LunarEnemy[] clonesLunar = new LunarEnemy[3];
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        Random random = new Random();
 
         public ASpaceOutside()
         {
@@ -72,10 +78,33 @@ namespace OOP_3S_Lab234
             player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, 
                 _graphics.PreferredBackBufferHeight / 2));
 
-            Random random = new Random();
-            for (int i = 0; i < numberOfClones; i++)
+            for (int i = 0; i < clonesBug.Length; ++i)
             {
-                clones[i] = new Enemy(random.Next(100, 300), new Vector2(random.Next(100, (int)resolution.X - 100), random.Next(100, (int)(resolution.Y - 100))));
+                clonesBug[i] = new BugEnemy(new Vector2(
+                    random.Next(65, _graphics.PreferredBackBufferWidth - 100),
+                    random.Next(65, _graphics.PreferredBackBufferHeight - 100)
+                ));
+            }
+            for (int i = 0; i < clonesGamepad.Length; ++i)
+            {
+                clonesGamepad[i] = new GamepadEnemy(new Vector2(
+                    random.Next(_graphics.PreferredBackBufferWidth - 300, _graphics.PreferredBackBufferWidth - 100),
+                    random.Next(65, _graphics.PreferredBackBufferHeight - 100)
+                ));
+            }
+            for (int i = 0; i < clonesMassive.Length; ++i)
+            {
+                clonesMassive[i] = new MassiveEnemy(new Vector2(
+                    random.Next(65, 350),
+                    random.Next(65, _graphics.PreferredBackBufferHeight / 2)
+                ));
+            }
+            for (int i = 0; i < clonesLunar.Length; ++i)
+            {
+                clonesLunar[i] = new LunarEnemy(new Vector2(
+                    random.Next(65, 350),
+                    random.Next(_graphics.PreferredBackBufferHeight / 2, _graphics.PreferredBackBufferHeight - 65)
+                ));
             }
 
             base.Initialize();
@@ -101,18 +130,37 @@ namespace OOP_3S_Lab234
             player.Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/brickCabin");
             player.Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/doubleOrangeJet");
 
-            String[] bodies = new String[4] { "bugBody", "gamepadBody", "horseshoeBody", "massiveBody" };
+            //String[] bodies = new String[4] { "bugBody", "gamepadBody", "lunarBody", "massiveBody" };
             String[] cabins = new String[4] { "brickCabin", "conusCabinDouble", "ovalCabin", "raindropDoubleCabin" };
             String[] jets = new String[6] { "doubleBlueJet", "doubleGreenJet", "doubleOrangeJet", "monoBlueJet", "monoGreenJet", "monoOrangeJet" };
-            Random random = new Random();
-            for (int i = 0; i < numberOfClones; i++)
+
+
+            for (int i = 0; i < clonesBug.Length; ++i)
             {
-                clones[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + bodies[random.Next(0, 4)]);
-                clones[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[random.Next(0, 4)]);
-                clones[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(0, 6)]);
+                clonesBug[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/bugBody");
+                clonesBug[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[1]);
+                clonesBug[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(3, 5)]);
+            }
+            for (int i = 0; i < clonesGamepad.Length; ++i)
+            {
+                clonesGamepad[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/gamepadBody");
+                clonesGamepad[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[random.Next(0,2) * 2]);
+                clonesGamepad[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/doubleGreenJet");
+            }
+            for (int i = 0; i < clonesMassive.Length; ++i)
+            {
+                clonesMassive[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
+                clonesMassive[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[random.Next(0, 2) == 0 ? 0 : cabins.Length - 1]);
+                clonesMassive[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(0, 4)]);
+            }
+            for (int i = 0; i < clonesLunar.Length; ++i)
+            {
+                clonesLunar[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/lunarBody");
+                clonesLunar[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[random.Next(0, 2) * 2 + 1]);
+                clonesLunar[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(0, 4)]);
             }
 
-            Timer timer = new Timer(new TimerCallback(GameLoaded), null, 2000, Timeout.Infinite);
+            Timer timer = new Timer(new TimerCallback(GameLoaded), null, 800, Timeout.Infinite);
         }
 
         private void GameLoaded(object obj)
@@ -162,96 +210,48 @@ namespace OOP_3S_Lab234
         protected void UpdateGameplay(GameTime gameTime)
         {
             player.Update(gameTime, resolution);
-
-            for (int i = 0; i < numberOfClones; i++)
+           
+            for (int i = 0; i < clonesBug.Length; ++i)
             {
-                clones[i].Update(gameTime, resolution);
+                clonesBug[i].Update(gameTime, resolution);
+            }
+            for (int i = 0; i < clonesGamepad.Length; ++i)
+            {
+                clonesGamepad[i].Update(gameTime, resolution);
+            }
+            for (int i = 0; i < clonesMassive.Length; ++i)
+            {
+                clonesMassive[i].Update(gameTime, resolution);
+            }
+            for (int i = 0; i < clonesLunar.Length; ++i)
+            {
+                clonesLunar[i].Update(gameTime, resolution);
             }
         }
         protected void DrawGameplay()
         {
-            bool jetOffset = false;
-
             _spriteBatch.Begin();
             _spriteBatch.Draw(backgoundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
-            for (int i = 0; i < numberOfClones; i++)
+
+            for (int i = 0; i < clonesBug.Length; ++i)
             {
-                _spriteBatch.Draw(
-                clones[i].Texture,
-                clones[i].Position,
-                null,
-                Color.White,
-                clones[i].RotateAngle,
-                new Vector2(clones[i].Texture.Width / 2, clones[i].Texture.Height / 2),
-                Vector2.One,
-                SpriteEffects.None,
-                0f
-                );
-
-                _spriteBatch.Draw(
-                clones[i].Cabin,
-                clones[i].Position,
-                null,
-                Color.White,
-                clones[i].RotateAngle,
-                new Vector2(clones[i].Texture.Width / 2, clones[i].Texture.Height / 2),
-                Vector2.One,
-                SpriteEffects.None,
-                0f
-                );
-
-                jetOffset = clones[i].Texture.ToString() == "Images/Shuttle/Body/massiveBody" ||
-                    clones[i].Texture.ToString() == "Images/Shuttle/Body/gamepadBody";
-
-                _spriteBatch.Draw(
-                clones[i].Jet,
-                clones[i].Position,
-                null,
-                Color.White,
-                clones[i].RotateAngle,
-                new Vector2(clones[i].Texture.Width / 2, jetOffset ? 10 : 0),
-                Vector2.One,
-                SpriteEffects.None,
-                0f
-                );
+                clonesBug[i].Draw(_spriteBatch);
             }
-            _spriteBatch.Draw(
-                player.Texture,
-                player.Position,
-                null,
-                Color.White,
-                player.RotateAngle,
-                new Vector2(player.Texture.Width / 2, player.Texture.Height / 2),
-                Vector2.One,
-                SpriteEffects.None,
-                1f
-            );
-            _spriteBatch.Draw(
-                player.Cabin,
-                player.Position,
-                null,
-                Color.White,
-                player.RotateAngle,
-                new Vector2(player.Texture.Width / 2, player.Texture.Height / 2),
-                Vector2.One,
-                SpriteEffects.None,
-                1f
-            );
+            for (int i = 0; i < clonesGamepad.Length; ++i)
+            {
+                clonesGamepad[i].Draw(_spriteBatch);
+            }
+            for (int i = 0; i < clonesMassive.Length; ++i)
+            {
+                clonesMassive[i].Draw(_spriteBatch);
+            }
+            for (int i = 0; i < clonesLunar.Length; ++i)
+            {
+                clonesLunar[i].Draw(_spriteBatch);
+            }
 
-            jetOffset = player.Texture.ToString() == "Images/Shuttle/Body/massiveBody" ||
-                    player.Texture.ToString() == "Images/Shuttle/Body/gamepadBody";
+            player.Draw(_spriteBatch);
 
-            _spriteBatch.Draw(
-                player.Jet,
-                player.Position,
-                null,
-                Color.White,
-                player.RotateAngle,
-                new Vector2(player.Texture.Width / 2, jetOffset ? 10 : 0),
-                Vector2.One,
-                SpriteEffects.None,
-                1f
-            );
             _spriteBatch.End();
         }
     }
