@@ -75,8 +75,6 @@ namespace OOP_3S_Lab234
             }
         }
 
-        public virtual void Update(GameTime gameTime, Vector2 resolution)
-        {
-        }
+        public abstract void Update(GameTime gameTime, Vector2 resolution);
     }
 }
