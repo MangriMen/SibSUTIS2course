@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework;
 using System.Diagnostics;
 using Microsoft.VisualBasic.CompilerServices;
 
-namespace OOP_3S_Lab234
+namespace OOP_3S_Lab234.Entities
 {
     abstract class Shuttle
     {
@@ -57,6 +57,50 @@ namespace OOP_3S_Lab234
         {
             get { return jet_; }
             set { jet_ = value; }
+        }
+
+        public void Draw(SpriteBatch _spriteBatch)
+        {
+            bool jetOffset = false;
+
+            _spriteBatch.Draw(
+                Texture,
+                Position,
+                null,
+                Color.White,
+                RotateAngle,
+                new Vector2(Texture.Width / 2, Texture.Height / 2),
+                Vector2.One,
+                SpriteEffects.None,
+                0f
+                );
+
+            _spriteBatch.Draw(
+            Cabin,
+            Position,
+            null,
+            Color.White,
+            RotateAngle,
+            new Vector2(Texture.Width / 2, Texture.Height / 2),
+            Vector2.One,
+            SpriteEffects.None,
+            0f
+            );
+
+            jetOffset = Texture.ToString() == "Images/Shuttle/Body/massiveBody" ||
+                Texture.ToString() == "Images/Shuttle/Body/gamepadBody";
+
+            _spriteBatch.Draw(
+            Jet,
+            Position,
+            null,
+            Color.White,
+            RotateAngle,
+            new Vector2(Texture.Width / 2, jetOffset ? 10 : 0),
+            Vector2.One,
+            SpriteEffects.None,
+            0f
+            );
         }
 
         protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)

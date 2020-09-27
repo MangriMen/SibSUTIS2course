@@ -10,7 +10,7 @@ using System.Text;
 using OOP_3S_Lab234.Utils;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 
-namespace OOP_3S_Lab234
+namespace OOP_3S_Lab234.Entities
 {
     class Player : Shuttle
     {
