@@ -62,6 +62,14 @@ namespace OOP_3S_Lab234.Entities
                 if(velocity_ != Vector2.Zero)
                 {
                     velocity_.Normalize();
+                    if (double.IsNaN(velocity_.X) || double.IsInfinity(velocity_.X))
+                    {
+                        velocity_.X = 0;
+                    }
+                    if (double.IsNaN(velocity_.Y) || double.IsInfinity(velocity_.Y))
+                    {
+                        velocity_.Y = 0;
+                    }
                 }
                 Vector2 offset = velocity_ * Speed * delta;
                 BorderCollision(offset, resolution, "player");

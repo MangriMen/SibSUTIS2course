@@ -23,6 +23,8 @@ namespace OOP_3S_Lab234
 
         public static GameState State { get; set; }
 
+        SpriteFont usually;
+
         Vector2 resolution;
 
         Texture2D backgoundTexture;
@@ -123,6 +125,7 @@ namespace OOP_3S_Lab234
 
         protected void LoadGame()
         {
+            usually = Content.Load<SpriteFont>("Fonts/default");
             MainMenu.Texture = Content.Load<Texture2D>("Images/Backgrounds/menu");
             backgoundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
@@ -251,6 +254,7 @@ namespace OOP_3S_Lab234
             }
 
             player.Draw(_spriteBatch);
+            Debug.WriteLine(player.Position);
 
             _spriteBatch.End();
         }
