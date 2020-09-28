@@ -20,6 +20,13 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/default.spritefont
 
+#begin Fonts/shadow.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/shadow.spritefont
+
 #begin Images/Backgrounds/background.jpg
 /importer:TextureImporter
 /processor:TextureProcessor
