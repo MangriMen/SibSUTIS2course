@@ -77,7 +77,7 @@ namespace OOP_3S_Lab234.Entities
 
             Position += velocity_ * Speed * delta;
 
-            rotateAngle_ = (float)Math.Atan2(Position.Y - temp.Y, Position.X - temp.X) + (float)Math.PI / 2;
+            RotateAngle = (float)Math.Atan2(Position.Y - temp.Y, Position.X - temp.X) + (float)Math.PI / 2;
         }
     }
 }

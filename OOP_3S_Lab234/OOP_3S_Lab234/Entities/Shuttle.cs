@@ -16,48 +16,12 @@ namespace OOP_3S_Lab234.Entities
     {
         protected Vector2 velocity_ = Vector2.Zero;
 
-        protected Vector2 position_ = Vector2.Zero;
-
-        protected int speed_ = new int();
-
-        protected float rotateAngle_ = new float();
-
-        protected Texture2D texture_;
-
-        protected Texture2D cabin_;
-
-        protected Texture2D jet_;
-
-        public Vector2 Position
-        {
-            get { return position_; }
-            set { position_ = value; }
-        }
-        public float RotateAngle
-        {
-            get { return rotateAngle_; }
-            set { rotateAngle_ = value; }
-        }
-        public int Speed
-        {
-            get { return speed_; }
-            set { speed_ = value > 0 ? value : 0; }
-        }
-        public Texture2D Texture
-        {
-            get { return texture_; }
-            set { texture_ = value; }
-        }
-        public Texture2D Cabin
-        {
-            get { return cabin_; }
-            set { cabin_ = value; }
-        }
-        public Texture2D Jet
-        {
-            get { return jet_; }
-            set { jet_ = value; }
-        }
+        public Vector2 Position { get; set; }
+        public float RotateAngle { get; set; }
+        public int Speed { get; set; }
+        public Texture2D Texture { get; set; }
+        public Texture2D Cabin { get; set; }
+        public Texture2D Jet { get; set; }
 
         public void Draw(SpriteBatch _spriteBatch)
         {

@@ -12,7 +12,7 @@ namespace OOP_3S_Lab234.Entities
         {
             Random random = new Random();
             Speed = random.Next(260, 341);
-            position_ = new Vector2(0, 0);
+            Position = new Vector2(0, 0);
             velocity_ = new Vector2(0, 0);
         }
 
@@ -20,7 +20,7 @@ namespace OOP_3S_Lab234.Entities
         {
             Random random = new Random();
             Speed = random.Next(260, 341);
-            position_ = spawnPoint;
+            Position = spawnPoint;
             velocity_ = new Vector2(0.5f, 0.5f);
         }
 
@@ -34,9 +34,9 @@ namespace OOP_3S_Lab234.Entities
 
             BorderCollision(velocity_ * Speed * delta, resolution, "bot");
 
-            position_ += velocity_ * Speed * delta;
+            Position += velocity_ * Speed * delta;
 
-            rotateAngle_ = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
+            RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
         }
 
     }
