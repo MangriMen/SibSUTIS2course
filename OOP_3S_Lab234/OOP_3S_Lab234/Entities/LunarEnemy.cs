@@ -3,6 +3,7 @@ using System;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Content;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -23,7 +24,6 @@ namespace OOP_3S_Lab234.Entities
             Position = spawnPoint;
             velocity_ = new Vector2(0.5f, 0.5f);
         }
-
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;

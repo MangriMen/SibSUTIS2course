@@ -127,14 +127,11 @@ namespace OOP_3S_Lab234
 
         protected void LoadGame()
         {
-            MainMenu.Font = Content.Load<SpriteFont>("Fonts/default");
-            MainMenu.ShadowFont = Content.Load<SpriteFont>("Fonts/shadow");
-            MainMenu.Texture = Content.Load<Texture2D>("Images/Backgrounds/menu");
+            MainMenu.Load(Content);
+
             backgoundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
-            player.Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
-            player.Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/brickCabin");
-            player.Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/doubleOrangeJet");
+            player.Load(Content);
 
             //String[] bodies = new String[4] { "bugBody", "gamepadBody", "lunarBody", "massiveBody" };
             String[] cabins = new String[4] { "brickCabin", "conusCabinDouble", "ovalCabin", "raindropDoubleCabin" };
@@ -143,27 +140,35 @@ namespace OOP_3S_Lab234
 
             for (int i = 0; i < clonesBug.Length; ++i)
             {
-                clonesBug[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/bugBody");
-                clonesBug[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[1]);
-                clonesBug[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(3, 5)]);
+                clonesBug[i].Load(Content,
+                    "bugBody",
+                    cabins[1],
+                    jets[random.Next(3, 5)]
+                    );
             }
             for (int i = 0; i < clonesGamepad.Length; ++i)
             {
-                clonesGamepad[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/gamepadBody");
-                clonesGamepad[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[random.Next(0,2) * 2]);
-                clonesGamepad[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/doubleGreenJet");
+                clonesGamepad[i].Load(Content,
+                    "gamepadBody",
+                    cabins[random.Next(0, 2) * 2],
+                    "doubleGreenJet"
+                    );
             }
             for (int i = 0; i < clonesMassive.Length; ++i)
             {
-                clonesMassive[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
-                clonesMassive[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[random.Next(0, 2) == 0 ? 0 : cabins.Length - 1]);
-                clonesMassive[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(0, 4)]);
+                clonesMassive[i].Load(Content,
+                    "massiveBody",
+                    cabins[random.Next(0, 2) == 0 ? 0 : cabins.Length - 1],
+                    jets[random.Next(0, 4)]
+                    );
             }
             for (int i = 0; i < clonesLunar.Length; ++i)
             {
-                clonesLunar[i].Texture = Content.Load<Texture2D>("Images/Shuttle/Body/lunarBody");
-                clonesLunar[i].Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabins[random.Next(0, 2) * 2 + 1]);
-                clonesLunar[i].Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jets[random.Next(0, 4)]);
+                clonesLunar[i].Load(Content,
+                    "lunarBody",
+                    cabins[random.Next(0, 2) * 2 + 1],
+                    jets[random.Next(0, 4)]
+                    );
             }
 
             Timer timer = new Timer(new TimerCallback(GameLoaded), null, 800, Timeout.Infinite);

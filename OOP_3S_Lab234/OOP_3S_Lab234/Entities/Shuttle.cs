@@ -66,7 +66,12 @@ namespace OOP_3S_Lab234.Entities
             0f
             );
         }
-
+        public virtual void Load(ContentManager Content, string body, string cabin, string jet)
+        {
+            Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + body);
+            Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabin);
+            Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jet);
+        }
         protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)
         {
             bool typeB = type == "player" ? false : true;

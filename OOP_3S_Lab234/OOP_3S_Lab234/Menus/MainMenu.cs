@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using OOP_3S_Lab234.Utils;
@@ -19,6 +20,12 @@ namespace OOP_3S_Lab234
 
         public static Texture2D Texture { get; set; }
 
+        public static void Load(ContentManager Content)
+        {
+            Font = Content.Load<SpriteFont>("Fonts/default");
+            ShadowFont = Content.Load<SpriteFont>("Fonts/shadow");
+            Texture = Content.Load<Texture2D>("Images/Backgrounds/menu");
+        }
         public static void Update(GameTime gameTime)
         {
             if (Kb.getDown(Keys.Space) || Kb.getDown(Keys.Enter))

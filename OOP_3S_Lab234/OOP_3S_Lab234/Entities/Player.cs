@@ -9,6 +9,7 @@ using System.Numerics;
 using System.Text;
 using OOP_3S_Lab234.Utils;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
+using Microsoft.Xna.Framework.Content;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -19,7 +20,12 @@ namespace OOP_3S_Lab234.Entities
             Speed = 200;
             Position = spawnPoint;
         }
-
+        public void Load(ContentManager Content)
+        {
+            Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
+            Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/brickCabin");
+            Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/doubleOrangeJet");
+        }
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
