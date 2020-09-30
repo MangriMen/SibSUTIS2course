@@ -24,18 +24,18 @@ Vertex* ideallyBalancedSearchTree(int left, int right) {
 	return pointer;
 }
 
-void balancedSearchTreeRecursive(Vertex*& pointer, int index) {
+void randomSearchTreeRecursive(Vertex*& pointer, int index) {
 	if (pointer == nullptr) {
 		pointer = new Vertex;
 		pointer->data = index;
 		pointer->left = nullptr;
 		pointer->right = nullptr;
 	}
-	else if (index < pointer->data) balancedSearchTreeRecursive(pointer->left, index);
-	else if (index > pointer->data) balancedSearchTreeRecursive(pointer->right, index);
+	else if (index < pointer->data) randomSearchTreeRecursive(pointer->left, index);
+	else if (index > pointer->data) randomSearchTreeRecursive(pointer->right, index);
 }
 
-void balancedSearchTreeDoublePointer(Vertex* root, int size) {
+void randomSearchTreeDoublePointer(Vertex* root, int size) {
 	for (int i = 1; i < size; i++) {
 		Vertex** pointer = &root;
 
@@ -57,6 +57,44 @@ void balancedSearchTreeDoublePointer(Vertex* root, int size) {
 	}
 }
 
+Vertex* randomSearchTreeDeleteNode(Vertex* root, int elementToDelete) {
+	if (root == nullptr) { return root; }
+
+	if (elementToDelete == root->data) {
+		Vertex* tempPointer;
+		if (root->right == nullptr) {
+			tempPointer = root->left;
+		} else {
+			Vertex* p = root->right;
+			if (p->left == nullptr) {
+				p->left = root->left;
+				tempPointer = p;
+			} else {
+				Vertex* r = p->left;
+				while (r->left != nullptr) {
+					p = r;
+					r = p->left;
+				}
+
+				p->left = r->right;
+				r->left = root->left;
+				r->right = root->right;
+				tempPointer = r;
+			}
+		}
+
+		delete root;
+		return tempPointer;
+	}
+	else if (elementToDelete < root->data) {
+		root->left = randomSearchTreeDeleteNode(root->left, elementToDelete);
+	} else {
+		root->right = randomSearchTreeDeleteNode(root->right, elementToDelete);
+	}
+	
+	return root;
+}
+
 void traversal(Vertex* pointer, int type) {
 	if (pointer != nullptr) {
 		if (type == 1) cout << pointer->data << " ";
@@ -72,14 +110,15 @@ Vertex* search(Vertex* pointer, int index) {
 
 	if (pointer->data == index) { return pointer; }
 
-	//pointer->data > index ? search(pointer->left, index) : (pointer->data < index ? search(pointer->right, index) : pointer);
-	if (pointer->data > index) {
-		search(pointer->left, index);
-		pointer->data = 0;
-	} else if (pointer->data < index) {
-		search(pointer->right, index);
-		pointer->data = 0;
-	}
+	pointer->data > index ? search(pointer->left, index) : (pointer->data < index ? search(pointer->right, index) : pointer);
+	
+	//if (pointer->data > index) {
+	//	search(pointer->left, index);
+	//	pointer->data = 0;
+	//} else if (pointer->data < index) {
+	//	search(pointer->right, index);
+	//  pointer->data = 0;
+	//}
 }
 
 int height(Vertex* pointer) {
@@ -110,6 +149,20 @@ void fillRand(int size) {
 	}
 }
 
+void dispalyVertexInfo(Vertex* root, int traversalType) {
+	cout << "\n-----------------------------------------------------\n\n";
+	if (root == nullptr) {
+		cout << "Дерево пусто.\n";
+		return;
+	}
+	cout << "Обход " << traversalType << " типа:\n";
+	traversal(root, traversalType);
+	cout << "\n\nКоличество вершин: " << amount(root);
+	cout << "\n\nСумма элементов: " << sum(root);
+	cout << "\n\nВысота дерева: " << height(root);
+	cout << "\n\nМаксимальная высота дерева: " << treeHeightSum(root, 1) / amount(root);
+}
+
 int main() {
 	srand(unsigned int(time(NULL)));
 	setlocale(LC_ALL, "Russian");
@@ -117,6 +170,7 @@ int main() {
 	int numberOfVertex;
 	int traversalType;
 	int elementToFind;
+	int elementToDelete;
 
 	cout << "Введите число вершин: ";
 	cin >> numberOfVertex;
@@ -132,34 +186,50 @@ int main() {
 
 	// ИСДП
 	//root = ideallyBalancedSearchTree(0, numberOfVertex - 1);
-	
 	// СДП с двойной косвенностью
-	balancedSearchTreeDoublePointer(root, numberOfVertex);
-	
+	randomSearchTreeDoublePointer(root, numberOfVertex);
 	// СДП с рекурсивным проходом
-	//for (int i = 0; i < numberOfVertex; ++i) { balancedSearchTreeRecursive(root, A[i]); }
+	//for (int i = 0; i < numberOfVertex; ++i) { randomSearchTreeRecursive(root, A[i]); }
 	
 	cout << "\nИзначальный массив А:\n";
 	for (int i = 0; i < numberOfVertex; ++i) {
 		cout << A[i] << " ";
 	}
-	cout << "\n\nОбход " << traversalType <<" типа:\n";
-	traversal(root, traversalType);
-	cout << "\n\nКоличество вершин:\n" << amount(root);
-	cout << "\n\nСумма элементов:\n" << sum(root);
-	cout << "\n\nВысота дерева:\n" << height(root);
-	cout << "\n\nМаксимальная высота дерева:\n" << treeHeightSum(root, 1) / amount(root);
-	cout << "\n\nВведите число для поиска: ";
-	cin >> elementToFind;
-	Vertex* foundElement = search(root, elementToFind);
-	if (foundElement != nullptr) {
-		cout << "\nЭлемент " << foundElement->data << " был найден по адресу: " << foundElement << "\n";
-	}
-	else {
-		cout << "\nЭлемент " << elementToFind << " не найден\n";
-	}
-	traversal(root, traversalType);
 
+	dispalyVertexInfo(root, traversalType);
+
+	//Замена выбраного элемента и всех элементов по пути на 0
+	//cout << "\n\nВведите число для поиска: ";
+	//cin >> elementToFind;
+	//Vertex* foundElement = search(root, elementToFind);
+	//if (foundElement != nullptr) {
+	//	cout << "\nЭлемент " << elementToFind << " был найден по адресу: " << foundElement << "\n";
+	//}
+	//else {
+	//	cout << "\nЭлемент " << elementToFind << " не найден\n";
+	//}
+	//traversal(root, traversalType);
+
+	//Удаление выбраного элемента
+	while (true) {
+		cout << "\n\nВведите число для поиска: ";
+		cin >> elementToDelete;
+		if (search(root, elementToDelete) != nullptr) {
+			root = randomSearchTreeDeleteNode(root, elementToDelete);
+			dispalyVertexInfo(root, traversalType);
+		} else {
+			cout << "\nЭлемент не найден\n";
+		}
+
+		if (root == nullptr) { break; }
+	}
+	//Поочерёдное удаление вершин
+	/*for (int i = 0; i < numberOfVertex; i++) {
+		root = randomSearchTreeDeleteNode(root, A[i]);
+		dispalyVertexInfo(root, traversalType);
+	}*/
+
+	cout << "\n\n-----------------------------------------------------\n\n";
 
 	delete root;
 	delete A;
