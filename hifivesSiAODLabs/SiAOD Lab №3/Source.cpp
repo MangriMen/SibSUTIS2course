@@ -65,18 +65,18 @@ Vertex* randomSearchTreeDeleteNode(Vertex* root, int elementToDelete) {
 		if (root->right == nullptr) {
 			tempPointer = root->left;
 		} else {
-			Vertex* p = root->right;
-			if (p->left == nullptr) {
-				p->left = root->left;
-				tempPointer = p;
+			Vertex* pointer = root->right;
+			if (pointer->left == nullptr) {
+				pointer->left = root->left;
+				tempPointer = pointer;
 			} else {
-				Vertex* r = p->left;
+				Vertex* r = pointer->left;
 				while (r->left != nullptr) {
-					p = r;
-					r = p->left;
+					pointer = r;
+					r = pointer->left;
 				}
 
-				p->left = r->right;
+				pointer->left = r->right;
 				r->left = root->left;
 				r->right = root->right;
 				tempPointer = r;
