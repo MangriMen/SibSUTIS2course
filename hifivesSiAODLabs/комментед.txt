@@ -61,14 +61,14 @@ Vertex* randomSearchTreeDeleteNode(Vertex* root, int elementToDelete) {
 	if (root == nullptr) { return root; }
 
 	if (elementToDelete == root->data) {
-		Vertex* q;
+		Vertex* tempPointer;
 		if (root->right == nullptr) {
-			q = root->left;
+			tempPointer = root->left;
 		} else {
 			Vertex* pointer = root->right;
 			if (pointer->left == nullptr) {
 				pointer->left = root->left;
-				q = pointer;
+				tempPointer = pointer;
 			} else {
 				Vertex* r = pointer->left;
 				while (r->left != nullptr) {
@@ -79,11 +79,11 @@ Vertex* randomSearchTreeDeleteNode(Vertex* root, int elementToDelete) {
 				pointer->left = r->right;
 				r->left = root->left;
 				r->right = root->right;
-				q = r;
+				tempPointer = r;
 			}
 		}
 
-		return q;
+		return tempPointer;
 	}
 	else if (elementToDelete < root->data) {
 		root->left = randomSearchTreeDeleteNode(root->left, elementToDelete);
@@ -151,15 +151,15 @@ void fillRand(int size) {
 void dispalyVertexInfo(Vertex* root, int traversalType) {
 	cout << "\n-----------------------------------------------------\n\n";
 	if (root == nullptr) {
-		cout << "Дерево пусто.\n";
+		cout << "Р”РµСЂРµРІРѕ РїСѓСЃС‚Рѕ.\n";
 		return;
 	}
-	cout << "Обход " << traversalType << " типа:\n";
+	cout << "РћР±С…РѕРґ " << traversalType << " С‚РёРїР°:\n";
 	traversal(root, traversalType);
-	cout << "\n\nКоличество вершин: " << amount(root);
-	cout << "\n\nСумма элементов: " << sum(root);
-	cout << "\n\nВысота дерева: " << height(root);
-	cout << "\n\nМаксимальная высота дерева: " << treeHeightSum(root, 1) / amount(root);
+	cout << "\n\nРљРѕР»РёС‡РµСЃС‚РІРѕ РІРµСЂС€РёРЅ: " << amount(root);
+	cout << "\n\nРЎСѓРјРјР° СЌР»РµРјРµРЅС‚РѕРІ: " << sum(root);
+	cout << "\n\nР’С‹СЃРѕС‚Р° РґРµСЂРµРІР°: " << height(root);
+	cout << "\n\nРњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° РґРµСЂРµРІР°: " << treeHeightSum(root, 1) / amount(root);
 }
 
 int main() {
@@ -171,9 +171,9 @@ int main() {
 	int elementToFind;
 	int elementToDelete;
 
-	cout << "Введите число вершин: ";
+	cout << "Р’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ РІРµСЂС€РёРЅ: ";
 	cin >> numberOfVertex;
-	cout << "Введите тип прохода (1 - сверху вниз, 2 - справа налево, 3 - снизу вверх): ";
+	cout << "Р’РІРµРґРёС‚Рµ С‚РёРї РїСЂРѕС…РѕРґР° (1 - СЃРІРµСЂС…Сѓ РІРЅРёР·, 2 - СЃРїСЂР°РІР° РЅР°Р»РµРІРѕ, 3 - СЃРЅРёР·Сѓ РІРІРµСЂС…): ";
 	cin >> traversalType;
 
 	//A = new int[numberOfVertex];
@@ -184,46 +184,46 @@ int main() {
 	root->right = nullptr;
 	root->left = nullptr;
 
-	// ИСДП
+	// РРЎР”Рџ
 	//root = ideallyBalancedSearchTree(0, numberOfVertex - 1);
-	// СДП с двойной косвенностью
+	// РЎР”Рџ СЃ РґРІРѕР№РЅРѕР№ РєРѕСЃРІРµРЅРЅРѕСЃС‚СЊСЋ
 	randomSearchTreeDoublePointer(root, numberOfVertex);
-	// СДП с рекурсивным проходом
+	// РЎР”Рџ СЃ СЂРµРєСѓСЂСЃРёРІРЅС‹Рј РїСЂРѕС…РѕРґРѕРј
 	//for (int i = 0; i < numberOfVertex; ++i) { randomSearchTreeRecursive(root, A[i]); }
 	
-	cout << "\nИзначальный массив А:\n";
+	cout << "\nРР·РЅР°С‡Р°Р»СЊРЅС‹Р№ РјР°СЃСЃРёРІ Рђ:\n";
 	for (int i = 0; i < numberOfVertex; ++i) {
 		cout << A[i] << " ";
 	}
 
 	dispalyVertexInfo(root, traversalType);
 
-	//Замена выбраного элемента и всех элементов по пути на 0
-	//cout << "\n\nВведите число для поиска: ";
+	//Р—Р°РјРµРЅР° РІС‹Р±СЂР°РЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р° Рё РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ РїРѕ РїСѓС‚Рё РЅР° 0
+	//cout << "\n\nР’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ РґР»СЏ РїРѕРёСЃРєР°: ";
 	//cin >> elementToFind;
 	//Vertex* foundElement = search(root, elementToFind);
 	//if (foundElement != nullptr) {
-	//	cout << "\nЭлемент " << elementToFind << " был найден по адресу: " << foundElement << "\n";
+	//	cout << "\nР­Р»РµРјРµРЅС‚ " << elementToFind << " Р±С‹Р» РЅР°Р№РґРµРЅ РїРѕ Р°РґСЂРµСЃСѓ: " << foundElement << "\n";
 	//}
 	//else {
-	//	cout << "\nЭлемент " << elementToFind << " не найден\n";
+	//	cout << "\nР­Р»РµРјРµРЅС‚ " << elementToFind << " РЅРµ РЅР°Р№РґРµРЅ\n";
 	//}
 	//traversal(root, traversalType);
 
-	//Удаление выбраного элемента
+	//РЈРґР°Р»РµРЅРёРµ РІС‹Р±СЂР°РЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 	while (true) {
-		cout << "\n\nВведите число для удаления: ";
+		cout << "\n\nР’РІРµРґРёС‚Рµ С‡РёСЃР»Рѕ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ: ";
 		cin >> elementToDelete;
 		if (search(root, elementToDelete) != nullptr) {
 			root = randomSearchTreeDeleteNode(root, elementToDelete);
 			dispalyVertexInfo(root, traversalType);
 		} else {
-			cout << "\nЭлемент не найден\n";
+			cout << "\nР­Р»РµРјРµРЅС‚ РЅРµ РЅР°Р№РґРµРЅ\n";
 		}
 
 		if (root == nullptr) { break; }
 	}
-	//Поочерёдное удаление вершин
+	//РџРѕРѕС‡РµСЂС‘РґРЅРѕРµ СѓРґР°Р»РµРЅРёРµ РІРµСЂС€РёРЅ
 	/*for (int i = 0; i < numberOfVertex; i++) {
 		root = randomSearchTreeDeleteNode(root, A[i]);
 		dispalyVertexInfo(root, traversalType);
