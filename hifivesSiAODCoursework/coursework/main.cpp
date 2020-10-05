@@ -1,7 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include "DatabaseNode.h"
+#include "List.h"
 using namespace std;
+
+void ShowMenu() {
+
+}
 
 int main() {
     ifstream dbFile("testBase2.dat", ios::in | ios::binary);
@@ -10,9 +15,14 @@ int main() {
     streamsize length = dbFile.gcount();
     dbFile.clear();
     dbFile.seekg(0, ios_base::beg);
-
     int nodesNumber = length / sizeof(DatabaseNode);
-    DatabaseNode* nodes = new DatabaseNode[nodesNumber];
+    
+    List<DatabaseNode> nodes;
+    for (int i = 0; i < nodesNumber; ++i) {
+        DatabaseNode tempNode;
+        tempNode.nodeFill(dbFile);
+        nodes.push_back(tempNode);
+    }
 
     if (!dbFile) {
         dbFile.clear();
@@ -20,8 +30,8 @@ int main() {
         return 1;
     }
 
-    nodes->ShowMenu(dbFile, nodesNumber);
+    ShowMenu(dbFile, nodesNumber);
 
     dbFile.clear();
-    delete[] nodes;
+    nodes.clear();
 }

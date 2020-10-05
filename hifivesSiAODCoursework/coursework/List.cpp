@@ -75,14 +75,17 @@ void List<T>::insert(T data, int index) {
 		push_front(data);
 	} else {
 		Node* previous = this->head;
+		Node* next = this->head;
 
 		for (int i = 0; i < index - 1; i++) {
 			previous = previous->next;
 		}
+		next = previous->next->next;
 
 		Node* newNode = new Node(data, previous->next);
 
 		previous->next = newNode;
+		next->prev = newNode;
 
 		length++;
 	}
@@ -93,14 +96,18 @@ void List<T>::remove_at(int index) {
 	if (index == 0)	{
 		pop_front();
 	} else {
+		Node* next = this->head;
 		Node* previous = this->head;
+
 		for (int i = 0; i < index - 1; i++) {
 			previous = previous->next;
 		}
+		next = previous->next->next;
 
 		Node* toDelete = previous->next;
 
 		previous->next = toDelete->next;
+		next->prev = toDelete->prev;
 
 		delete toDelete;
 

@@ -9,10 +9,8 @@ public:
 
     void ShowMenu(ifstream& opendFileStream, int size = 0);
 
-protected:
-    void nodePrint();
-
     void nodeFill(ifstream& opendFileStream);
 
+    void nodePrint();
 };
 

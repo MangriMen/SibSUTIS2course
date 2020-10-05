@@ -10,10 +10,6 @@ void DatabaseNode::ShowMenu(ifstream& opendFileStream, int size = 0) {
     int tempLeftBorder = 0;
     int tempRightBorder = 0;
 
-    for (int i = 0; i < size; ++i) {
-        this[i].nodeFill(opendFileStream);
-    }
-
     cout << "A Company Database.\n\n"
         << "Enter the appropriate number:\n"
         << "\"1\" to print workers information\n"
