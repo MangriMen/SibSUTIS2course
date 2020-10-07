@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+using namespace std;
 
 template<typename T>
 class List
@@ -8,31 +9,22 @@ public:
 	List();
 	~List();
 
-	//удаление первого элемента в списке
 	void pop_front();
 
-	//добавление элемента в конец списка
 	void push_back(T data);
 
-	// очистить список
 	void clear();
 
-	// получить количество елементов в списке
 	int size() { return length; }
 
-	// перегруженный оператор [] 
 	T& operator[](const int index);
 
-	//добавление элемента в начало списка
 	void push_front(T data);
 
-	//добавление элемента в список по указанному индексу
 	void insert(T data, int index);
 
-	//удаление элемента в списке по указанному индексу
 	void remove_at(int index);
 
-	//удаление последнего элемента в списке
 	void pop_back();
 private:
 	class Node
@@ -55,3 +47,127 @@ private:
 	Node* head;
 	Node* tail;
 };
+
+template<typename T>
+List<T>::List() {
+	length = 0;
+	head = nullptr;
+}
+
+template<typename T>
+List<T>::~List() {
+	clear();
+}
+
+template<typename T>
+void List<T>::pop_front() {
+	Node* temp = head;
+
+	head = head->next;
+
+	delete temp;
+
+	length--;
+
+}
+
+template<typename T>
+void List<T>::push_back(T data) {
+	if (head == nullptr) {
+		head = new Node(data);
+	}
+	else {
+		Node* current = this->head;
+
+		while (current->next != nullptr) {
+			current = current->next;
+		}
+		current->next = new Node(data, nullptr, current);
+	}
+
+	length++;
+}
+
+template<typename T>
+void List<T>::clear() {
+	while (length)
+		pop_front();
+}
+
+template<typename T>
+T& List<T>::operator[](const int index)
+{
+	int counter = 0;
+
+	Node* current = this->head;
+
+	while (current != nullptr)
+	{
+		if (counter == index)
+		{
+			return current->data;
+		}
+		current = current->next;
+		counter++;
+	}
+}
+
+template<typename T>
+void List<T>::push_front(T data) {
+	head = new Node(data, head);
+	length++;
+}
+
+template<typename T>
+void List<T>::insert(T data, int index) {
+	if (index == 0) {
+		push_front(data);
+	}
+	else {
+		Node* previous = this->head;
+		Node* next = this->head;
+
+		for (int i = 0; i < index - 1; i++) {
+			previous = previous->next;
+		}
+		next = previous->next->next;
+
+		Node* newNode = new Node(data, previous->next);
+
+		previous->next = newNode;
+		next->prev = newNode;
+
+		length++;
+	}
+}
+
+template<typename T>
+void List<T>::remove_at(int index) {
+	if (index == 0) {
+		pop_front();
+	}
+	else {
+		Node* next = this->head;
+		Node* previous = this->head;
+
+		for (int i = 0; i < index - 1; i++) {
+			previous = previous->next;
+		}
+		next = previous->next->next;
+
+		Node* toDelete = previous->next;
+
+		previous->next = toDelete->next;
+		next->prev = toDelete->prev;
+
+		delete toDelete;
+
+		length--;
+	}
+
+}
+
+template<typename T>
+void List<T>::pop_back() {
+	remove_at(length - 1);
+}

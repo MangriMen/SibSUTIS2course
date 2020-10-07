@@ -1,4 +1,8 @@
 #pragma once
+#include <iostream>
+#include <fstream>
+using namespace std;
+
 class DatabaseNode
 {
 public:
@@ -6,8 +10,6 @@ public:
     short int departmentNumber;
     char post[22];
     char birthDate[10];
-
-    void ShowMenu(ifstream& opendFileStream, int size = 0);
 
     void nodeFill(ifstream& opendFileStream);
 
