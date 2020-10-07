@@ -25,6 +25,12 @@
     <Filter Include="Header Files\Utils">
       <UniqueIdentifier>{cd0c763b-829c-4acb-9d22-15a99648c6c4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Database">
+      <UniqueIdentifier>{f2ec115c-cc70-445f-9394-7e73c5d3d389}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Database">
+      <UniqueIdentifier>{a7612eb4-4425-4b65-9f80-d3e876c6abcd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -39,6 +45,9 @@
     <ClCompile Include="Form.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="Employee.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Variant.txt" />
@@ -52,6 +61,12 @@
     </ClInclude>
     <ClInclude Include="Form.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="List.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Employee.h">
+      <Filter>Header Files\Database</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

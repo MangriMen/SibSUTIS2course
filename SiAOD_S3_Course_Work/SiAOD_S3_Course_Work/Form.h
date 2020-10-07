@@ -68,7 +68,8 @@ namespace form
 	class Table : public Button {
 	private:
 		Button** cells = nullptr;
-		Vector2i size;
+		Vector2i proportions;
+		Vector2f size;
 	public:
 		Table(size_t row_, size_t col_);
 
@@ -77,6 +78,12 @@ namespace form
 		size_t cols();
 
 		size_t rows();
+
+		void update();
+
+		int width();
+		
+		int height();
 
 		void setPosition(Vector2f pos_);
 	};

@@ -1,10 +1,13 @@
 #include <iostream>
 #include <ctime>
+#include <vector>
+#include <map>
+#include <string>
 
 using namespace std;
 
 int* A;
-
+vector<int> pos;
 
 struct Vertex {
 	int data;
@@ -53,30 +56,6 @@ void recursiveSDP(Vertex*& p, int index) {
 	else if (index > p->data)recursiveSDP(p->right, index);
 }
 
-void recSDP(Vertex* Root, int index) {
-	if (index > _msize(A) / sizeof(A[0]) - 1) {
-		return;
-	}
-	Vertex** p = &Root;
-
-	while(*p != nullptr) {
-		if (A[index] < ((*p)->data)) {
-			p = &((*p)->left);
-		}
-		else if (A[index] > ((*p)->data)) {
-			p = &((*p)->right);
-		}
-		else break;
-	}
-	if ((*p) == nullptr) {
-		*p = new Vertex;
-		(*p)->data = A[index];
-		(*p)->right = nullptr;
-		(*p)->left = nullptr;
-	}
-	recSDP(Root, index + 1);
-}
-
 void addSDP(Vertex* Root, int data) {
 	Vertex** p = &Root;
 
@@ -96,6 +75,94 @@ void addSDP(Vertex* Root, int data) {
 		(*p)->left = nullptr;
 	}
 }
+
+Vertex* deleteSDP(Vertex* root, int X) {
+	//Vertex** p = &root;
+	//Vertex* q = nullptr, * right = nullptr, * s = nullptr;
+	//while (*p != nullptr)
+	//{
+	//	if ((*p)->data > X)
+	//	{
+	//		p = &((*p)->left);
+	//	}
+	//	else if ((*p)->data < X)
+	//	{
+	//		p = &((*p)->right);
+	//	}
+	//	else break;
+	//}
+	//if (*p != nullptr)
+	//{
+	//	q = *p;
+	//	if (q->left == nullptr)
+	//	{
+	//		*p = q->right;
+	//	}
+	//	else if (q->right == nullptr)//1
+	//	{
+	//		*p = q->left;
+	//	}
+	//	else
+	//	{
+	//		right = q->left;
+	//		s = q;
+	//		if (right->right == nullptr)//3
+	//		{
+	//			right->right = q->right;
+	//			*p = right;
+	//		}
+	//		else
+	//		{
+	//			while (right->right != nullptr)//2
+	//			{
+	//				s = right;
+	//				right = right->right;
+	//			}
+	//			s->right = right->left;
+	//			right->left = q->left;
+	//			right->right = q->right;
+	//			*p = right;
+	//		}
+	//	}
+	//	delete q;
+	//}
+	//return *p;
+	Vertex* q, * p, * r;
+
+	if (root == NULL)
+		return root;
+
+	if (X == root->data) {
+		if (root->right == NULL)
+			q = root->left;
+		else {
+			p = root->right;
+			if (p->left == NULL) {
+				p->left = root->left;
+				q = p;
+			}
+			else {
+				r = p->left;
+				while (r->left != NULL) {
+					p = r;
+					r = p->left;
+				}
+				p->left = r->right;
+				r->left = root->left;
+				r->right = root->right;
+				q = r;
+			}
+		}
+		delete root;
+		return q;
+	}
+	else if (X < root->data)
+		root->left = deleteSDP(root->left, X);
+	else
+		root->right = deleteSDP(root->right, X);
+	return root;
+}
+
 
 void traversalTB(Vertex* p) {
 	if (p != nullptr) {
@@ -117,6 +184,14 @@ void traversalBT(Vertex* p) {
 		traversalBT(p->left);
 		traversalBT(p->right);
 		cout << p->data << " ";
+	}
+}
+
+void traversalGraph(Vertex* p) {
+	if (p != nullptr) {
+		traversalGraph(p->left);
+		pos.push_back(p->data);
+		traversalGraph(p->right);
 	}
 }
 
@@ -164,66 +239,79 @@ void fillDec(int* A, int size) {
 
 void fillRand(int* A, int size) {
 	for (int i = 0; i < size; i++) {
-		A[i] = rand()% 2000;
+		A[i] = rand()% 99;
 	}
 }
 
-Vertex* find(Vertex* p, int key) {
+Vertex* find(Vertex* p, int X) {
 	while (p != nullptr)
 	{
-		if (key < p->data) { p->data = 0; p = p->left; }
-		else if (key > p->data) { p->data = 0; p = p->right; }
+		if (X < p->data) { p = p->left; }
+		else if (X > p->data) { p = p->right; }
 		else break;
 	}
 	return p;
 }
 
-Vertex* findRec(Vertex* p, int key) {
+Vertex* findRec(Vertex* p, int X) {
 	if (p != nullptr) {
-		if (p->data == key) { return p; };
+		if (p->data == X) { return p; };
 
-		if (key < p->data) {
-			p->data = 0;
-			findRec(p->left, key);
+		if (X < p->data) {
+			findRec(p->left, X);
 		}
-		else if (key > p->data) {
-			p->data = 0;
-			findRec(p->right, key);
+		else if (X > p->data) {
+			findRec(p->right, X);
 		}
 	}
 	else return nullptr;
 }
 
+int getLevel(Vertex* p, int X) {
+	int level = 1;
+	while (p != nullptr)
+	{
+		if (X < p->data) { p = p->left; level++; }
+		else if (X > p->data) { p = p->right; level++; }
+		else break;
+	}
+	return level;
+}
+
 int main() {
 	srand(unsigned int(time(NULL)));
 	//system("chcp 1251");
-	int numberOfVertex = 0, key = 0;
+	int numberOfVertex = 0, X = 0;
+	map<int, int> graph;
 
-	cout << "Enter number of vertices: " << endl;
-	cin >> numberOfVertex;
-	cout << endl;
-
-	A = new int[numberOfVertex];
-
-	//fillInc(A, numberOfVertex);
-
-	//for (int i = 0; i < numberOfVertex; i++) {
-	//	cout << A[i] << " ";
-	//}
+	//cout << "Enter number of vertices: " << endl;
+	//cin >> numberOfVertex;
 	//cout << endl;
+	numberOfVertex = 10;
 
-	A[0] = 12;
-	A[1] = 6;
-	A[2] = 3;
-	A[3] = 11;
-	A[4] = 9;
-	A[5] = 14;
-	A[6] = 4;
-	A[7] = 15;
-	A[8] = 17;
-	A[9] = 29;
-	A[10] = 1;
-	A[11] = 5;
+	//A = new int[numberOfVertex];
+	A = new int[10] { 44, 56, 40, 60, 23, 8, 48, 87, 66, 35 };
+
+	//fillRand(A, numberOfVertex);
+
+	//A[0] = 12;
+	//A[1] = 6;
+	//A[2] = 3;
+	//A[3] = 11;
+	//A[4] = 9;
+	//A[5] = 14;
+	//A[6] = 4;
+	//A[7] = 15;
+	//A[8] = 17;
+	//A[9] = 29;
+	//A[10] = 1;
+	//A[11] = 5;
+	//A = { 44, 56, 40, 60, 23, 8, 48, 87, 66, 35 };
+
+	for (int i = 0; i < numberOfVertex; i++) {
+		cout << A[i] << " ";
+	}
+	cout << endl;
 
 	Vertex* root = new Vertex;
 	root->data = A[0];
@@ -238,51 +326,18 @@ int main() {
 		recursiveSDP(root, A[i]);
 	}*/
 
-	//recSDP(root, 1);
-
 	//Vertex* root = ISDP(0, numberOfVertex - 1);
 	//
-	///*cout << "Enter key to find element: ";
-	//cin >> key;
+	///*cout << "Enter X to find element: ";
+	//cin >> X;
 	//cout << endl;
-	//Vertex* found = find(root, key);*/
+	//Vertex* found = find(root, X);*/
 
-	//cout << "Top to bottom: ";
-	//traversalTB(root);
-	//cout << endl << endl;
 	cout << "Left to right: ";
 	traversalLR(root);
 	cout << endl << endl;
-	//cout << "Bottom to top: ";
-	//traversalBT(root);
-	//cout << endl << endl;
 
-	//cout << "Key: " << 98 << endl;
-	//if (findRec(root, 98) != nullptr) {
-	//	//find(root, 98)->data = 111;
-	//	cout << "Vertex found" << endl << endl;
-	//}
-	//else {
-	//	cout << "Vertex not found" << endl << endl;
-	//}
-
-	cout << "Key: " << 5 << endl;
-	if (find(root, 5) != nullptr) {
-		cout << "Vertex found" << endl << endl;
-	}
-	else {
-		cout << "Vertex not found" << endl << endl;
-	}
-
-	//cout << "Key: " << 110 << endl;
-	//if (find(root, 110) != nullptr) {
-	//	cout << "Vertex found" << endl << endl;
-	//}
-	//else {
-	//	cout << "Vertex not found" << endl << endl;
-	//}
-
-	//cout << "Key: " << 98 << endl;
+	//cout << "X: " << 98 << endl;
 	//if (findRec(root, 98) != nullptr) {
 	//	find(root, 98)->data = 111;
 	//	cout << "Vertex found" << endl << endl;
@@ -291,15 +346,119 @@ int main() {
 	//	cout << "Vertex not found" << endl << endl;
 	//}
 
-	cout << "Left to right: ";
-	traversalLR(root);
-	cout << endl << endl;
+	//cout << "Left to right: ";
+	//traversalLR(root);
+	//cout << endl << endl;
+
+	int height = treeHeight(root);
+	
+	for (int i = 0; i < numberOfVertex; i++) {
+		int level = getLevel(root, A[i]);
+		graph.insert({ A[i], level });
+	}
+
+	for (int j = 0; j < pos.size(); j++) {
+		cout << (graph[pos[j]]) << " ";
+	}
+
+	traversalGraph(root);
+
+	cout << endl;
+	for (int i = 1; i <= height; i++) {
+		cout << i << "\t";
+		for (int j = 0; j < pos.size(); j++) {
+			if (graph[pos[j]] == i) {
+				cout << pos[j];
+			}
+			else {
+				cout << string(j+1, ' ');
+			}
+		}
+		cout << endl << endl;
+	}
+	cout << endl;
 
 	cout << "Tree size: " << treeSize(root);
 	cout << endl << endl << "Check sum: " << treeCheckSum(root);
 	cout << endl << endl << "Tree height: " << treeHeight(root);
 	cout << endl << endl << "Tree average height: " << averagePathLenght(root, 1) / (double)(treeSize(root));
 	cout << endl << endl;
+
+	while (1) {
+		int key;
+		cout << "Enter the key: ";
+		cin >> key;
+		if (findRec(root, key) != nullptr) {
+			//system("cls");
+			for (int i = 0; i < numberOfVertex; i++) {
+				cout << A[i] << " ";
+			}
+			cout << endl;
+			cout << endl;
+			root = deleteSDP(root, key);
+			if (root == nullptr) {
+				cout << "Tree is empty" << endl;
+				break;
+			}
+			cout << "Left to right: ";
+			traversalLR(root);
+			cout << endl << endl;
+
+			graph.clear();
+			for (int i = 0; i < numberOfVertex; i++) {
+				int level = getLevel(root, A[i]);
+				graph.insert({ A[i], level });
+			}
+			pos.clear();
+			traversalGraph(root);
+
+			cout << endl;
+			for (int i = 1; i <= height; i++) {
+				cout << i << "\t";
+				for (int j = 0; j < pos.size(); j++) {
+					if (graph[pos[j]] == i) {
+						cout << pos[j];
+					}
+					else {
+						cout << string(j + 1, ' ');
+					}
+				}
+				cout << endl << endl;
+			}
+			cout << endl;
+
+			cout << "Tree size: " << treeSize(root);
+			cout << endl << endl << "Check sum: " << treeCheckSum(root);
+			cout << endl << endl << "Tree height: " << treeHeight(root);
+			cout << endl << endl << "Tree average height: " << averagePathLenght(root, 1) / (double)(treeSize(root));
+			cout << endl << endl;
+			cout << endl;
+		}
+		else {
+			cout << "Vertex not found" << endl;
+		}
+	}
+
+	//for (int i = 0; i < 12; i++) {
+	//	cout << endl;
+	//	root = deleteSDP(root, A[i]);
+
+	//	if (root == nullptr) {
+	//		cout << "Tree is empty" << endl;
+	//		break;
+	//	}
+
+	//	cout << "Left to right: ";
+	//	traversalLR(root);
+	//	cout << endl << endl;
+
+	//	cout << "Tree size: " << treeSize(root);
+	//	cout << endl << endl << "Check sum: " << treeCheckSum(root);
+	//	cout << endl << endl << "Tree height: " << treeHeight(root);
+	//	cout << endl << endl << "Tree average height: " << averagePathLenght(root, 1) / (double)(treeSize(root));
+	//	cout << endl << endl;
+	//	cout << endl;
+	//}
 
 	delete[] A;
 	delete root;

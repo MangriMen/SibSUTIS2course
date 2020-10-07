@@ -10,9 +10,7 @@ private:
 	RenderWindow window;
 	MainMenu mainMenu;
 public:
-	Program() {
-		window.create(VideoMode(1280, 720), "Course");
-	}
+	Program();
 
 	void Run();
 };

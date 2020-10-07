@@ -1,9 +1,9 @@
-#define _CRT_SECURE_NO_WARNINGS
 #include <fstream>
-#include <conio.h>
 #include <SFML/Graphics.hpp>
 #include "MainMenu.h"
 #include "Form.h"
+#include "Employee.h"
+#include "List.h"
 
 static void cp866_to_utf8(String& out, const char* in, size_t size) {
 	static const wchar_t utf8[69] = {
@@ -51,13 +51,36 @@ static void cp866_to_utf8(String& out, const char* in, size_t size) {
 using namespace std;
 using namespace sf;
 
-struct Employee
-{
-	char FIO[30];
-	short int departmentNumber;
-	char place[22];
-	char birthDate[10];
-};
+void printTable(form::Table table, List<Employee> &employers, int start, int end) {
+	int row = 0;
+	size_t cellH = 43;
+	String name;
+	String place;
+	if (start >= 0 && end <= 4000) {
+		for (int i = start; i < end; i++) {
+
+			table.getCells()[0][row].setText(to_string(i + 1));
+			table.getCells()[0][row].setSize(Vector2f(60, cellH));
+
+			cp866_to_utf8(name, employers[i].FIO, sizeof(employers[i].FIO));
+			table.getCells()[1][row].setText(name);
+			table.getCells()[1][row].setSize(Vector2f(300, cellH));
+
+			table.getCells()[2][row].setText(to_string(employers[i].departmentNumber));
+			table.getCells()[2][row].setSize(Vector2f(100, cellH));
+
+			cp866_to_utf8(place, employers[i].place, sizeof(employers[i].place));
+			table.getCells()[3][row].setText(place);
+			table.getCells()[3][row].setSize(Vector2f(300, cellH));
+
+			table.getCells()[4][row].setText(employers[i].birthDate);
+			table.getCells()[4][row].setSize(Vector2f(100, cellH));
+
+			row++;
+		}
+		row = 0;
+	}
+}
 
 void MainMenu::Run(RenderWindow& window)
 {
@@ -65,127 +88,44 @@ void MainMenu::Run(RenderWindow& window)
 
 	ifstream databaseFile("testBase2.dat", ios::in | ios::binary);
 
-	databaseFile.ignore(numeric_limits<streamsize>::max());
-	streamsize length = databaseFile.gcount();
-	databaseFile.clear();
-	databaseFile.seekg(0, ios_base::beg);
-
 	if (!databaseFile) {
 		cerr << "databaseFile not found";
 		databaseFile.clear();
 	}
 
-	int numOfEmployees = length / sizeof(Employee);
+	databaseFile.ignore(numeric_limits<streamsize>::max());
+	streamsize length = databaseFile.gcount();
+	databaseFile.clear();
+	databaseFile.seekg(0, ios_base::beg);
 
-	Employee* employee = new Employee[numOfEmployees];
+	size_t numOfEmployers = length / sizeof(Employee);
 
-	short int* temp = new short int[sizeof(short int)];
+	List<Employee> employers;
 
-	for (int i = 0; i < numOfEmployees; i++) {
-		databaseFile.read(employee[i].FIO, sizeof(employee[i].FIO));
-		for (int j = 0; j < sizeof(employee[i].departmentNumber); j++) { temp[j] = databaseFile.get(); }
-		employee[i].departmentNumber = temp[0] + temp[1];
-		databaseFile.read(employee[i].place, sizeof(employee[i].place));
-		databaseFile.read(employee[i].birthDate, sizeof(employee[i].birthDate));
+	for (int i = 0; i < numOfEmployers; i++) {
+		Employee tempEmployee;
+		tempEmployee.getEmployeeFromFile(databaseFile);
+		employers.push_back(tempEmployee);
 	}
 
-	databaseFile.clear();
 	databaseFile.close();
-	delete[] temp;
 
 	size_t start = 0;
 	size_t end = 20;
 	
-	bool graphics = false;
-	int type = 0;
-
-	cout << "Choose what kind of output do you want to have. 1 for graphics, 0 for command: ";
-	cin >> graphics;
-	cout << endl;
-
-	if (!graphics) {
-		window.close();
-		cout << "Enter type of output table: ";
-		cin >> type;
-		cout << endl;
-		while (end <= numOfEmployees) {
-			cout << endl;
-			if (type == 0) {
-				for (int i = start; i < end; i++) {
-					cout << "Employee " << i + 1 << ":" << endl;
-					cout << "\t" << "Full name: " << employee[i].FIO << endl;
-					cout << "\t" << "Deparment number: " << employee[i].departmentNumber << endl;
-					cout << "\t" << "Place: " << employee[i].place << endl;
-					cout << "\t" << "Birthdate: " << employee[i].birthDate << endl;
-					cout << endl;
-				}
-			}
-			else if (type == 1) {
-				for (int i = start; i < end; i++) {
-					cout << "\t" << i + 1 << "\t"
-						 << employee[i].FIO << "\t"
-						 << employee[i].departmentNumber << "\t"
-						 << employee[i].place << "\t"
-						 << employee[i].birthDate << endl << endl;
-				}
-			}
-			else if (type == 2) {
-				cout << "\t----------------------------------------------------------------------------------\n";
-				for (int i = start; i < end; i++) {
-					cout << "\t|" << i + 1 << "\t"
-						<< employee[i].FIO << "\t"
-						<< employee[i].departmentNumber << "\t"
-						<< employee[i].place << "\t"
-						<< employee[i].birthDate << "|" << endl;
-					cout << "\t----------------------------------------------------------------------------------\n";
-				}
-			}
-			cout << "For next 20 employees press Enter";
-			char ch = _getch();
-			if (ch == 27) {
-				exit(0);
-			}
-			else if (ch == '\r') {
-				cout << "\r                                        \t" << end / 20 << "/" << numOfEmployees / 20 << endl;
-				start = end;
-				end = end + 20;
-			}
-		}
-	}
-
-
 	form::Table table(5, 20);
 
 	form::Label alert(L"Нажмите Enter \n \tдля следующих 20 пунктов", Vector2f(50, 50), 24, form::Align::Left);
-	
-	String name;
-	String place;
-	size_t cellH = 43;
 
-	start = 0;
-	end = 20;
-	int row = 0;
-	for (int i = start; i < end; i++) {
-		table.getCells()[0][row].setText(to_string(i+1));
-		table.getCells()[0][row].setSize(Vector2f(60, cellH));
-		cp866_to_utf8(name, employee[i].FIO, sizeof(employee[i].FIO));
-		table.getCells()[1][row].setText(name);
-		table.getCells()[1][row].setSize(Vector2f(300, cellH));
-		table.getCells()[2][row].setText(to_string(employee[i].departmentNumber));
-		table.getCells()[2][row].setSize(Vector2f(100, cellH));
-		cp866_to_utf8(place, employee[i].place, sizeof(employee[i].place));
-		table.getCells()[3][row].setText(place);
-		table.getCells()[3][row].setSize(Vector2f(300, cellH));
-		table.getCells()[4][row].setText(employee[i].birthDate);
-		table.getCells()[4][row].setSize(Vector2f(100, cellH));
-		row++;
-	}
-	row = 0;
-	start = end;
-	end = end + 20;
+	printTable(table, employers, start, end);
 
-	table.setPosition(Vector2f(445, 7));
+	table.update();
+	table.setPosition(Vector2f(
+		(window.getSize().x / 2) - (table.width() / 2),
+		(window.getSize().y / 2) - (table.height() / 2)
+		));
 
+	employers.MergESorT();
 
 	while (isMenu) {
 		Event event;
@@ -195,40 +135,41 @@ void MainMenu::Run(RenderWindow& window)
 			switch (event.type)
 			{
 			case Event::Closed:
+				employers.~List();
 				window.close();
-				delete[] employee;
 				return;
 				break;
 			case Event::KeyPressed:
 				switch (event.key.code)
 				{
-				case Keyboard::Enter:
-					if (end > numOfEmployees)
-						break;
-					for (int i = start; i < end; i++) {
-						table.getCells()[0][row].setText(to_string(i + 1));
-						table.getCells()[0][row].setSize(Vector2f(60, cellH));
-						cp866_to_utf8(name, employee[i].FIO, sizeof(employee[i].FIO));
-						table.getCells()[1][row].setText(name);
-						table.getCells()[1][row].setSize(Vector2f(300, cellH));
-						table.getCells()[2][row].setText(to_string(employee[i].departmentNumber));
-						table.getCells()[2][row].setSize(Vector2f(100, cellH));
-						cp866_to_utf8(place, employee[i].place, sizeof(employee[i].place));
-						table.getCells()[3][row].setText(place);
-						table.getCells()[3][row].setSize(Vector2f(300, cellH));
-						table.getCells()[4][row].setText(employee[i].birthDate);
-						table.getCells()[4][row].setSize(Vector2f(100, cellH));
-						row++;
+				case Keyboard::Right:
+					if (start < numOfEmployers - 20 && end < numOfEmployers) {
+						start = end;
+						end += 20;
 					}
-					row = 0;
-					start = end;
-					end = end + 20;
+					printTable(table, employers, start, end);
 
-					table.setPosition(Vector2f(445, 7));
+					table.setPosition(Vector2f(
+						(window.getSize().x / 2) - (table.width() / 2),
+						(window.getSize().y / 2) - (table.height() / 2)
+					));
+					break;
+				case Keyboard::Left:
+					if (start >= 20) {
+						end = start;
+						start -= 20;
+					}
+					printTable(table, employers, start, end);
+
+					table.setPosition(Vector2f(
+						(window.getSize().x / 2) - (table.width() / 2),
+						(window.getSize().y / 2) - (table.height() / 2)
+					));
 					break;
 				default:
 					break;
 				}
+				cout << start << " " << end << endl;
 			default:
 				break;
 			}
@@ -236,7 +177,7 @@ void MainMenu::Run(RenderWindow& window)
 
 		window.clear(form::fColor::Background);
 
-		window.draw(alert.getText());
+		//window.draw(alert.getText());
 
 		for (int col = 0; col < table.cols(); col++) {
 			for (int row = 0; row < table.rows(); row++) {
@@ -248,3 +189,4 @@ void MainMenu::Run(RenderWindow& window)
 		window.display();
 	}
 }
+

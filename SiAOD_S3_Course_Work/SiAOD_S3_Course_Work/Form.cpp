@@ -1,6 +1,5 @@
 #include "Form.h"
 
-
 form::Label::Label()
 {
 	font.loadFromFile("fonts/Roboto-Medium.ttf");
@@ -154,7 +153,8 @@ int form::Button::getOutlineThickness()
 }
 
 form::Table::Table(size_t cols_, size_t rows_) {
-	size = Vector2i(cols_, rows_);
+	proportions = Vector2i(cols_, rows_);
+	size = Vector2f(0, 0);
 	cells = new Button*[cols_];
 	for (int col = 0; col < cols_; col++) {
 		cells[col] = new Button[rows_];;
@@ -177,19 +177,44 @@ form::Button** form::Table::getCells()
 	return cells;
 }
 
-
 size_t form::Table::cols()
+{
+	return proportions.x;
+}
+
+size_t form::Table::rows()
+{
+	return proportions.y;
+}
+
+void form::Table::update()
+{
+	size = Vector2f(0, 0);
+
+	for (int i = 0; i < cols(); i++) {
+		size.x += getCells()[i][0].getButton().getSize().x;
+	}
+	for (int i = 0; i < rows(); i++) {
+		size.y += getCells()[0][i].getButton().getSize().y;
+	}
+
+	size.x -= (cols() - 1) * abs(getCells()[0][0].getButton().getOutlineThickness());
+	size.y -= (rows() - 1) * abs(getCells()[0][0].getButton().getOutlineThickness());
+}
+
+int form::Table::width()
 {
 	return size.x;
 }
 
-size_t form::Table::rows()
+int form::Table::height()
 {
 	return size.y;
 }
 
 void form::Table::setPosition(Vector2f pos_)
 {
+	update();
 	for (int col = 0; col < cols(); col++) {
 		for (int row = 0; row < rows(); row++) {
 			int bWidth = abs(cells[col][row].getOutlineThickness());
