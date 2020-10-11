@@ -18,7 +18,6 @@ namespace OOP_3S_Lab234.Entities
 
         public Vector2 Position { get; set; }
         public float RotateAngle { get; set; }
-        public int Speed { get; set; }
         public Texture2D Texture { get; set; }
         public Texture2D Cabin { get; set; }
         public Texture2D Jet { get; set; }
