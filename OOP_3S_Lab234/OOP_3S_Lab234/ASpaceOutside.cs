@@ -77,8 +77,6 @@ namespace OOP_3S_Lab234
 
             _graphics.ApplyChanges();
 
-            //State = GameState.MainMenu;
-
             player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, 
                 _graphics.PreferredBackBufferHeight / 2));
 
