@@ -125,8 +125,6 @@ void MainMenu::Run(RenderWindow& window)
 		(window.getSize().y / 2) - (table.height() / 2)
 		));
 
-	employers.MergESorT();
-
 	while (isMenu) {
 		Event event;
 
@@ -169,7 +167,7 @@ void MainMenu::Run(RenderWindow& window)
 				default:
 					break;
 				}
-				cout << start << " " << end << endl;
+				//cout << start << " " << end << endl;
 			default:
 				break;
 			}

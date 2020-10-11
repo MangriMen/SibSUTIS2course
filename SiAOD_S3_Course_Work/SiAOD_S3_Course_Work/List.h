@@ -27,8 +27,6 @@ public:
 
 	void pop_back();
 
-	void MergESorT();
-
 private:
 	class Node
 	{
@@ -45,11 +43,6 @@ private:
 		}
 
 		void swap(Node &first, Node &second);
-
-		void mergeSort(Node** headRef);
-		List<T>::Node* sortedMerge(Node* a, Node* b);
-		void frontBackSplit(Node* source, Node** frontRef, Node** backRef);
-
 	};
 	size_t length;
 	Node* head;
@@ -179,82 +172,6 @@ void List<T>::remove_at(int index) {
 template<typename T>
 void List<T>::pop_back() {
 	remove_at(length - 1);
-}
-
-template<typename T>
-void List<T>::MergESorT()
-{
-	mergeSort(&this->head);
-}
-
-template<typename T>
-List<T>::Node* List<T>::Node::sortedMerge(List<T>::Node* a, List<T>::Node* b)
-{
-	Node* result = NULL;
-
-	/* Base cases */
-	if (a == NULL)
-		return (b);
-	else if (b == NULL)
-		return (a);
-
-	/* Pick either a or b, and recur */
-	if (a->data->departmentNumber <= b->data->departmentNumber) {
-		result = a;
-		result->next = sortedMerge(a->next, b);
-	}
-	else {
-		result = b;
-		result->next = sortedMerge(a, b->next);
-	}
-	return (result);
-}
-
-template<typename T>
-void List<T>::Node::mergeSort(List<T>::Node** headRef)
-{
-	Node* head = *headRef;
-	Node* a;
-	Node* b;
-
-	/* Base case -- length 0 or 1 */
-	if ((head == NULL) || (head->next == NULL)) {
-		return;
-	}
-
-	/* Split head into 'a' and 'b' sublists */
-	frontBackSplit(head, &a, &b);
-
-	/* Recursively sort the sublists */
-	mergeSort(&a);
-	mergeSort(&b);
-
-	/* answer = merge the two sorted lists together */
-	*headRef = sortedMerge(a, b);
-}
-
-template<typename T>
-void List<T>::Node::frontBackSplit(List<T>::Node* source, List<T>::Node** frontRef, List<T>::Node** backRef)
-{
-	Node* fast;
-	Node* slow;
-	slow = source;
-	fast = source->next;
-
-	/* Advance 'fast' two nodes, and advance 'slow' one node */
-	while (fast != NULL) {
-		fast = fast->next;
-		if (fast != NULL) {
-			slow = slow->next;
-			fast = fast->next;
-		}
-	}
-
-	/* 'slow' is before the midpoint in the list, so split it in two
-	at that point. */
-	*frontRef = source;
-	*backRef = slow->next;
-	slow->next = NULL;
 }
 
 template<typename T>
