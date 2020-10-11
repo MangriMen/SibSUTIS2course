@@ -12,7 +12,7 @@ namespace OOP_3S_Lab234.Entities
         public LunarEnemy()
         {
             Random random = new Random();
-            Speed = random.Next(260, 341);
+            Jet.Speed = random.Next(260, 341);
             Position = new Vector2(0, 0);
             velocity_ = new Vector2(0, 0);
         }
@@ -20,7 +20,7 @@ namespace OOP_3S_Lab234.Entities
         public LunarEnemy(Vector2 spawnPoint)
         {
             Random random = new Random();
-            Speed = random.Next(260, 341);
+            Jet.Speed = random.Next(260, 341);
             Position = spawnPoint;
             velocity_ = new Vector2(0.5f, 0.5f);
         }
@@ -32,9 +32,9 @@ namespace OOP_3S_Lab234.Entities
 
             if (velocity_ != Vector2.Zero) { velocity_.Normalize(); }
 
-            BorderCollision(velocity_ * Speed * delta, resolution, "bot");
+            BorderCollision(velocity_ * Jet.Speed * delta, resolution, "bot");
 
-            Position += velocity_ * Speed * delta;
+            Position += velocity_ * Jet.Speed * delta;
 
             RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
         }

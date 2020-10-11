@@ -10,6 +10,7 @@ using System.Text;
 using OOP_3S_Lab234.Utils;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Microsoft.Xna.Framework.Content;
+using OOP_3S_Lab234.ShipParts;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -17,14 +18,15 @@ namespace OOP_3S_Lab234.Entities
     {
         public Player(Vector2 spawnPoint)
         {
-            Speed = 200;
+            Jet = new SpeedJet();
+            Jet.Speed = 200;
             Position = spawnPoint;
         }
         public void Load(ContentManager Content)
         {
             Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/brickCabin");
-            Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/doubleOrangeJet");
+            Jet.Load(Content, "Images/Shuttle/Jet/doubleOrangeJet");
         }
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
@@ -77,11 +79,11 @@ namespace OOP_3S_Lab234.Entities
                         velocity_.Y = 0;
                     }
                 }
-                Vector2 offset = velocity_ * Speed * delta;
+                Vector2 offset = velocity_ * Jet.Speed * delta;
                 BorderCollision(offset, resolution, "player");
             }
 
-            Position += velocity_ * Speed * delta;
+            Position += velocity_ * Jet.Speed * delta;
 
             RotateAngle = (float)Math.Atan2(Position.Y - temp.Y, Position.X - temp.X) + (float)Math.PI / 2;
         }

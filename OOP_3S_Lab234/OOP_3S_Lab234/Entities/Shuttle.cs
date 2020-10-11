@@ -1,14 +1,9 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
-using System.Diagnostics;
-using Microsoft.VisualBasic.CompilerServices;
+using OOP_3S_Lab234.ShipParts;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -20,8 +15,7 @@ namespace OOP_3S_Lab234.Entities
         public float RotateAngle { get; set; }
         public Texture2D Texture { get; set; }
         public Texture2D Cabin { get; set; }
-        public Texture2D Jet { get; set; }
-
+        protected IJet Jet = new SpeedJet();
         public void Draw(SpriteBatch _spriteBatch)
         {
             bool jetOffset = false;
@@ -54,7 +48,7 @@ namespace OOP_3S_Lab234.Entities
                 Texture.ToString() == "Images/Shuttle/Body/gamepadBody";
 
             _spriteBatch.Draw(
-            Jet,
+            Jet.Texture,
             Position,
             null,
             Color.White,
@@ -69,7 +63,7 @@ namespace OOP_3S_Lab234.Entities
         {
             Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + body);
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabin);
-            Jet = Content.Load<Texture2D>("Images/Shuttle/Jet/" + jet);
+            Jet.Load(Content, "Images/Shuttle/Jet/" + jet);
         }
         protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)
         {

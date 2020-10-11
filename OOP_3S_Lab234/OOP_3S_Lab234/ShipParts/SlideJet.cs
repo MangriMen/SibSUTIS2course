@@ -1,17 +1,22 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace OOP_3S_Lab234.ShipParts
 {
 
-    class SlideJet : Jet
+    public class SlideJet : IJet
     {
-        protected float Speed { get; set; }
-
-        void Jet.boost()
+        public float Speed { get; set; }
+        public Texture2D Texture { get; set; }
+        public SlideJet()
         {
-            throw new NotImplementedException();
+            Speed = 200f;
+        }
+        void IJet.Boost()
+        {
         }
     }
 }
