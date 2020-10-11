@@ -63,6 +63,18 @@
 /processorParam:TextureFormat=Color
 /build:Images/Backgrounds/menu.png
 
+#begin Images/Shuttle/Body/batBody.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Shuttle/Body/batBody.png
+
 #begin Images/Shuttle/Body/bugBody.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -74,18 +86,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Images/Shuttle/Body/bugBody.png
-
-#begin Images/Shuttle/Body/gamepadBody.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Images/Shuttle/Body/gamepadBody.png
 
 #begin Images/Shuttle/Body/lunarBody.png
 /importer:TextureImporter

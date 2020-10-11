@@ -29,10 +29,10 @@ namespace OOP_3S_Lab234
         Texture2D backgoundTexture;
         Texture2D loadingScreen;
         Player player;
-        BugEnemy[] clonesBug = new BugEnemy[6];
-        GamepadEnemy[] clonesGamepad = new GamepadEnemy[3];
-        MassiveEnemy[] clonesMassive = new MassiveEnemy[2];
-        LunarEnemy[] clonesLunar = new LunarEnemy[3];
+        Bug[] clonesBug = new Bug[6];
+        Bat[] clonesBat = new Bat[3];
+        Massive[] clonesMassive = new Massive[2];
+        Lunar[] clonesLunar = new Lunar[3];
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -82,28 +82,28 @@ namespace OOP_3S_Lab234
 
             for (int i = 0; i < clonesBug.Length; ++i)
             {
-                clonesBug[i] = new BugEnemy(new Vector2(
+                clonesBug[i] = new Bug(new Vector2(
                     random.Next(65, _graphics.PreferredBackBufferWidth - 100),
                     random.Next(65, _graphics.PreferredBackBufferHeight - 100)
                 ));
             }
-            for (int i = 0; i < clonesGamepad.Length; ++i)
+            for (int i = 0; i < clonesBat.Length; ++i)
             {
-                clonesGamepad[i] = new GamepadEnemy(new Vector2(
+                clonesBat[i] = new Bat(new Vector2(
                     random.Next(_graphics.PreferredBackBufferWidth - 300, _graphics.PreferredBackBufferWidth - 100),
                     random.Next(65, _graphics.PreferredBackBufferHeight - 100)
                 ));
             }
             for (int i = 0; i < clonesMassive.Length; ++i)
             {
-                clonesMassive[i] = new MassiveEnemy(new Vector2(
+                clonesMassive[i] = new Massive(new Vector2(
                     random.Next(65, 350),
                     random.Next(65, _graphics.PreferredBackBufferHeight / 2)
                 ));
             }
             for (int i = 0; i < clonesLunar.Length; ++i)
             {
-                clonesLunar[i] = new LunarEnemy(new Vector2(
+                clonesLunar[i] = new Lunar(new Vector2(
                     random.Next(65, 350),
                     random.Next(_graphics.PreferredBackBufferHeight / 2, _graphics.PreferredBackBufferHeight - 65)
                 ));
@@ -144,10 +144,10 @@ namespace OOP_3S_Lab234
                     jets[random.Next(3, 5)]
                     );
             }
-            for (int i = 0; i < clonesGamepad.Length; ++i)
+            for (int i = 0; i < clonesBat.Length; ++i)
             {
-                clonesGamepad[i].Load(Content,
-                    "gamepadBody",
+                clonesBat[i].Load(Content,
+                    "batBody",
                     cabins[random.Next(0, 2) * 2],
                     "doubleGreenJet"
                     );
@@ -224,9 +224,9 @@ namespace OOP_3S_Lab234
             {
                 clonesBug[i].Update(gameTime, resolution);
             }
-            for (int i = 0; i < clonesGamepad.Length; ++i)
+            for (int i = 0; i < clonesBat.Length; ++i)
             {
-                clonesGamepad[i].Update(gameTime, resolution);
+                clonesBat[i].Update(gameTime, resolution);
             }
             for (int i = 0; i < clonesMassive.Length; ++i)
             {
@@ -246,9 +246,9 @@ namespace OOP_3S_Lab234
             {
                 clonesBug[i].Draw(_spriteBatch);
             }
-            for (int i = 0; i < clonesGamepad.Length; ++i)
+            for (int i = 0; i < clonesBat.Length; ++i)
             {
-                clonesGamepad[i].Draw(_spriteBatch);
+                clonesBat[i].Draw(_spriteBatch);
             }
             for (int i = 0; i < clonesMassive.Length; ++i)
             {

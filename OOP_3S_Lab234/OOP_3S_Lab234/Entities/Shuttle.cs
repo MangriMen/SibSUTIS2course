@@ -7,10 +7,18 @@ using OOP_3S_Lab234.ShipParts;
 
 namespace OOP_3S_Lab234.Entities
 {
+    public enum ShuttleType
+    {
+        Bug,
+        Bat,
+        Lunar,
+        Massive
+    }
+
     abstract class Shuttle
     {
         protected Vector2 velocity_ = Vector2.Zero;
-
+        public string TypeOfShuttle { get; protected set; }
         public Vector2 Position { get; set; }
         public float RotateAngle { get; set; }
         public Texture2D Texture { get; set; }
@@ -59,11 +67,12 @@ namespace OOP_3S_Lab234.Entities
             0f
             );
         }
-        public virtual void Load(ContentManager Content, string body, string cabin, string jet)
+        public virtual void Load(ContentManager Content, string cabin)
         {
-            Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + body);
+            Random rand = new Random();
+            Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + TypeOfShuttle.ToLower() + "Body");
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabin);
-            Jet.Load(Content, "Images/Shuttle/Jet/" + jet);
+            Jet.Load(Content, "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue"));
         }
         protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)
         {

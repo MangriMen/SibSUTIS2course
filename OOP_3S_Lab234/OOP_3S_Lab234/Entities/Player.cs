@@ -2,11 +2,6 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Numerics;
-using System.Text;
 using OOP_3S_Lab234.Utils;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Microsoft.Xna.Framework.Content;
