@@ -8,6 +8,7 @@ namespace OOP_3S_Lab234.ShipParts
 {
     public class WarpJet : IJet
     {
+        public string TypeOfJet { get; set; }
         public float Speed { get; set; }
         public Texture2D Texture { get; set; }
         public WarpJet()

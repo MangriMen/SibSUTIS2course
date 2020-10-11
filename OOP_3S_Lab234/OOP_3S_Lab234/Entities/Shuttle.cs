@@ -72,7 +72,7 @@ namespace OOP_3S_Lab234.Entities
             Random rand = new Random();
             Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + TypeOfShuttle.ToLower() + "Body");
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabin);
-            Jet.Load(Content, "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue"));
+            Jet.Load(Content, "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue") + "Jet");
         }
         protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)
         {

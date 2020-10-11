@@ -43,8 +43,6 @@ namespace OOP_3S_Lab234.Entities
             velocity_ = new Vector2(0.5f, 0.5f);
         }
 
-
-
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
