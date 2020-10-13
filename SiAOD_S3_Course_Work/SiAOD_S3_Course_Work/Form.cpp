@@ -95,17 +95,17 @@ form::Button::Button() {
 
 form::Button::Button(String text_, Vector2f pos_, Vector2f rec_, size_t size)
 {
-	text.setString(text_);
-	text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds().height);
-	text.setPosition(pos_);
-
 	rec.setSize(rec_);
 	//rec.setOrigin(rec.getLocalBounds().width / 2, rec.getLocalBounds().height / 2);
 	rec.setPosition(pos_);
 
-	rec.setOutlineThickness(8);
+	rec.setOutlineThickness(-8);
 	rec.setFillColor(fColor::Button);
 	rec.setOutlineColor(fColor::Outline);
+	
+	text.setString(text_);
+	text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds().height);
+	text.setPosition(pos_ + Vector2f(rec.getLocalBounds().width / 2, rec.getLocalBounds().height / 2 - text.getLocalBounds().height/10));
 }
 
 RectangleShape form::Button::getButton()
@@ -210,6 +210,10 @@ int form::Table::width()
 int form::Table::height()
 {
 	return size.y;
+}
+
+Vector2f form::Table::getPosition() {
+	return cells[0][0].getPosition();
 }
 
 void form::Table::setPosition(Vector2f pos_)

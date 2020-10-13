@@ -85,6 +85,8 @@ namespace form
 		
 		int height();
 
+		Vector2f getPosition();
+
 		void setPosition(Vector2f pos_);
 	};
 };
