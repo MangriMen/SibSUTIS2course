@@ -84,10 +84,11 @@ int BinarySearch(DatabaseNode** nodeArr, int key, size_t size) {
     if (nodeArr[m]->departmentNumber == key) { return m; }
 }
 
-void ShowMenu(ifstream& opendFileStream, stack* stack, size_t size) {
+void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     int chooseNumber = 0;
     int leftBorder = 0;
-    int rightBorder = 0;
+    int rightBorder = 20;
+    stack** tempStack;
     cout << "A Company Database." << endl << endl;
 
     while (true) {
@@ -108,7 +109,7 @@ void ShowMenu(ifstream& opendFileStream, stack* stack, size_t size) {
                 rightBorder += 20;
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                     << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-                printStackData(&stack, leftBorder, rightBorder);
+                printStackData(operatingStack, leftBorder, rightBorder);
             }
             else {
                 cout << "Final range achived" << endl;
@@ -120,7 +121,7 @@ void ShowMenu(ifstream& opendFileStream, stack* stack, size_t size) {
                 leftBorder -= 20;
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                     << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-                printStackData(&stack, leftBorder, rightBorder);
+                printStackData(operatingStack, leftBorder, rightBorder);
             }
             else {
                 cout << "Starting elements achived" << endl;
@@ -129,7 +130,7 @@ void ShowMenu(ifstream& opendFileStream, stack* stack, size_t size) {
         case '3':
             cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                 << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-            printStackData(&stack, 0, size);
+            printStackData(operatingStack, 0, size);
             break;
         case '4':
             int choosenDepNumber;
@@ -174,11 +175,11 @@ int main() {
     
     switch (choosenStruct) {
     case '1':
-        ShowMenu(dbFile, nodesReference, nodesNumber);
+        ShowMenu(dbFile, &nodesReference, nodesNumber);
         break;
     case '2':
-        DigitalSort(nodes, 0);
-        ShowMenu(dbFile, nodes, nodesNumber);
+        DigitalSort(nodes, 0); // 1 for another sort
+        ShowMenu(dbFile, &nodes, nodesNumber);
         break;
     case '0':
     default:
