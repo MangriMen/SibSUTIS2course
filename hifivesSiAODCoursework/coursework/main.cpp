@@ -1,111 +1,146 @@
 #include <iostream>
 #include <fstream>
+#include <conio.h>
 #include "DatabaseNode.h"
-#include "List.h"
 using namespace std;
 
-void ShowMenu(ifstream& opendFileStream, List<DatabaseNode>& list, size_t size) {
-    int chooseNumber = 0;
-    int leftBorder = 0;
-    int rightBorder = 20;
+struct stack {
+    stack* next;
+    DatabaseNode data;
+};
 
-    cout << "A Company Database.\n\n"
-        << "Enter the appropriate number:\n"
-        << "\"1\" to print workers information\n"
-        << "\"2\" to select the next 20 workers\n"
-        << "\"3\" to print information about all employees\n"
-        << "\"4\" to search information about specific employees\n"
-        << "\"0\" for exiting program.\n";
+struct queue {
+    stack* head;
+    stack* tail;
+};
 
-    while (true) {
-        cin >> chooseNumber;
-        switch (chooseNumber) {
-        case 0: {
-            return;
-        }
-        case 1: {
-            cout << "\t" << "Full name: " << "\t\t\t\t" << "Dep. No: " << "\t"
-                << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-            for (int i = leftBorder; i < rightBorder; i++) {
-                cout << i + 1 << ")";
-                list[i].nodePrint();
-            }
-        } break;
-        case 2: {
-            if (rightBorder < size) {
-                leftBorder = rightBorder;
-                rightBorder += 20;
-                cout << "Next workers will be in numeric range of (" << leftBorder << ", " << rightBorder << ")\n\n";
-            }
-            else {
-                cout << "Final range achived.";
-            }
-        } break;
-        case 3: {
-             cout << "\t" << "Full name: " << "\t\t\t\t" << "Dep. No: " << "\t"
-                 << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-             for (int i = 0; i < size; i++) {
-                 cout << i + 1 << ")";
-                 list[i].nodePrint();
-             }
-        } break;
-        case 4: {
-            //here be sort
-        } break;
-        default: {
-            cout << "\n\nError: unsupported argument entered\n\n";
-        } break;
-        }
+void addToStack(stack** head, DatabaseNode node) {
+    stack* temp = new stack;
+    temp->data = node;
+    temp->next = *head;
+    *head = temp;
+}
+
+void printStackData(stack** head, int leftBorder, int rightborder) {
+    stack* current = *head;
+    for (int i = leftBorder; i < rightborder; ++i) {
+        cout << "#" << i + 1;
+        current->data.nodePrint();
+        current = current->next;
     }
 }
 
+void DigitalSort(stack*& S, bool chooseDigit = 0, int q_length = 64) {
+    int KDI[64];
+    for (int i = 63; i >= 0; --i) { KDI[i] = i; }
 
-//void digitalSort(List<DatabaseNode>& list, size_t size)
-//{
-//    DatabaseNode mx = list[0];
-//    for (int i = 1; i < size; i++)
-//        if (list[i]->data->departmentNumber > mx->data->departmentNumber)
-//            mx = list[i]->data->departmentNumber;
-//
-//    for (int exp = 1; mx / exp > 0; exp *= 10) {
-//        int* output = new int[size];
-//        int i, count[10] = { 0 };
-//
-//        for (i = 0; i < size; i++)
-//            count[(list[i]->data / exp) % 10]++;
-//
-//        for (i = 1; i < 10; i++)
-//            count[i] += count[i - 1];
-//
-//        for (i = size - 1; i >= 0; i--) {
-//            output[count[(list[i]->data / exp) % 10] - 1] = arr[i];
-//            count[(arr[i] / exp) % 10]--;
-//        }
-//
-//        for (i = 0; i < size; i++)
-//            list[i]->data = output[i];
-//    }
-//}
-
-function radixSort(int[] A) {
-    for (i = 1 to m)
-        for j = 0 to k - 1
-            C[j] = 0
-        for j = 0 to n - 1
-            d = digit(A[j], i)
-            C[d]++
-            count = 0
-        for j = 0 to k - 1
-            tmp = C[j]
-            C[j] = count
-            count += tmp
-        for j = 0 to n - 1
-            d = digit(A[j], i)
-            B[C[d]] = A[j]
-            C[d]++
-            A = B
+    int j, i, d, k;
+    stack* p;
+    queue Q[256];
+    for (j = q_length - 1; j >= 0; j--) {
+        for (i = 0; i < 256; i++)
+            Q[i].tail = (stack*)&Q[i].head;
+        p = S;
+        k = KDI[j];
+        while (p) {
+            d = (chooseDigit ? p->data.nameDigit[k] : p->data.depDigit[k]);
+            Q[d].tail->next = p;
+            Q[d].tail = p;
+            p = p->next;
+        }
+        p = (stack*)&S;
+        for (i = 0; i < 256; i++) {
+            if (Q[i].tail != (stack*)&Q[i].head) {
+                p->next = Q[i].head;
+                p = Q[i].tail;
+            }
+        }
+        p->next = NULL;
+    }
 }
-    
+
+void fillIndexArray(stack** head, DatabaseNode** node) {
+    stack* current = *head;
+    int i = 0;
+    while (current != nullptr) {
+        node[i] = &current->data;
+        current = current->next;
+        i++;
+    }
+}
+
+int BinarySearch(DatabaseNode** nodeArr, int key, size_t size) {
+    int L = 1, m = 0;
+    int R = size - 1;
+    while (L <= R) {
+        m = (L + R) / 2;
+        if (nodeArr[m]->departmentNumber < key) {
+            L = m + 1;
+        }
+        else {
+            R = m - 1;
+        }
+    }
+    if (nodeArr[m]->departmentNumber == key) { return m; }
+}
+
+void ShowMenu(ifstream& opendFileStream, stack* stack, size_t size) {
+    int chooseNumber = 0;
+    int leftBorder = 0;
+    int rightBorder = 0;
+    cout << "A Company Database." << endl << endl;
+
+    while (true) {
+        cout << "Enter the appropriate number:" << endl
+             << "\"1\" to print information about next 20 workers" << endl
+             << "\"2\" to print information about previous 20 workers" << endl
+             << "\"3\" to print information about all personal" << endl
+             << "\"4\" to search specific employees by their department" << endl
+             << "\"0\" to exit the program" << endl;
+        char chooseNumber = _getch();
+        system("CLS");
+
+        switch (chooseNumber) {
+        case '0': return;
+        case '1':
+            if (rightBorder < size) {
+                leftBorder = rightBorder;
+                rightBorder += 20;
+                cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
+                    << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
+                printStackData(&stack, leftBorder, rightBorder);
+            }
+            else {
+                cout << "Final range achived" << endl;
+            }
+            break;
+        case '2':
+            if (leftBorder > 0) {
+                rightBorder = leftBorder;
+                leftBorder -= 20;
+                cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
+                    << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
+                printStackData(&stack, leftBorder, rightBorder);
+            }
+            else {
+                cout << "Starting elements achived" << endl;
+            }
+            break;
+        case '3':
+            cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
+                << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
+            printStackData(&stack, 0, size);
+            break;
+        case '4':
+            int choosenDepNumber;
+            cout << "\t Enter the department number: ";
+            cin >> choosenDepNumber;
+        default:
+            cout << "\n\nError: unsupported argument entered\n\n";
+            break;
+        }
+    }
+}
 
 int main() {
     ifstream dbFile("testBase2.dat", ios::in | ios::binary);
@@ -120,32 +155,35 @@ int main() {
     dbFile.clear();
     dbFile.seekg(0, ios_base::beg);
     int nodesNumber = length / sizeof(DatabaseNode);
-    int choosedStructureNumber;
-    List<DatabaseNode> nodesSorted;
-    List<DatabaseNode> nodes;
+    stack* nodes = nullptr;
+    stack* nodesReference = nullptr;
+
     for (int i = 0; i < nodesNumber; ++i) {
         DatabaseNode tempNode;
         tempNode.nodeFill(dbFile);
-        nodes.push_back(tempNode);
+        addToStack(&nodes, tempNode);
+        addToStack(&nodesReference, tempNode);
     }
     
-    cout << "Choose a structure to work with:\n\n"
-        << "\"1\" for default list\n"
-        << "\"2\" for a sorted list\n"
-        << "\"0\" for exiting program.\n";;
-    cin >> choosedStructureNumber;
-    switch (choosedStructureNumber) {
-    case 1: {
+    cout << "Choose a structure to work with:" << endl << endl
+        << "\"1\" for default list" << endl
+        << "\"2\" for a sorted list" << endl
+        << "\"0\" for exiting program." << endl;
+    char choosenStruct = _getch();
+    system("CLS");
+    
+    switch (choosenStruct) {
+    case '1':
+        ShowMenu(dbFile, nodesReference, nodesNumber);
+        break;
+    case '2':
+        DigitalSort(nodes, 0);
         ShowMenu(dbFile, nodes, nodesNumber);
-    } break;
-    case 2: {
-        ShowMenu(dbFile, nodesSorted, nodesNumber);
-    } break;
-    case 0:
+        break;
+    case '0':
     default:
         break;
     }
 
     dbFile.close();
-    nodes.~List();
 }

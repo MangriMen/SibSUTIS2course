@@ -6,8 +6,14 @@ using namespace std;
 class DatabaseNode
 {
 public:
-    char employeeFullName[30];
-    short int departmentNumber;
+    union {
+        char employeeFullName[30];
+        unsigned char nameDigit[sizeof(employeeFullName)];
+    };
+    union {
+        short int departmentNumber;
+        unsigned char depDigit[sizeof(departmentNumber)];
+    };
     char post[22];
     char birthDate[10];
 
