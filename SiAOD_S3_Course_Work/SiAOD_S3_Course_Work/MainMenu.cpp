@@ -20,7 +20,7 @@ struct queue {
 };
 
 void Split(stack* head, stack** a, stack** b, int& n);
-void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail, string field);
+void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail);
 int BinarySearch(Employee** employersI, short int key, size_t size);
 
 static void cp866_to_utf8(String& out, const char* in, size_t size) {
@@ -114,7 +114,7 @@ void printTable(form::Table table, Employee** employers, int n, int start, int e
 	}
 }
 
-void MergeSort(stack** head, int n, string field) {
+void MergeSort(stack** head, int n) {
 	stack* a = NULL, * b = NULL, * head_p = *head;
 	int p, i, m, q, r;
 	Split(head_p, &a, &b, n);
@@ -136,7 +136,7 @@ void MergeSort(stack** head, int n, string field) {
 			else
 				r = m;
 			m -= r;
-			Merge(&a, q, &b, r, &c[i].tail, field);
+			Merge(&a, q, &b, r, &c[i].tail);
 			i = 1 - i;
 		}
 		a = c[0].head, b = c[1].head;
@@ -179,19 +179,21 @@ void StackToQueue(stack** head, stack** tail) {
 	(*tail)->next = NULL;
 }
 
-bool compareEmployee(Employee first, Employee second, string field) {
-	if (field == "FIO") {
-		return (string)first.FIO <= (string)second.FIO;
+bool compareEmployee(Employee first, Employee second) {
+	if (first.departmentNumber < second.departmentNumber) {
+		return true;
 	}
-	else if (field == "departmentNumber") {
-		return first.departmentNumber <= second.departmentNumber;
+	else if (first.departmentNumber > second.departmentNumber) {
+		return false;
 	}
-	else return false;
+	else {
+		return (string)first.FIO < (string)second.FIO;
+	}
 }
 
-void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail, string field) {
+void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail) {
 	while (q != 0 && r != 0) {
-		if (compareEmployee((*head_a)->data, (*head_b)->data, field)) {
+		if (compareEmployee((*head_a)->data, (*head_b)->data)) {
 			StackToQueue(head_a, c_tail);
 			q--;
 		}
@@ -272,13 +274,11 @@ int BinarySearch(Employee** employersI, short int key, size_t size) {
 int queueFromIndex(queue& queue, Employee** employersI, int index, int n) {
 	int numOfFounded = 0;
 	for (int i = index; i < n-1; i++) {
-		if (employersI[i]->departmentNumber == employersI[i + 1]->departmentNumber) {
-			numOfFounded++;
-		}
+		if (employersI[i]->departmentNumber == employersI[i + 1]->departmentNumber) { numOfFounded++; }
 		else break;
 	}
 
-	for (int i = (index + numOfFounded) - 1; i >= index; i--) {
+	for (int i = index; i < (index + numOfFounded); i++) {
 		addToQueue(queue, *employersI[i]);
 	}
 	return numOfFounded;
@@ -332,7 +332,7 @@ void MainMenu::Run(RenderWindow& window)
 
 	databaseFile.close();
 
-	MergeSort(&employers.head, numOfEmployers, "departmentNumber");
+	MergeSort(&employers.head, numOfEmployers);
 
 	fillIndexArray(employers, employersI);
 
@@ -510,5 +510,9 @@ void MainMenu::Run(RenderWindow& window)
 
 		window.display();
 	}
+	Delete(&employers.head);
+	Delete(&foundedEmployers.head);
+	delete[] employersI;
+	delete[] foundedI;
 }
 
