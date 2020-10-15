@@ -4,6 +4,7 @@
 using namespace std;
 
 bool isIncreased = true;
+bool decreased = true;
 int* A;
 
 struct Vertex {
@@ -32,32 +33,32 @@ void rightRightTurn(Vertex*& pointer) {
 }
 
 void leftRightTurn(Vertex*& pointer) {
-	Vertex* q = pointer->left;
-	Vertex* r = q->right;
+	Vertex* tempPointer = pointer->left;
+	Vertex* r = tempPointer->right;
 
 	pointer->balance = (r->balance < 0 ? 1 : 0);
-	q->balance = (r->balance > 0 ? -1 : 0);
+	tempPointer->balance = (r->balance > 0 ? -1 : 0);
 
 	r->balance = 0;
-	q->right = r->left;
+	tempPointer->right = r->left;
 	pointer->left = r->right;
-	r->left = q;
+	r->left = tempPointer;
 	r->right = pointer;
 	pointer = r;
 }
 
 void rightLeftTurn(Vertex*& pointer) {
-	Vertex* q = pointer->right;
-	Vertex* r = q->left;
+	Vertex* tempPointer = pointer->right;
+	Vertex* r = tempPointer->left;
 
 	pointer->balance = (r->balance > 0 ? -1 : 0);
-	q->balance = (r->balance < 0 ? 1 : 0);
+	tempPointer->balance = (r->balance < 0 ? 1 : 0);
 
 	r->balance = 0;
 	pointer->right = r->left;
-	q->left = r->right;
+	tempPointer->left = r->right;
 	r->left = pointer;
-	r->right = q;
+	r->right = tempPointer;
 	pointer = r;
 }
 
@@ -126,6 +127,116 @@ void AVLTreeAddNode(Vertex*& pointer, int data) {
 	}
 }
 
+void oneLeftLeftTurn(Vertex*& pointer) {
+	Vertex* tempPointer = pointer->left;
+	if (tempPointer->balance == 0) {
+		pointer->balance = -1;
+		tempPointer->balance = 1;
+		decreased = false;
+	} else {
+		pointer->balance = 0;
+		tempPointer->balance = 0;
+	}
+	pointer->left = tempPointer->right;
+	tempPointer->right = pointer;
+	pointer = tempPointer;
+}
+
+void oneRightRightTurn(Vertex*& pointer) {
+	Vertex* tempPointer = pointer->right;
+	if (tempPointer->balance == 0) {
+		pointer->balance = 1;
+		tempPointer->balance = -1;
+		decreased = false;
+	} else {
+		pointer->balance = 0;
+		tempPointer->balance = 0;
+	}
+	pointer->right = tempPointer->left;
+	tempPointer->left = pointer;
+	pointer = tempPointer;
+}
+
+void avl_bl_turn(Vertex*& pointer) {
+	if (pointer->balance == -1) {
+		pointer->balance = 0;
+	}
+	else if (pointer->balance == 0) {
+		pointer->balance = 1;
+		decreased = false;
+	}
+	else if (pointer->balance == 1) {
+		if (pointer->right->balance >= 0) {
+			oneRightRightTurn(pointer);
+			cout << endl << "rr1" << endl;
+		}
+		else {
+			rightLeftTurn(pointer);
+		}
+	}
+}
+
+void avl_br_turn(Vertex*& pointer) {
+	if (pointer->balance == 1) {
+		pointer->balance = 0;
+	}
+	else if (pointer->balance == 0) {
+		pointer->balance = -1;
+		decreased = false;
+	}
+	else if (pointer->balance == -1) {
+		if (pointer->left->balance <= 0) {
+			oneLeftLeftTurn(pointer);
+			cout << endl << "ll1" << endl;
+		}
+		else {
+			leftRightTurn(pointer);
+		}
+	}
+}
+
+void Del(Vertex*& r, Vertex*& tempPointer) {
+	if (r->right != nullptr) {
+		Del(r->right, tempPointer);
+		if (decreased) {
+			avl_br_turn(r);
+		}
+	}
+	else {
+		tempPointer->data = r->data;
+		tempPointer = r;
+		r = r->left;
+		decreased = true;
+	}
+}
+
+void AVLTreeDeleteNode(Vertex*& pointer, int data) {
+	if (pointer == nullptr) { return; }
+
+	if (data < pointer->data) {
+		AVLTreeDeleteNode(pointer->left, data);
+		if (decreased) { avl_bl_turn(pointer); }
+	} else if (data > pointer->data) {
+		AVLTreeDeleteNode(pointer->right, data);
+		if (decreased) { avl_br_turn(pointer); }
+	} else {
+		Vertex* tempPointer = pointer;
+		if (tempPointer->left == nullptr) {
+			pointer = tempPointer->right;
+			decreased = true;
+		}
+		else if (tempPointer->right == nullptr) {
+			pointer = tempPointer->left;
+			decreased = true;
+		}
+		else {
+			Del(tempPointer->left, tempPointer);
+			if (decreased) { avl_bl_turn(pointer); }
+		}
+		delete tempPointer;
+	}
+}
+
 void traversal(Vertex* pointer, int type) {
 	if (pointer != nullptr) {
 		if (type == 1) cout << pointer->data << "(" << pointer->balance << ") ";
@@ -164,41 +275,42 @@ void fillRand(int size) {
 	}
 }
 
-void dispalyVertexInfo(Vertex* root, int traversalType) {
+void dispalyVertexInfo(Vertex* pointer, int traversalType) {
 	cout << "\n-----------------------------------------------------\n\n";
-	if (root == nullptr) {
+	if (pointer == nullptr) {
 		cout << "Дерево пусто.\n";
 		return;
 	}
 	cout << "Обход " << traversalType << " типа:\n";
-	traversal(root, traversalType);
-	cout << "\n\nКоличество вершин: " << amount(root);
-	cout << "\n\nСумма элементов: " << sum(root);
-	cout << "\n\nВысота дерева: " << height(root);
-	cout << "\n\nМаксимальная высота дерева: " << treeHeightSum(root, 1) / amount(root);
+	traversal(pointer, traversalType);
+	cout << "\n\nКоличество вершин: " << amount(pointer);
+	cout << "\n\nСумма элементов: " << sum(pointer);
+	cout << "\n\nВысота дерева: " << height(pointer);
+	cout << "\n\nМаксимальная высота дерева: " << treeHeightSum(pointer, 1) / amount(pointer);
 }
 
 int main() {
 	srand(unsigned int(time(NULL)));
 	setlocale(LC_ALL, "Russian");
 
-	int numberOfVertex;
-	int traversalType;
+	int numberOfVertex = 12;
+	int traversalType = 2;
+	int vertexToDelete = 0;
 
 	cout << "Введите число вершин: ";
 	cin >> numberOfVertex;
 	cout << "Введите тип прохода (1 - сверху вниз, 2 - справа налево, 3 - снизу вверх): ";
 	cin >> traversalType;
 
-	A = new int[numberOfVertex];
-	fillRand(numberOfVertex);
+	/*A = new int[numberOfVertex];
+	fillRand(numberOfVertex);*/
 	//A = new int[10]{ 21, 60, 79, 14, 7, 34, 40, 35, 29, 56 };
-	//A = new int[12]{ 17, 1, 15, 10, 12, 20, 16, 13, 6, 4, 3, 25 };
+	A = new int[12]{ 17, 1, 15, 10, 12, 20, 16, 13, 6, 4, 3, 25 };
 
-	Vertex* root = new Vertex;
-	root->data = A[0];
-	root->right = nullptr;
-	root->left = nullptr;
+	Vertex* pointer = new Vertex;
+	pointer->data = A[0];
+	pointer->right = nullptr;
+	pointer->left = nullptr;
 
 	cout << "\nИзначальный массив А:\n";
 	for (int i = 0; i < numberOfVertex; ++i) {
@@ -206,13 +318,28 @@ int main() {
 	}
 
 	for (int i = 0; i < numberOfVertex; ++i) {
-		AVLTreeAddNode(root, A[i]);
+		AVLTreeAddNode(pointer, A[i]);
 	}
 
-	dispalyVertexInfo(root, traversalType);
+	dispalyVertexInfo(pointer, traversalType);
+
+	// Выборочное удаление вершин
+	/*while (amount(pointer)) {
+		cout << endl << endl << "Ведите высоту для удаления: ";
+		cin >> vertexToDelete;
+		cout << endl << endl;
+		AVLTreeDeleteNode(pointer, vertexToDelete);
+		dispalyVertexInfo(pointer, traversalType);
+	}*/
+	
+	// Для последовательного удаления всего дерева
+	for (int i = 0; i < numberOfVertex; ++i) {
+		AVLTreeDeleteNode(pointer, A[i]);
+		dispalyVertexInfo(pointer, traversalType);
+	}
 
 	cout << "\n\n-----------------------------------------------------\n\n";
 
-	delete root;
+	delete pointer;
 	delete A;
 }
