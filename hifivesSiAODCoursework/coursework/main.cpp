@@ -23,10 +23,22 @@ void addToStack(stack** head, DatabaseNode node) {
 
 void printStackData(stack** head, int leftBorder, int rightborder) {
     stack* current = *head;
-    for (int i = leftBorder; i < rightborder; ++i) {
-        cout << "#" << i + 1;
+    int i = 0;
+    while (current != nullptr && i < leftBorder) {
+        current = current->next;
+        ++i;
+    }
+    while (current != nullptr && i < rightborder) {
         current->data.nodePrint();
         current = current->next;
+        ++i;
+    }
+}
+
+void printArrayData(DatabaseNode** nodeArray, int leftBorder, int rightBorder) {
+    for (int i = leftBorder; i < rightBorder; ++i) {
+        cout << "#" << i << "\t";
+        nodeArray[i]->nodePrint();
     }
 }
 
@@ -89,6 +101,8 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     int leftBorder = 0;
     int rightBorder = 20;
     stack** tempStack;
+    DatabaseNode** nodesArray = new DatabaseNode*[size];
+    fillIndexArray(operatingStack, nodesArray);
     cout << "A Company Database." << endl << endl;
 
     while (true) {
@@ -102,14 +116,17 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
         system("CLS");
 
         switch (chooseNumber) {
-        case '0': return;
+        case '0':
+            delete[] nodesArray;
+            return;
         case '1':
             if (rightBorder < size) {
                 leftBorder = rightBorder;
                 rightBorder += 20;
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                     << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-                printStackData(operatingStack, leftBorder, rightBorder);
+                //printStackData(operatingStack, leftBorder, rightBorder);
+                printArrayData(nodesArray, leftBorder, rightBorder);
             }
             else {
                 cout << "Final range achived" << endl;
@@ -121,7 +138,8 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 leftBorder -= 20;
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                     << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-                printStackData(operatingStack, leftBorder, rightBorder);
+                //printStackData(operatingStack, leftBorder, rightBorder);
+                printArrayData(nodesArray, leftBorder, rightBorder);
             }
             else {
                 cout << "Starting elements achived" << endl;
@@ -130,7 +148,8 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
         case '3':
             cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                 << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-            printStackData(operatingStack, 0, size);
+            //printStackData(operatingStack, 0, size);
+            printArrayData(nodesArray, 0, size);
             break;
         case '4':
             int choosenDepNumber;
@@ -141,6 +160,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             break;
         }
     }
+    delete[] nodesArray;
 }
 
 int main() {
