@@ -157,7 +157,8 @@ void oneRightRightTurn(Vertex*& pointer) {
 	pointer = tempPointer;
 }
 
-void avl_bl_turn(Vertex*& pointer) {
+//bl из псевдокода
+void checkBalanceLeft(Vertex*& pointer) {
 	if (pointer->balance == -1) {
 		pointer->balance = 0;
 	}
@@ -168,15 +169,14 @@ void avl_bl_turn(Vertex*& pointer) {
 	else if (pointer->balance == 1) {
 		if (pointer->right->balance >= 0) {
 			oneRightRightTurn(pointer);
-			cout << endl << "rr1" << endl;
+			cout << "\nRR, balance\n";
 		}
-		else {
-			rightLeftTurn(pointer);
-		}
+		else { rightLeftTurn(pointer); }
 	}
 }
 
-void avl_br_turn(Vertex*& pointer) {
+//br из псевдокода
+void checkBalanceRight(Vertex*& pointer) {
 	if (pointer->balance == 1) {
 		pointer->balance = 0;
 	}
@@ -187,22 +187,17 @@ void avl_br_turn(Vertex*& pointer) {
 	else if (pointer->balance == -1) {
 		if (pointer->left->balance <= 0) {
 			oneLeftLeftTurn(pointer);
-			cout << endl << "ll1" << endl;
+			cout << "\nLL, balanced\n";
 		}
-		else {
-			leftRightTurn(pointer);
-		}
+		else { leftRightTurn(pointer); }
 	}
 }
 
 void Del(Vertex*& r, Vertex*& tempPointer) {
 	if (r->right != nullptr) {
 		Del(r->right, tempPointer);
-		if (decreased) {
-			avl_br_turn(r);
-		}
-	}
-	else {
+		if (decreased) { checkBalanceRight(r); }
+	} else {
 		tempPointer->data = r->data;
 		tempPointer = r;
 		r = r->left;
@@ -215,10 +210,10 @@ void AVLTreeDeleteNode(Vertex*& pointer, int data) {
 
 	if (data < pointer->data) {
 		AVLTreeDeleteNode(pointer->left, data);
-		if (decreased) { avl_bl_turn(pointer); }
+		if (decreased) { checkBalanceLeft(pointer); }
 	} else if (data > pointer->data) {
 		AVLTreeDeleteNode(pointer->right, data);
-		if (decreased) { avl_br_turn(pointer); }
+		if (decreased) { checkBalanceRight(pointer); }
 	} else {
 		Vertex* tempPointer = pointer;
 		if (tempPointer->left == nullptr) {
@@ -231,7 +226,7 @@ void AVLTreeDeleteNode(Vertex*& pointer, int data) {
 		}
 		else {
 			Del(tempPointer->left, tempPointer);
-			if (decreased) { avl_bl_turn(pointer); }
+			if (decreased) { checkBalanceLeft(pointer); }
 		}
 		delete tempPointer;
 	}
