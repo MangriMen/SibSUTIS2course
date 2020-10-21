@@ -7,6 +7,7 @@ using OOP_3S_Lab234.Entities;
 using Color = Microsoft.Xna.Framework.Color;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using OOP_3S_Lab234.ShipParts;
+using System.Diagnostics;
 
 namespace OOP_3S_Lab234
 {
@@ -26,7 +27,7 @@ namespace OOP_3S_Lab234
         Texture2D backgoundTexture;
         Texture2D loadingScreen;
         Player player;
-        Enemy[] clones = new Enemy[9];
+        Enemy[] clones = new Enemy[1000];
  
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -48,7 +49,7 @@ namespace OOP_3S_Lab234
             // Screen mode
             _graphics.IsFullScreen = false;
 
-            _graphics.SynchronizeWithVerticalRetrace = true; // vsync
+            _graphics.SynchronizeWithVerticalRetrace = false; // vsync
             IsFixedTimeStep = false; // Don't force equal timestep updates
 
             // Auto resolution on fullscreen
@@ -106,8 +107,11 @@ namespace OOP_3S_Lab234
             loadingScreen = Content.Load<Texture2D>("Images/Backgrounds/bootloader");
 
             Thread bgLoad = new Thread(new ThreadStart(LoadGame));
+
             bgLoad.IsBackground = true;
             bgLoad.Start();
+
+
         }
 
         protected void LoadGame()
@@ -130,9 +134,22 @@ namespace OOP_3S_Lab234
             Timer timer = new Timer(new TimerCallback(GameLoaded), null, 800, Timeout.Infinite);
         }
 
+
         private void GameLoaded(object obj)
         {
             State = GameState.MainMenu;
+        }
+
+        protected void CollisionCheck()
+        {
+            player.isDamaged = false;
+            for (int i = 0; i < clones.Length; i++)
+            {
+                if (clones[i].HitBox.Intersects(player.HitBox))
+                {
+                    player.isDamaged = true;
+                }
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -183,6 +200,7 @@ namespace OOP_3S_Lab234
                 clones[i].Update(gameTime, resolution);
             }
 
+            CollisionCheck();
         }
         protected void DrawGameplay()
         {
