@@ -4,7 +4,6 @@
 #include <vector>
 #include <map>
 #include <random>
-#include <Windows.h>
 
 using namespace std;
 
@@ -388,21 +387,6 @@ void traversalGraph(Vertex* root, int numberOfVertex, bool isChar) {
 				: (cout << "   ");
 		}
 		cout << endl << endl;
-	}
-}
-
-void traversalGraph2(Vertex* root, int numberOfVertex, bool isChar) {
-	if (root != nullptr)
-	{
-		traversalGraph2(root->right, numberOfVertex + 1, isChar);
-		for (int i = 1; i <= numberOfVertex; i++) cout << "\t";
-		if (isChar) {
-			cout << (char)root->data << endl;
-		}
-		else {
-			cout << root->data << endl;
-		}
-		traversalGraph2(root->left, numberOfVertex + 1, isChar);
 	}
 }
 
