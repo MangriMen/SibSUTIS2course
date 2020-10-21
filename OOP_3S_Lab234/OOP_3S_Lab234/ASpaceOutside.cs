@@ -48,7 +48,7 @@ namespace OOP_3S_Lab234
             // Screen mode
             _graphics.IsFullScreen = false;
 
-            _graphics.SynchronizeWithVerticalRetrace = false; // vsync
+            _graphics.SynchronizeWithVerticalRetrace = true; // vsync
             IsFixedTimeStep = false; // Don't force equal timestep updates
 
             // Auto resolution on fullscreen

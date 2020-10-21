@@ -74,19 +74,18 @@ namespace OOP_3S_Lab234.Entities
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabin);
             Jet.Load(Content, "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue") + "Jet");
         }
-        protected void BorderCollision(Vector2 offset, Vector2 resolution, String type)
+        protected virtual void BorderCollision(Vector2 offset, Vector2 resolution)
         {
-            bool typeB = type == "player" ? false : true;
             if (Position.Y + offset.Y < Texture.Height / 2 ||
                 Position.Y + offset.Y > resolution.Y - Texture.Height / 2)
             {
-                velocity_.Y = Convert.ToInt32(typeB) * -velocity_.Y;
+                velocity_.Y = -velocity_.Y;
             }
 
             if (Position.X + offset.X < Texture.Height / 2 ||
                 Position.X + offset.X > resolution.X - Texture.Height / 2)
             {
-                velocity_.X = Convert.ToInt32(typeB) * -velocity_.X;
+                velocity_.X = -velocity_.X;
             }
         }
 

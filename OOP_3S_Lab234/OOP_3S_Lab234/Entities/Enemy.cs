@@ -51,7 +51,7 @@ namespace OOP_3S_Lab234.Entities
 
             if (velocity_ != Vector2.Zero) { velocity_.Normalize(); }
 
-            BorderCollision(velocity_ * Jet.Speed * delta, resolution, "bot");
+            BorderCollision(velocity_ * Jet.Speed * delta, resolution);
 
             Position += velocity_ * Jet.Speed * delta;
 
