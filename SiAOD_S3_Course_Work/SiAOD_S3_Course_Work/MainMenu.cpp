@@ -396,7 +396,7 @@ void MainMenu::Run(RenderWindow& window)
 						printTable(table, *&employersI, numOfEmployers, start, end);
 						break;
 					case Mode::Founded:
-						if (startFounded < (long)numOfFounded - 20 && endFounded < numOfFounded) {
+						if (startFounded < numOfFounded - (long)20 && endFounded < numOfFounded) {
 							startFounded = endFounded;
 							endFounded += 20;
 						}

@@ -50,16 +50,36 @@ namespace OOP_3S_Lab234.Entities
 
             if (noKeyPressed)
             {
-                if (Position.Y > 0 + Texture.Height / 2 && Position.Y < resolution.Y &&
-                    Position.X > 0 + Texture.Width / 2 && Position.X < resolution.X)
+                if (!isStoped)
                 {
-                    if (Math.Abs(velocity_.X) > 0.05f || Math.Abs(velocity_.Y) > 0.05f)
-                        velocity_ *= 0.95f;
+                    if (clearStep)
+                    {
+                        tmpVel = velocity_;
+                        step = 0;
+                    }
+                    if (step <= 1)
+                    {
+                        step += 0.007f;
+                        clearStep = false;
+                        t = 1 - SmoothStep(step);
+                        velocity_ = tmpVel * t;
+                    }
                     else
-                        velocity_ *= 0;
-                }
-                else
-                    velocity_ *= 0;
+                    {
+                        clearStep = true;
+                        isStoped = true;
+                    }
+                }   
+                //if (Position.Y > 0 + Texture.Height / 2 && Position.Y < resolution.Y &&
+                //    Position.X > 0 + Texture.Width / 2 && Position.X < resolution.X)
+                //{
+                //    if (Math.Abs(velocity_.X) > 0.05f || Math.Abs(velocity_.Y) > 0.05f)
+                //        velocity_ *= 0.95f;
+                //    else
+                //        velocity_ *= 0;
+                //}
+                //else
+                //    velocity_ *= 0;
             }
             else
             {
@@ -81,6 +101,9 @@ namespace OOP_3S_Lab234.Entities
                     if (double.IsNaN(velocity_.Y) || double.IsInfinity(velocity_.Y))
                         velocity_.Y = 0;
                 }
+
+                clearStep = true;
+                isStoped = false;
             }
 
             Vector2 offset = velocity_ * Jet.Speed * delta;
@@ -88,9 +111,9 @@ namespace OOP_3S_Lab234.Entities
 
             Position += velocity_ * Jet.Speed * delta;
 
+
             if (Position - temp != Vector2.Zero)
                 RotateAngle = (float)Math.Atan2(Position.Y - temp.Y, Position.X - temp.X) + (float)Math.PI / 2;
-            //Debug.WriteLine(Position - temp);
         }
     }
 }

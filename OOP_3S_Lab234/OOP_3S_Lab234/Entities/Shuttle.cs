@@ -98,5 +98,15 @@ namespace OOP_3S_Lab234.Entities
         }
 
         public abstract void Update(GameTime gameTime, Vector2 resolution);
+
+        protected float t = 0;
+        protected float step = 1;
+        protected bool isStoped = false;
+        protected bool clearStep = true;
+        protected Vector2 tmpVel;
+        protected float SmoothStep(float x)
+        {
+            return (float)Math.Sqrt(1 - Math.Pow(x - 1, 2));
+        }
     }
 }
