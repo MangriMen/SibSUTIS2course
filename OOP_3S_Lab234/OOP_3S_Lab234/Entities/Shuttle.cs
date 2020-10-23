@@ -4,6 +4,9 @@ using System;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using Microsoft.Xna.Framework;
 using OOP_3S_Lab234.ShipParts;
+using System.Collections.Generic;
+using System.Threading;
+using System.Diagnostics;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -15,8 +18,17 @@ namespace OOP_3S_Lab234.Entities
         Massive
     }
 
+
     abstract class Shuttle
     {
+        public readonly Dictionary<string, int> ShuttleJetOffset = new Dictionary<string, int>
+        {
+            ["Bug"] = -30,
+            ["Bat"] = -10,
+            ["Lunar"] = -30,
+            ["Massive"] = -20
+        };
+
         protected Vector2 velocity_ = Vector2.Zero;
         public string TypeOfShuttle { get; protected set; }
         public Vector2 Position { get; set; }
@@ -24,6 +36,25 @@ namespace OOP_3S_Lab234.Entities
         public Texture2D Texture { get; set; }
         public Texture2D Cabin { get; set; }
         public bool isDamaged { get; set; }
+        public float timer;
+        public int frameWidth = 16;
+        public int frameHeight = 16;
+        public int framesCount = 4;
+        public int currentFrame = 0;
+        public void animationPlaying(GameTime gameTime)
+        {
+            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (timer > 0.2)
+            {
+                timer = 0;
+                currentFrame++;
+                if (currentFrame >= framesCount)
+                {
+                    currentFrame = 0;
+                }
+            }
+        }
+
         public Rectangle HitBox
         {
             get
@@ -34,8 +65,6 @@ namespace OOP_3S_Lab234.Entities
         protected IJet Jet = new SpeedJet();
         public void Draw(SpriteBatch _spriteBatch)
         {
-            bool jetOffset = false;
-            
             _spriteBatch.Draw(
                 Texture,
                 Position,
@@ -60,16 +89,25 @@ namespace OOP_3S_Lab234.Entities
                 0f
                 );
 
-            jetOffset = Texture.ToString() == "Images/Shuttle/Body/massiveBody" ||
-                Texture.ToString() == "Images/Shuttle/Body/gamepadBody";
-
             _spriteBatch.Draw(
                 Jet.Texture,
                 Position,
                 null,
                 isDamaged ? Color.Red : Color.White,
                 RotateAngle,
-                new Vector2(Texture.Width / 2, jetOffset ? 10 : 0),
+                new Vector2(Jet.Texture.Width / 2, ShuttleJetOffset[TypeOfShuttle]),
+                Vector2.One,
+                SpriteEffects.None,
+                0f
+                );
+
+            _spriteBatch.Draw(
+                Jet.Particles,
+                Position,
+                new Rectangle(currentFrame * frameWidth, 0, frameWidth, frameHeight),
+                Color.White,
+                RotateAngle,
+                new Vector2(Jet.Particles.Width / 4 / 2, ShuttleJetOffset[TypeOfShuttle] - (Jet.Particles.Height / 2) + 6),
                 Vector2.One,
                 SpriteEffects.None,
                 0f

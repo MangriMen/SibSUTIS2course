@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Content;
 using OOP_3S_Lab234.ShipParts;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -24,6 +25,7 @@ namespace OOP_3S_Lab234.Entities
             Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/brickCabin");
             Jet.Load(Content, "Images/Shuttle/Jet/speedOrangeJet");
+            TypeOfShuttle = "Massive";
         }
         protected override void BorderCollision(Vector2 offset, Vector2 resolution)
         {
@@ -42,6 +44,8 @@ namespace OOP_3S_Lab234.Entities
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            animationPlaying(gameTime);
 
             bool noKeyPressed = !(Kb.getDown(Keys.Up) || Kb.getDown(Keys.Down) || Kb.getDown(Keys.Left) || Kb.getDown(Keys.Right) ||
                 Kb.getDown(Keys.W) || Kb.getDown(Keys.S) || Kb.getDown(Keys.A) || Kb.getDown(Keys.D));

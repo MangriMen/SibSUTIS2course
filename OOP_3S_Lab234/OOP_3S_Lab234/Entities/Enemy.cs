@@ -47,6 +47,8 @@ namespace OOP_3S_Lab234.Entities
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            animationPlaying(gameTime);
+
             Vector2 prevPos = Position;
 
             if (velocity_ != Vector2.Zero) { velocity_.Normalize(); }
