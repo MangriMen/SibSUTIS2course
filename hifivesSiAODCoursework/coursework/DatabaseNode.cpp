@@ -5,8 +5,8 @@ using namespace std;
 
 void DatabaseNode::nodePrint() {
     cout << "\t" << this->employeeFullName;
-    cout << "\t\t" << this->departmentNumber;
-    cout << "\t\t" << this->post;
+    cout << "\t" << this->departmentNumber;
+    cout << "\t" << this->post;
     cout << "\t" << this->birthDate << "\n\n";
 }
 

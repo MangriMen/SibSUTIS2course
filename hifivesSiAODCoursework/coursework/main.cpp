@@ -37,16 +37,16 @@ void printStackData(stack** head, int leftBorder, int rightborder) {
 
 void printArrayData(DatabaseNode** nodeArray, int leftBorder, int rightBorder) {
     for (int i = leftBorder; i < rightBorder; ++i) {
-        cout << "#" << i << "\t";
+        cout << "#" << i + 1;
         nodeArray[i]->nodePrint();
     }
 }
 
-void DigitalSort(stack*& S, bool chooseDigit = 0, int q_length = 64) {
-    int KDI[64];
-    for (int i = 63; i >= 0; --i) { KDI[i] = i; }
-
-    int j, i, d, k;
+void DigitalSort(stack*& S, int q_length = 32) {
+    int* KDI = new int[q_length];
+    for (int i = 0; i < q_length; ++i) { KDI[i] = i; }
+    
+    int j = 0, i = 0, d = 0, k = 0;
     stack* p;
     queue Q[256];
     for (j = q_length - 1; j >= 0; j--) {
@@ -55,7 +55,7 @@ void DigitalSort(stack*& S, bool chooseDigit = 0, int q_length = 64) {
         p = S;
         k = KDI[j];
         while (p) {
-            d = (chooseDigit ? p->data.nameDigit[k] : p->data.depDigit[k]);
+            d = p->data.depDigit[k];
             Q[d].tail->next = p;
             Q[d].tail = p;
             p = p->next;
@@ -69,6 +69,7 @@ void DigitalSort(stack*& S, bool chooseDigit = 0, int q_length = 64) {
         }
         p->next = NULL;
     }
+    delete[] KDI;
 }
 
 void fillIndexArray(stack** head, DatabaseNode** node) {
@@ -100,6 +101,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     int chooseNumber = 0;
     int leftBorder = 0;
     int rightBorder = 20;
+    bool first20 = true;
     stack** tempStack;
     DatabaseNode** nodesArray = new DatabaseNode*[size];
     fillIndexArray(operatingStack, nodesArray);
@@ -121,12 +123,18 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             return;
         case '1':
             if (rightBorder < size) {
-                leftBorder = rightBorder;
-                rightBorder += 20;
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                     << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-                //printStackData(operatingStack, leftBorder, rightBorder);
-                printArrayData(nodesArray, leftBorder, rightBorder);
+
+                if (first20) {
+                    printArrayData(nodesArray, 0, 20);
+                    first20 = false;
+                } else {
+                    leftBorder = rightBorder;
+                    rightBorder += 20;
+                    //printStackData(operatingStack, leftBorder, rightBorder);
+                    printArrayData(nodesArray, leftBorder, rightBorder);
+                }
             }
             else {
                 cout << "Final range achived" << endl;
@@ -134,12 +142,21 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             break;
         case '2':
             if (leftBorder > 0) {
-                rightBorder = leftBorder;
-                leftBorder -= 20;
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                     << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-                //printStackData(operatingStack, leftBorder, rightBorder);
-                printArrayData(nodesArray, leftBorder, rightBorder);
+                if (leftBorder == 0) { first20 = true; }
+
+                if (first20) {
+                    printArrayData(nodesArray, 0, 20);
+                    first20 = !first20;
+                }
+                else {
+                    rightBorder = leftBorder;
+                    leftBorder -= 20;
+                    //printStackData(operatingStack, leftBorder, rightBorder);
+                    printArrayData(nodesArray, leftBorder, rightBorder);
+                }
+
             }
             else {
                 cout << "Starting elements achived" << endl;
@@ -198,7 +215,7 @@ int main() {
         ShowMenu(dbFile, &nodesReference, nodesNumber);
         break;
     case '2':
-        DigitalSort(nodes, 0); // 1 for another sort
+        DigitalSort(nodes); // 1 for another sort
         ShowMenu(dbFile, &nodes, nodesNumber);
         break;
     case '0':
@@ -208,3 +225,15 @@ int main() {
 
     dbFile.close();
 }
+
+//bool nodeCompare(stack*& first) {
+//    if (first->data.departmentNumber < first->next->data.departmentNumber) {
+//        return true;
+//    }
+//    else if (first->data.departmentNumber > first->next->data.departmentNumber) {
+//        return false;
+//    }
+//    else {
+//        return (string)first->data.employeeFullName < (string)first->next->data.employeeFullName;
+//    }
+//}
