@@ -23,10 +23,17 @@ namespace OOP_3S_Lab234.Entities
     {
         public readonly Dictionary<string, int> ShuttleJetOffset = new Dictionary<string, int>
         {
-            ["Bug"] = -30,
-            ["Bat"] = -10,
-            ["Lunar"] = -30,
+            ["Bug"] = -28,
+            ["Bat"] = -5,
+            ["Lunar"] = -28,
             ["Massive"] = -20
+        };
+
+        public Dictionary<string, Color> JetColors = new Dictionary<string, Color>
+        {
+            ["BlueJet"] = new Color(51, 147, 212),
+            ["GreenJet"] = new Color(83, 255, 0),
+            ["OrangeJet"] = new Color(238, 120, 26)
         };
 
         protected Vector2 velocity_ = Vector2.Zero;
@@ -37,14 +44,14 @@ namespace OOP_3S_Lab234.Entities
         public Texture2D Cabin { get; set; }
         public bool isDamaged { get; set; }
         public float timer;
-        public int frameWidth = 16;
-        public int frameHeight = 16;
-        public int framesCount = 4;
+        public int frameWidth = 26;
+        public int frameHeight = 11;
+        public int framesCount = 10;
         public int currentFrame = 0;
         public void animationPlaying(GameTime gameTime)
         {
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (timer > 0.2)
+            if (timer > 0.1)
             {
                 timer = 0;
                 currentFrame++;
@@ -65,20 +72,25 @@ namespace OOP_3S_Lab234.Entities
         protected IJet Jet = new SpeedJet();
         public void Draw(SpriteBatch _spriteBatch)
         {
+            string test = Jet.Texture.ToString().Split("/")[3];
+
+            int pos = 0;
+            while (pos < test.Length && test[pos] != test.ToUpper()[pos]) pos++;
+
             _spriteBatch.Draw(
-                Texture,
+                Jet.Particles,
                 Position,
-                null,
-                isDamaged ? Color.Red : Color.White,
+                new Rectangle(currentFrame * frameWidth, 0, frameWidth, frameHeight),
+                JetColors[test.Substring(pos, test.Length - pos)],
                 RotateAngle,
-                new Vector2(Texture.Width / 2, Texture.Height / 2),
+                new Vector2(Jet.Particles.Width / framesCount / 2, ShuttleJetOffset[TypeOfShuttle] - (Jet.Particles.Height / 2) + 2),
                 Vector2.One,
                 SpriteEffects.None,
                 0f
                 );
 
             _spriteBatch.Draw(
-                Cabin,
+                Texture,
                 Position,
                 null,
                 isDamaged ? Color.Red : Color.White,
@@ -102,12 +114,12 @@ namespace OOP_3S_Lab234.Entities
                 );
 
             _spriteBatch.Draw(
-                Jet.Particles,
+                Cabin,
                 Position,
-                new Rectangle(currentFrame * frameWidth, 0, frameWidth, frameHeight),
-                Color.White,
+                null,
+                isDamaged ? Color.Red : Color.White,
                 RotateAngle,
-                new Vector2(Jet.Particles.Width / 4 / 2, ShuttleJetOffset[TypeOfShuttle] - (Jet.Particles.Height / 2) + 6),
+                new Vector2(Texture.Width / 2, Texture.Height / 2),
                 Vector2.One,
                 SpriteEffects.None,
                 0f

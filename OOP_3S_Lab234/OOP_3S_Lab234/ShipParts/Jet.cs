@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace OOP_3S_Lab234.ShipParts
         void Load(ContentManager Content, string texturePath)
         {
             Texture = Content.Load<Texture2D>(texturePath);
-            Particles = Content.Load<Texture2D>("Images/Particles/JetParticles");
+            Particles = Content.Load<Texture2D>("Images/Particles/slideParticles");
         }
         void Boost();
     }

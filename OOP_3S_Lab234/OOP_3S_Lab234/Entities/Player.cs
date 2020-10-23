@@ -24,7 +24,7 @@ namespace OOP_3S_Lab234.Entities
         {
             Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/brickCabin");
-            Jet.Load(Content, "Images/Shuttle/Jet/speedOrangeJet");
+            Jet.Load(Content, "Images/Shuttle/Jet/slideBlueJet");
             TypeOfShuttle = "Massive";
         }
         protected override void BorderCollision(Vector2 offset, Vector2 resolution)
