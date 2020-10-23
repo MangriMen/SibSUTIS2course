@@ -7,6 +7,8 @@ using OOP_3S_Lab234.ShipParts;
 using System.Collections.Generic;
 using System.Threading;
 using System.Diagnostics;
+using OOP_3S_Lab234.Models;
+using System.Linq;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -24,7 +26,7 @@ namespace OOP_3S_Lab234.Entities
         public readonly Dictionary<string, int> ShuttleJetOffset = new Dictionary<string, int>
         {
             ["Bug"] = -28,
-            ["Bat"] = -5,
+            ["Bat"] = -7,
             ["Lunar"] = -28,
             ["Massive"] = -20
         };
@@ -43,24 +45,6 @@ namespace OOP_3S_Lab234.Entities
         public Texture2D Texture { get; set; }
         public Texture2D Cabin { get; set; }
         public bool isDamaged { get; set; }
-        public float timer;
-        public int frameWidth = 26;
-        public int frameHeight = 11;
-        public int framesCount = 10;
-        public int currentFrame = 0;
-        public void animationPlaying(GameTime gameTime)
-        {
-            timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (timer > 0.1)
-            {
-                timer = 0;
-                currentFrame++;
-                if (currentFrame >= framesCount)
-                {
-                    currentFrame = 0;
-                }
-            }
-        }
 
         public Rectangle HitBox
         {
@@ -69,25 +53,17 @@ namespace OOP_3S_Lab234.Entities
                 return new Rectangle((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
             }
         }
-        protected IJet Jet = new SpeedJet();
+        public IJet Jet = new SpeedJet();
+
         public void Draw(SpriteBatch _spriteBatch)
         {
-            string test = Jet.Texture.ToString().Split("/")[3];
-
-            int pos = 0;
-            while (pos < test.Length && test[pos] != test.ToUpper()[pos]) pos++;
-
-            _spriteBatch.Draw(
-                Jet.Particles,
-                Position,
-                new Rectangle(currentFrame * frameWidth, 0, frameWidth, frameHeight),
-                JetColors[test.Substring(pos, test.Length - pos)],
-                RotateAngle,
-                new Vector2(Jet.Particles.Width / framesCount / 2, ShuttleJetOffset[TypeOfShuttle] - (Jet.Particles.Height / 2) + 2),
-                Vector2.One,
-                SpriteEffects.None,
-                0f
-                );
+            Jet._animationManager.Color = JetColors[Jet.Color];
+            Jet._animationManager.Pivot = new Vector2(
+                    Jet._animations["Working"].Texture.Width / Jet._animations["Working"].FrameCount / 2,
+                    ShuttleJetOffset[TypeOfShuttle] - (Jet._animations["Working"].Texture.Height / 2) + 2
+                    );
+            Jet._animationManager.RotateAngle = RotateAngle;
+            Jet._animationManager.Draw(_spriteBatch);
 
             _spriteBatch.Draw(
                 Texture,
@@ -130,7 +106,11 @@ namespace OOP_3S_Lab234.Entities
             Random rand = new Random();
             Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + TypeOfShuttle.ToLower() + "Body");
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabin);
-            Jet.Load(Content, "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue") + "Jet");
+            Jet.Load(
+                Content,
+                "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue") + "Jet",
+                new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Particles/" + Jet.TypeOfJet.ToLower() + "Particles"), 10, 0.1f) }
+                );
         }
         protected virtual void BorderCollision(Vector2 offset, Vector2 resolution)
         {

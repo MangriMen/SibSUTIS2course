@@ -40,14 +40,15 @@ namespace OOP_3S_Lab234.Entities
                     break;
             }
             Position = spawnPoint;
-            //velocity_ = new Vector2(0.5f, 0.5f);
+            velocity_ = new Vector2(0.5f, 0.5f);
         }
 
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            animationPlaying(gameTime);
+            Jet._animationManager.Play(Jet._animations["Working"]);
+            Jet._animationManager.Update(gameTime);
 
             Vector2 prevPos = Position;
 
@@ -56,6 +57,8 @@ namespace OOP_3S_Lab234.Entities
             BorderCollision(velocity_ * Jet.Speed * delta, resolution);
 
             Position += velocity_ * Jet.Speed * delta;
+
+            Jet._animationManager.Position = Position;
 
             RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
         }

@@ -8,6 +8,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
 using OOP_3S_Lab234.ShipParts;
 using System.Diagnostics;
+using System.Linq;
 
 namespace OOP_3S_Lab234
 {
@@ -24,7 +25,7 @@ namespace OOP_3S_Lab234
 
         Vector2 resolution;
 
-        Texture2D backgoundTexture;
+        Texture2D backgroundTexture;
         Texture2D loadingScreen;
         Player player;
         Enemy[] clones = new Enemy[9];
@@ -118,7 +119,7 @@ namespace OOP_3S_Lab234
         {
             MainMenu.Load(Content);
 
-            backgoundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
+            backgroundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
             player.Load(Content);
 
@@ -204,12 +205,23 @@ namespace OOP_3S_Lab234
         }
         protected void DrawGameplay()
         {
+            _graphics.GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
-            _spriteBatch.Draw(backgoundTexture, GraphicsDevice.Viewport.Bounds, Color.White);
 
-            for (int i = 0; i < clones.Length; i++)
+            _spriteBatch.Draw(
+                backgroundTexture,
+                GraphicsDevice.Viewport.Bounds,
+                null,
+                Color.White,
+                0f,
+                Vector2.Zero,
+                SpriteEffects.None,
+                0f
+                );
+
+            foreach (var clone in clones)
             {
-                clones[i].Draw(_spriteBatch);
+                clone.Draw(_spriteBatch);
             }
 
             player.Draw(_spriteBatch);
