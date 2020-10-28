@@ -72,6 +72,25 @@ void DigitalSort(stack*& S, int q_length = 32) {
     delete[] KDI;
 }
 
+short int BinarySearch(DatabaseNode** nodeArr, int key, size_t size) {
+    int L = 1, m = 0;
+    int R = size - 1;
+
+    while (L <= R) {
+        m = (L + R) / 2;
+        if (nodeArr[m]->departmentNumber < key) {
+            L = m + 1;
+        } else {
+            R = m - 1;
+        }
+    }
+    if (nodeArr[m]->departmentNumber == key)
+        return m;
+    else if (nodeArr[m + 1]->departmentNumber == key)
+        return m + 1;
+    return 0;
+}
+
 void fillIndexArray(stack** head, DatabaseNode** node) {
     stack* current = *head;
     int i = 0;
@@ -82,31 +101,18 @@ void fillIndexArray(stack** head, DatabaseNode** node) {
     }
 }
 
-int BinarySearch(DatabaseNode** nodeArr, int key, size_t size) {
-    int L = 1, m = 0;
-    int R = size - 1;
-    while (L <= R) {
-        m = (L + R) / 2;
-        if (nodeArr[m]->departmentNumber < key) {
-            L = m + 1;
-        }
-        else {
-            R = m - 1;
-        }
-    }
-    if (nodeArr[m]->departmentNumber == key) { return m; }
-}
-
 void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     int chooseNumber = 0;
     int leftBorder = 0;
     int rightBorder = 20;
+    int tempLeftBorder = 0;
+    int tempRightBorder = 0;
     bool first20 = true;
-    stack** tempStack;
+    bool isSearchActive = false;
     DatabaseNode** nodesArray = new DatabaseNode*[size];
     fillIndexArray(operatingStack, nodesArray);
-    cout << "A Company Database." << endl << endl;
 
+    cout << "A Company Database." << endl << endl;
     while (true) {
         cout << "Enter the appropriate number:" << endl
              << "\"1\" to print information about next 20 workers" << endl
@@ -132,11 +138,9 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 } else {
                     leftBorder = rightBorder;
                     rightBorder += 20;
-                    //printStackData(operatingStack, leftBorder, rightBorder);
                     printArrayData(nodesArray, leftBorder, rightBorder);
                 }
-            }
-            else {
+            } else {
                 cout << "Final range achived" << endl;
             }
             break;
@@ -144,34 +148,45 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             if (leftBorder > 0) {
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                     << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-                if (leftBorder == 0) { first20 = true; }
-
-                if (first20) {
-                    printArrayData(nodesArray, 0, 20);
-                    first20 = !first20;
+                
+                rightBorder = leftBorder;
+                leftBorder -= 20;
+                printArrayData(nodesArray, leftBorder, rightBorder);
+                
+                if (leftBorder == 0) {
+                    first20 = true;
                 }
-                else {
-                    rightBorder = leftBorder;
-                    leftBorder -= 20;
-                    //printStackData(operatingStack, leftBorder, rightBorder);
-                    printArrayData(nodesArray, leftBorder, rightBorder);
-                }
-
-            }
-            else {
+            } else {
                 cout << "Starting elements achived" << endl;
             }
             break;
         case '3':
             cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                 << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-            //printStackData(operatingStack, 0, size);
             printArrayData(nodesArray, 0, size);
             break;
         case '4':
             int choosenDepNumber;
+            int searchResult;
+            isSearchActive = !isSearchActive;
+            if (!isSearchActive) {
+                cout << "Exiting search mode.\n";
+                leftBorder = tempLeftBorder;
+                rightBorder = tempRightBorder;
+                break;
+            }
+            tempLeftBorder = leftBorder;
+            tempRightBorder = rightBorder;
+
             cout << "\t Enter the department number: ";
             cin >> choosenDepNumber;
+            searchResult = BinarySearch(nodesArray, choosenDepNumber, size) - (2 * bool(!choosenDepNumber));
+            cout << "Employee with department number of " << choosenDepNumber <<
+                    " are loocated at the " << searchResult + 1 << "th position.\n";
+            rightBorder = searchResult;
+            first20 = false;
+            _getch();
+            break;
         default:
             cout << "\n\nError: unsupported argument entered\n\n";
             break;
@@ -215,7 +230,7 @@ int main() {
         ShowMenu(dbFile, &nodesReference, nodesNumber);
         break;
     case '2':
-        DigitalSort(nodes); // 1 for another sort
+        DigitalSort(nodes);
         ShowMenu(dbFile, &nodes, nodesNumber);
         break;
     case '0':
@@ -225,15 +240,3 @@ int main() {
 
     dbFile.close();
 }
-
-//bool nodeCompare(stack*& first) {
-//    if (first->data.departmentNumber < first->next->data.departmentNumber) {
-//        return true;
-//    }
-//    else if (first->data.departmentNumber > first->next->data.departmentNumber) {
-//        return false;
-//    }
-//    else {
-//        return (string)first->data.employeeFullName < (string)first->next->data.employeeFullName;
-//    }
-//}
