@@ -3,6 +3,8 @@
 #include <math.h>
 using namespace std;
 
+bool isIncreased = true;
+bool decreased = true;
 int* A;
 
 struct Vertex {
@@ -54,6 +56,229 @@ void randomSearchTreeDoublePointer(Vertex* root, int size) {
 			(*pointer)->right = nullptr;
 			(*pointer)->left = nullptr;
 		}
+	}
+}
+
+void leftLeftTurn(Vertex*& pointer) {
+	Vertex* tempPointer = pointer->left;
+	pointer->balance = 0;
+	tempPointer->balance = 0;
+	pointer->left = tempPointer->right;
+	tempPointer->right = pointer;
+	pointer = tempPointer;
+}
+
+void rightRightTurn(Vertex*& pointer) {
+	Vertex* tempPointer = pointer->right;
+	pointer->balance = 0;
+	tempPointer->balance = 0;
+	pointer->right = tempPointer->left;
+	tempPointer->left = pointer;
+	pointer = tempPointer;
+}
+
+void leftRightTurn(Vertex*& pointer) {
+	Vertex* tempPointer = pointer->left;
+	Vertex* r = tempPointer->right;
+
+	pointer->balance = (r->balance < 0 ? 1 : 0);
+	tempPointer->balance = (r->balance > 0 ? -1 : 0);
+
+	r->balance = 0;
+	tempPointer->right = r->left;
+	pointer->left = r->right;
+	r->left = tempPointer;
+	r->right = pointer;
+	pointer = r;
+}
+
+void rightLeftTurn(Vertex*& pointer) {
+	Vertex* tempPointer = pointer->right;
+	Vertex* r = tempPointer->left;
+
+	pointer->balance = (r->balance > 0 ? -1 : 0);
+	tempPointer->balance = (r->balance < 0 ? 1 : 0);
+
+	r->balance = 0;
+	pointer->right = r->left;
+	tempPointer->left = r->right;
+	r->left = pointer;
+	r->right = tempPointer;
+	pointer = r;
+}
+
+void AVLTreeAddNode(Vertex*& pointer, int data) {
+	if (pointer == nullptr) {
+		pointer = new Vertex;
+		pointer->data = data;
+		pointer->balance = 0;
+		pointer->left = nullptr;
+		pointer->right = nullptr;
+		isIncreased = true;
+	}
+	else if (pointer->data > data) {
+		AVLTreeAddNode(*&pointer->left, data);
+		if (isIncreased) {
+			if (pointer->balance > 0) {
+				pointer->balance = 0;
+				isIncreased = false;
+			}
+			else if (pointer->balance == 0) {
+				pointer->balance = -1;
+				isIncreased = true;
+			}
+			else {
+				if (pointer->left->balance < 0) {
+					cout << endl;
+					leftLeftTurn(pointer);
+					cout << "LL ";
+					isIncreased = false;
+				}
+				else {
+					cout << endl;
+					leftRightTurn(pointer);
+					cout << "LR ";
+					isIncreased = false;
+				}
+			}
+		}
+	}
+	else if (pointer->data < data) {
+		AVLTreeAddNode(*&pointer->right, data);
+		if (isIncreased) {
+			if (pointer->balance < 0) {
+				pointer->balance = 0;
+				isIncreased = false;
+			}
+			else if (pointer->balance == 0) {
+				pointer->balance = 1;
+				isIncreased = true;
+			}
+			else {
+				if (pointer->right->balance > 0) {
+					cout << endl;
+					rightRightTurn(pointer);
+					cout << "RR ";
+					isIncreased = false;
+				}
+				else {
+					cout << endl;
+					rightLeftTurn(pointer);
+					cout << "RL ";
+					isIncreased = false;
+				}
+			}
+		}
+	}
+}
+
+void oneLeftLeftTurn(Vertex*& pointer) {
+	Vertex* tempPointer = pointer->left;
+	if (tempPointer->balance == 0) {
+		pointer->balance = -1;
+		tempPointer->balance = 1;
+		decreased = false;
+	}
+	else {
+		pointer->balance = 0;
+		tempPointer->balance = 0;
+	}
+	pointer->left = tempPointer->right;
+	tempPointer->right = pointer;
+	pointer = tempPointer;
+}
+
+void oneRightRightTurn(Vertex*& pointer) {
+	Vertex* tempPointer = pointer->right;
+	if (tempPointer->balance == 0) {
+		pointer->balance = 1;
+		tempPointer->balance = -1;
+		decreased = false;
+	}
+	else {
+		pointer->balance = 0;
+		tempPointer->balance = 0;
+	}
+	pointer->right = tempPointer->left;
+	tempPointer->left = pointer;
+	pointer = tempPointer;
+}
+
+//bl из псевдокода
+void checkBalanceLeft(Vertex*& pointer) {
+	if (pointer->balance == -1) {
+		pointer->balance = 0;
+	}
+	else if (pointer->balance == 0) {
+		pointer->balance = 1;
+		decreased = false;
+	}
+	else if (pointer->balance == 1) {
+		if (pointer->right->balance >= 0) {
+			oneRightRightTurn(pointer);
+			cout << "\nRR, balance\n";
+		}
+		else { rightLeftTurn(pointer); }
+	}
+}
+
+//br из псевдокода
+void checkBalanceRight(Vertex*& pointer) {
+	if (pointer->balance == 1) {
+		pointer->balance = 0;
+	}
+	else if (pointer->balance == 0) {
+		pointer->balance = -1;
+		decreased = false;
+	}
+	else if (pointer->balance == -1) {
+		if (pointer->left->balance <= 0) {
+			oneLeftLeftTurn(pointer);
+			cout << "\nLL, balanced\n";
+		}
+		else { leftRightTurn(pointer); }
+	}
+}
+
+void Del(Vertex*& r, Vertex*& tempPointer) {
+	if (r->right != nullptr) {
+		Del(r->right, tempPointer);
+		if (decreased) { checkBalanceRight(r); }
+	}
+	else {
+		tempPointer->data = r->data;
+		tempPointer = r;
+		r = r->left;
+		decreased = true;
+	}
+}
+
+void AVLTreeDeleteNode(Vertex*& pointer, int data) {
+	if (pointer == nullptr) { return; }
+
+	if (data < pointer->data) {
+		AVLTreeDeleteNode(pointer->left, data);
+		if (decreased) { checkBalanceLeft(pointer); }
+	}
+	else if (data > pointer->data) {
+		AVLTreeDeleteNode(pointer->right, data);
+		if (decreased) { checkBalanceRight(pointer); }
+	}
+	else {
+		Vertex* tempPointer = pointer;
+		if (tempPointer->left == nullptr) {
+			pointer = tempPointer->right;
+			decreased = true;
+		}
+		else if (tempPointer->right == nullptr) {
+			pointer = tempPointer->left;
+			decreased = true;
+		}
+		else {
+			Del(tempPointer->left, tempPointer);
+			if (decreased) { checkBalanceLeft(pointer); }
+		}
+		delete tempPointer;
 	}
 }
 
