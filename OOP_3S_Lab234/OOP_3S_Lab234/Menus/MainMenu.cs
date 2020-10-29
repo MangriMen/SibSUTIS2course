@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using OOP_3S_Lab234.Control;
 using OOP_3S_Lab234.Utils;
 using System;
 using System.Collections.Generic;
@@ -12,63 +13,74 @@ namespace OOP_3S_Lab234
 {
     static class MainMenu
     {
+        public static List<Component> Controls;
         public static SpriteFont Font { get; set; }
         public static SpriteFont ShadowFont { get; set; }
+
+        public static bool isGame = true;
 
         readonly static Color Purple = new Color(127, 110, 155);
         readonly static Color DarkPurple = new Color(72, 54, 102);
 
         public static Texture2D Texture { get; set; }
 
-        public static void Load(ContentManager Content)
+        public static void Load(ContentManager Content, GraphicsDevice GraphicsDevice)
         {
             Font = Content.Load<SpriteFont>("Fonts/default");
             ShadowFont = Content.Load<SpriteFont>("Fonts/shadow");
             Texture = Content.Load<Texture2D>("Images/Backgrounds/menu");
-        }
-        public static void Update(GameTime gameTime)
-        {
-            if (Kb.getDown(Keys.Space) || Kb.getDown(Keys.Enter))
+            Button PlayButton = new Button(Content.Load<Texture2D>("Images/Controls/button"), Content.Load<SpriteFont>("Fonts/default"))
             {
-                ASpaceOutside.State = ASpaceOutside.GameState.Gameplay;
-            }
+                Position = new Vector2(GraphicsDevice.Viewport.Width * 0.65f, GraphicsDevice.Viewport.Height * 0.4f),
+                Text = "Play",
+            };
+            PlayButton.Click += PlayButton_Click;
+            Button SettingsButton = new Button(Content.Load<Texture2D>("Images/Controls/button"), Content.Load<SpriteFont>("Fonts/default"))
+            {
+                Position = new Vector2(GraphicsDevice.Viewport.Width * 0.65f, GraphicsDevice.Viewport.Height * 0.65f),
+                Text = "Settings",
+            };
+            Button ExitButton = new Button(Content.Load<Texture2D>("Images/Controls/button"), Content.Load<SpriteFont>("Fonts/default"))
+            {
+                Position = new Vector2(GraphicsDevice.Viewport.Height * 0.05f, GraphicsDevice.Viewport.Height * 0.85f),
+                Text = "Exit",
+            };
+            ExitButton.Click += ExitButton_Click;
+            Controls = new List<Component>
+            {
+                PlayButton,
+                SettingsButton,
+                ExitButton,
+            };
         }
-        public static void Draw(SpriteBatch _spriteBatch, GraphicsDevice GraphicsDevice)
+
+        private static void PlayButton_Click(object sender, EventArgs e)
+        {
+            ASpaceOutside.State = ASpaceOutside.GameState.Gameplay;
+        }
+        private static void ExitButton_Click(object sender, System.EventArgs e)
+        {
+            isGame = false;
+        }
+        public static void Update(GameTime gameTime, Game game)
+        {
+            if (!isGame)
+            {
+                game.Exit();
+            }
+
+            foreach (var component in Controls)
+                component.Update(gameTime);
+        }
+        public static void Draw(GameTime gameTime, SpriteBatch _spriteBatch, GraphicsDevice GraphicsDevice)
         {
             _spriteBatch.Begin();
+
             _spriteBatch.Draw(Texture, GraphicsDevice.Viewport.Bounds, Color.White);
-            Vector2 pressEnter = new Vector2(GraphicsDevice.Viewport.Width / 2 - 60, GraphicsDevice.Viewport.Height - 150);
-            int offset = 2;
-            _spriteBatch.DrawString(
-                Font,
-                "Press Enter to start the game",
-                pressEnter + new Vector2(0, -offset),
-                Purple
-            );
-            _spriteBatch.DrawString(
-                Font,
-                "Press Enter to start the game",
-                pressEnter + new Vector2(offset, 0),
-                Purple
-            );
-            _spriteBatch.DrawString(
-                Font,
-                "Press Enter to start the game",
-                pressEnter + new Vector2(0, offset),
-                Purple
-            );
-            _spriteBatch.DrawString(
-                Font,
-                "Press Enter to start the game",
-                pressEnter + new Vector2(-offset, 0),
-                Purple
-            );
-            _spriteBatch.DrawString(
-                Font,
-                "Press Enter to start the game",
-                pressEnter,
-                DarkPurple
-            );
+
+            foreach (var component in Controls)
+                component.Draw(gameTime, _spriteBatch);
+
             _spriteBatch.End();
         }
     }

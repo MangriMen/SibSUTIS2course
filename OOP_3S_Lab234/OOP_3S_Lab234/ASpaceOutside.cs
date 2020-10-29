@@ -111,13 +111,11 @@ namespace OOP_3S_Lab234
 
             bgLoad.IsBackground = true;
             bgLoad.Start();
-
-
         }
 
         protected void LoadGame()
         {
-            MainMenu.Load(Content);
+            MainMenu.Load(Content, GraphicsDevice);
 
             backgroundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
@@ -163,7 +161,7 @@ namespace OOP_3S_Lab234
                 case GameState.LoadingStart:
                     break;
                 case GameState.MainMenu:
-                    MainMenu.Update(gameTime);
+                    MainMenu.Update(gameTime, this);
                     break;
                 case GameState.Gameplay:
                     UpdateGameplay(gameTime);
@@ -183,7 +181,7 @@ namespace OOP_3S_Lab234
                     _spriteBatch.End();
                     break;
                 case GameState.MainMenu:
-                    MainMenu.Draw(_spriteBatch, GraphicsDevice);
+                    MainMenu.Draw(gameTime, _spriteBatch, GraphicsDevice);
                     break;
                 case GameState.Gameplay:
                     DrawGameplay();

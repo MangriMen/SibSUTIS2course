@@ -23,6 +23,8 @@ namespace OOP_3S_Lab234.Control
 
         private Texture2D _texture;
 
+        private int _pressedOffset;
+
         #endregion
 
         #region Properties
@@ -39,7 +41,7 @@ namespace OOP_3S_Lab234.Control
         {
             get
             {
-                return new Rectangle((int)Position.X, (int)Position.Y, _texture.Width, _texture.Height);
+                return new Rectangle((int)Position.X, (int)Position.Y + _pressedOffset, _texture.Width, _texture.Height);
             }
         }
 
@@ -63,14 +65,19 @@ namespace OOP_3S_Lab234.Control
             var colour = Color.White;
 
             if (_isHovering)
-                colour = Color.Gray;
+                colour = Color.LightGray;
+
+            if (_isHovering)
+                PenColour = new Color(180, 180, 180);
+            else
+                PenColour = Color.Black;
 
             spriteBatch.Draw(_texture, Rectangle, colour);
 
             if (!string.IsNullOrEmpty(Text))
             {
                 var x = (Rectangle.X + (Rectangle.Width / 2)) - (_font.MeasureString(Text).X / 2);
-                var y = (Rectangle.Y + (Rectangle.Height / 2)) - (_font.MeasureString(Text).Y / 2);
+                var y = (4 + Rectangle.Y + (Rectangle.Height / 2)) - (_font.MeasureString(Text).Y / 2);
 
                 spriteBatch.DrawString(_font, Text, new Vector2(x, y), PenColour);
             }
@@ -84,11 +91,15 @@ namespace OOP_3S_Lab234.Control
             var mouseRectangle = new Rectangle(_currentMouse.X, _currentMouse.Y, 1, 1);
 
             _isHovering = false;
+            _pressedOffset = 0;
 
             if (mouseRectangle.Intersects(Rectangle))
             {
                 _isHovering = true;
-
+                if (_currentMouse.LeftButton == ButtonState.Pressed)
+                {
+                    _pressedOffset = 4;
+                }
                 if (_currentMouse.LeftButton == ButtonState.Released && _previousMouse.LeftButton == ButtonState.Pressed)
                 {
                     Click?.Invoke(this, new EventArgs());
