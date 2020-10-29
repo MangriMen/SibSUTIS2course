@@ -144,16 +144,19 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Program.cpp" />
+    <ClCompile Include="VisualTree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Variant.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BTree.h" />
+    <ClInclude Include="CPConvert.h" />
     <ClInclude Include="Employee.h" />
     <ClInclude Include="Form.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Program.h" />
+    <ClInclude Include="VisualTree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

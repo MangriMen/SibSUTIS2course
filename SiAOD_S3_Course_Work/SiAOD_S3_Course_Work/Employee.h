@@ -11,7 +11,13 @@ public:
 	short int departmentNumber;
 	char place[22];
 	char birthDate[10];
+	
+	Employee();
 
-	void getEmployeeFromFile(ifstream& databaseFile);
+	Employee(ifstream& databaseFile);
+
+	void GetFromFile(ifstream& databaseFile);
+
+	void Print();
 };
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "Employee.h"
+
 class BTree
 {
 public:
@@ -14,17 +16,10 @@ public:
 	};
 	Vertex* root = nullptr;
 
-	void outRab(Employee rab) {
-		cout << "\t" << rab.FIO
-			<< "\t" << rab.departmentNumber
-			<< "\t" << rab.place
-			<< "\t" << rab.birthDate;
-	}
-
 	void Print(Vertex* p) {
 		if (p != nullptr) {
 			Print(p->left);
-			outRab(p->data);
+			p->data.Print();
 			cout << endl;
 			Print(p->right);
 		}

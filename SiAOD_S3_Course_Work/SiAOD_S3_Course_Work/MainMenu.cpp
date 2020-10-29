@@ -5,6 +5,7 @@
 #include "Form.h"
 #include "Employee.h"
 #include "BTree.h"
+#include "CPConvert.h"
 
 using namespace std;
 using namespace sf;
@@ -22,49 +23,6 @@ struct queue {
 void Split(stack* head, stack** a, stack** b, int& n);
 void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail);
 int BinarySearch(Employee** employersI, short int key, size_t size);
-
-static void cp866_to_utf8(String& out, const char* in, size_t size) {
-	static const wchar_t utf8[69] = {
-		L"\u0410\u0411\u0412\u0413\u0414\u0415\u0416\u0417\u0418\u0419\u041A\u041B\u041C\u041D\u041E\u041F"
-		L"\u0420\u0421\u0422\u0423\u0424\u0425\u0426\u0427\u0428\u0429\u042A\u042B\u042C\u042D\u042E\u042F"
-		L"\u0430\u0431\u0432\u0433\u0434\u0435\u0436\u0437\u0438\u0439\u043A\u043B\u043C\u043D\u043E\u043F"
-		L"\u0440\u0441\u0442\u0443\u0444\u0445\u0446\u0447\u0448\u0449\u044A\u044B\u044C\u044D\u044E\u044F"
-		L"\u0020\u002D\u2593\u002F"
-	};
-
-	out.clear();
-	
-	int i = 0;
-	while (i < size) {
-		int cp866 = (uint8_t)in[i];
-		int utf8Index;
-
-		if (cp866 > 127 && cp866 < 176) {
-			utf8Index = cp866 - 128;
-		}
-		else if (cp866 > 223) {
-			utf8Index = cp866 - 48 - 128;
-		}
-		else if (cp866 == 32) {
-			utf8Index = 64;
-		}
-		else if (cp866 == 45) {
-			utf8Index = 65;
-		}
-		else if (cp866 == 47) {
-			utf8Index = 67;
-		}
-		else if (i == size - 1) {
-			utf8Index = 64;
-		}
-		else {
-			utf8Index = 66;
-		}
-
-		out += utf8[utf8Index];
-		i++;
-	}
-}
 
 void printTable(form::Table table, Employee** employers, int n, int start, int end) {
 	int row = 0;
@@ -300,8 +258,29 @@ enum class Mode{
 	Founded
 };
 
-void MainMenu::Run(RenderWindow& window)
+void MainMenu::RunThread()
 {
+	m_thread.launch();
+}
+
+void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow& window, float zoom)
+{
+	const sf::Vector2f beforeCoord{ window.mapPixelToCoords(pixel) };
+	sf::View view{ window.getView() };
+	view.zoom(zoom);
+	window.setView(view);
+	const sf::Vector2f afterCoord{ window.mapPixelToCoords(pixel) };
+	const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
+	view.move(offsetCoords);
+	window.setView(view);
+}
+
+void MainMenu::Run()
+{
+	window.create(VideoMode(1024, 800), "Employers");
+	window.setVerticalSyncEnabled(true);
+	View view = window.getDefaultView();
+	window.setView(view);
 	bool isMenu = true;
 
 	Mode mode;
@@ -327,9 +306,7 @@ void MainMenu::Run(RenderWindow& window)
 	Employee** employersI = new Employee*[numOfEmployers];
 
 	for (int i = 0; i < numOfEmployers; i++) {
-		Employee tempEmployee;
-		tempEmployee.getEmployeeFromFile(databaseFile);
-		addToQueue(employers, tempEmployee);
+		addToQueue(employers, Employee(databaseFile));
 	}
 
 	databaseFile.close();
@@ -373,6 +350,7 @@ void MainMenu::Run(RenderWindow& window)
 	keyText.setPosition(table.getPosition() - Vector2f(keyText.getText().getLocalBounds().width - table.width(), 40));
 
 	form::Label modeText(L"Все работники", (table.getPosition() - Vector2f(0, 40)), 24, form::Align::Left);
+	//Vector2f center = window.getDefaultView().getCenter();
 
 	while (isMenu) {
 		Event event;
@@ -388,6 +366,19 @@ void MainMenu::Run(RenderWindow& window)
 				delete[] foundedI;
 				window.close();
 				return;
+				break;
+			case Event::MouseWheelScrolled:
+				if (event.mouseWheelScroll.wheel == Mouse::VerticalWheel) {
+					if (event.mouseWheelScroll.delta > 0)
+						zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, (1.f / 1.1f));
+					else if (event.mouseWheelScroll.delta < 0)
+						zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, 1.1f);
+				}
+				break;
+			case Event::Resized:
+				view.reset(FloatRect(0.f, 0.f, event.size.width, event.size.height));
+				view.zoom(1.0f);
+				window.setView(view);
 				break;
 			case Event::KeyPressed:
 				switch (event.key.code)

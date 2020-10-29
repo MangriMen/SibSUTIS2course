@@ -4,8 +4,7 @@
 using namespace std;
 using namespace sf;
 
-class MainMenu
-{
+class VisualTree {
 private:
 	RenderWindow window;
 
@@ -13,9 +12,8 @@ private:
 
 	void Run();
 public:
-	MainMenu() : m_thread(&MainMenu::Run, this) {};
+	VisualTree() : m_thread(&VisualTree::Run, this) {};
 
 	void RunThread();
 
 };
-
