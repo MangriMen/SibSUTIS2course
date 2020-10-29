@@ -1,25 +1,21 @@
 #include <iostream>
+#include <SFML/Graphics.hpp>
 #include "Program.h"
 #include "MainMenu.h"
-#include <SFML/Graphics.hpp>
+#include "Reader.h"
 
 Program::Program()
 {
 }
 
 void Program::Run() {
+	MainMenu mainMenu;
+	VisualTree visualTree;
+	Reader *reader = new Reader();
+
+	mainMenu.reader = *&reader;
+	visualTree.reader = *&reader;
+
 	mainMenu.RunThread();
 	//visualTree.RunThread();
-}
-
-void Program::zoomViewAt(Vector2i pixel, RenderWindow& window, float zoom)
-{
-	const sf::Vector2f beforeCoord{ window.mapPixelToCoords(pixel) };
-	sf::View view{ window.getView() };
-	view.zoom(zoom);
-	window.setView(view);
-	const sf::Vector2f afterCoord{ window.mapPixelToCoords(pixel) };
-	const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
-	view.move(offsetCoords);
-	window.setView(view);
 }

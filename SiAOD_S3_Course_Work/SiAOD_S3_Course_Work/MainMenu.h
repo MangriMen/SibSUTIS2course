@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "Reader.h"
 
 using namespace std;
 using namespace sf;
@@ -13,9 +14,10 @@ private:
 
 	void Run();
 public:
-	MainMenu() : m_thread(&MainMenu::Run, this) {};
+	Reader* reader;
+
+	MainMenu() : m_thread(&MainMenu::Run, this), reader(nullptr) {};
 
 	void RunThread();
-
 };
 

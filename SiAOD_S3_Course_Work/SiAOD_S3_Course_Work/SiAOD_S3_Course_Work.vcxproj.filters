@@ -31,6 +31,18 @@
     <Filter Include="Source Files\Database">
       <UniqueIdentifier>{a7612eb4-4425-4b65-9f80-d3e876c6abcd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Tree">
+      <UniqueIdentifier>{20aed4eb-bf9d-4d89-813e-a8c30378f110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\DataHolder">
+      <UniqueIdentifier>{6870849a-720f-40e1-9b45-d49a4b965fa2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Tree">
+      <UniqueIdentifier>{1251ef02-9c9f-4278-92fb-b79d03170696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DataHolder">
+      <UniqueIdentifier>{427fbd24-617e-4622-8d77-cf573d320a55}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -48,8 +60,17 @@
     <ClCompile Include="Employee.cpp">
       <Filter>Source Files\Database</Filter>
     </ClCompile>
+    <ClCompile Include="MergeSort.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
     <ClCompile Include="VisualTree.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Queue.cpp">
+      <Filter>Source Files\DataHolder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,23 +89,26 @@
     <ClInclude Include="Employee.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="BTree.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="VisualTree.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="CPConvert.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Queue.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="BinarySearch.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="MergeSort.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Reader.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="BTree.h">
+      <Filter>Header Files\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="VisualTree.h">
+      <Filter>Header Files\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Queue.h">
+      <Filter>Header Files\DataHolder</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeVertex.h">
+      <Filter>Header Files\Tree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

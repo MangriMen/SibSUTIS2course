@@ -9,13 +9,9 @@ class Program
 {
 private:
 	RenderWindow window;
-	MainMenu mainMenu;
-	VisualTree visualTree;
 public:
 	Program();
 
 	void Run();
-
-	static void zoomViewAt(Vector2i pixel, RenderWindow& window, float zoom);
 };
 

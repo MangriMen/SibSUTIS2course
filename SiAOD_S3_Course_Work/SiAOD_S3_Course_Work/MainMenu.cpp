@@ -1,15 +1,14 @@
 #include <fstream>
 #include <SFML/Graphics.hpp>
 #include <ctime>
+#include <thread>
 #include "MainMenu.h"
 #include "Form.h"
 #include "Employee.h"
 #include "BTree.h"
-#include "CPConvert.h"
 #include "Queue.h"
-#include "BinarySearch.h"
-#include "Program.h"
 #include "MergeSort.h"
+#include "Utils.h"
 
 using namespace std;
 using namespace sf;
@@ -78,52 +77,9 @@ void MainMenu::Run()
 	window.setVerticalSyncEnabled(true);
 	View view = window.getDefaultView();
 	window.setView(view);
-	bool isMenu = true;
 
 	Mode mode;
 	int key = 0;
-
-	ifstream databaseFile("testBase2.dat", ios::in | ios::binary);
-
-	if (!databaseFile) {
-		cerr << "databaseFile not found";
-		databaseFile.clear();
-	}
-
-	databaseFile.ignore(numeric_limits<streamsize>::max());
-	streamsize length = databaseFile.gcount();
-	databaseFile.clear();
-	databaseFile.seekg(0, ios_base::beg);
-
-	size_t numOfEmployers = length / sizeof(Employee);
-
-	BTree btree;
-
-	queue employers;
-	Employee** employersI = new Employee*[numOfEmployers];
-
-	for (int i = 0; i < numOfEmployers; i++) {
-		addToQueue(employers, Employee(databaseFile));
-	}
-
-	databaseFile.close();
-
-	MergeSort(&employers.head, numOfEmployers);
-
-	fillIndexArray(employers, employersI);
-
-	btree.From(employersI, numOfEmployers);
-
-	//btree.Print(btree.root);
-	//btree.Info();
-
-	queue foundedEmployers;
-
-	int numOfFounded = queueFromKey(employersI, foundedEmployers, key, numOfEmployers);
-
-	Employee** foundedI = new Employee *[numOfFounded];
-
-	fillIndexArray(foundedEmployers, foundedI);
 
 	size_t start = 0;
 	size_t end = 20;
@@ -133,7 +89,7 @@ void MainMenu::Run()
 	form::Table table(5, 20);
 	
 	mode = Mode::All;
-	printTable(table, *&employersI, numOfEmployers, start, end);
+	printTable(table, *&reader->employersI, reader->numOfEmployers, start, end);
 
 	table.update();
 	Vector2f defaultPosition = Vector2f(
@@ -147,9 +103,8 @@ void MainMenu::Run()
 	keyText.setPosition(table.getPosition() - Vector2f(keyText.getText().getLocalBounds().width - table.width(), 40));
 
 	form::Label modeText(L"Все работники", (table.getPosition() - Vector2f(0, 40)), 24, form::Align::Left);
-	//Vector2f center = window.getDefaultView().getCenter();
 
-	while (isMenu) {
+	while (window.isOpen()) {
 		Event event;
 
 		while (window.pollEvent(event))
@@ -157,19 +112,19 @@ void MainMenu::Run()
 			switch (event.type)
 			{
 			case Event::Closed:
-				Delete(&employers.head);
-				Delete(&foundedEmployers.head);
-				delete[] employersI;
-				delete[] foundedI;
+				Delete(&reader->employersQ.head);
+				Delete(&reader->employersFoundedQ.head);
+				delete[] reader->employersI;
+				delete[] reader->employersFoundedI;
 				window.close();
 				return;
 				break;
 			case Event::MouseWheelScrolled:
 				if (event.mouseWheelScroll.wheel == Mouse::VerticalWheel) {
 					if (event.mouseWheelScroll.delta > 0)
-						Program::zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, (1.f / 1.1f));
+						zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, (1.f / 1.1f));
 					else if (event.mouseWheelScroll.delta < 0)
-						Program::zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, 1.1f);
+						zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, 1.1f);
 				}
 				break;
 			case Event::Resized:
@@ -180,22 +135,26 @@ void MainMenu::Run()
 			case Event::KeyPressed:
 				switch (event.key.code)
 				{
+				case Keyboard::B:
+					reader->btree.Print(reader->btree.root);
+					reader->btree.Info();
+					break;
 				case Keyboard::Right:
 					switch (mode)
 					{
 					case Mode::All:
-						if (start < numOfEmployers - 20 && end < numOfEmployers) {
+						if (start < reader->numOfEmployers - 20 && end < reader->numOfEmployers) {
 							start = end;
 							end += 20;
 						}
-						printTable(table, *&employersI, numOfEmployers, start, end);
+						printTable(table, *&reader->employersI, reader->numOfEmployers, start, end);
 						break;
 					case Mode::Founded:
-						if (startFounded < numOfFounded - (long)20 && endFounded < numOfFounded) {
+						if (startFounded < reader->numOfFounded - (long)20 && endFounded < reader->numOfFounded) {
 							startFounded = endFounded;
 							endFounded += 20;
 						}
-						printTable(table, *&foundedI, numOfFounded, startFounded, endFounded);
+						printTable(table, *&reader->employersFoundedI, reader->numOfFounded, startFounded, endFounded);
 						break;
 					default:
 						break;
@@ -211,14 +170,14 @@ void MainMenu::Run()
 							end = start;
 							start -= 20;
 						}
-						printTable(table, *&employersI, numOfEmployers, start, end);
+						printTable(table, *&reader->employersI, reader->numOfEmployers, start, end);
 						break;
 					case Mode::Founded:
 						if (startFounded >= 20) {
 							endFounded = startFounded;
 							startFounded -= 20;
 						}
-						printTable(table, *&foundedI, numOfFounded, startFounded, endFounded);
+						printTable(table, *&reader->employersFoundedI, reader->numOfFounded, startFounded, endFounded);
 						break;
 					default:
 						break;
@@ -230,11 +189,11 @@ void MainMenu::Run()
 					switch (mode)
 					{
 					case Mode::All:
-						printTable(table, *&foundedI, numOfFounded, startFounded, endFounded);
+						printTable(table, *&reader->employersFoundedI, reader->numOfFounded, startFounded, endFounded);
 						mode = Mode::Founded;
 						break;
 					case Mode::Founded:
-						printTable(table, *&employersI, numOfEmployers, start, end);
+						printTable(table, *&reader->employersI, reader->numOfEmployers, start, end);
 						mode = Mode::All;
 						break;
 					default:
@@ -249,12 +208,12 @@ void MainMenu::Run()
 					keyText.setText(L"Ключ поиска: " + to_string(key));
 					keyText.setPosition(table.getPosition() - Vector2f(keyText.getText().getLocalBounds().width - table.width(), 40));
 
-					Delete(&foundedEmployers.head);
-					delete[] foundedI;
+					Delete(&reader->employersFoundedQ.head);
+					delete[] reader->employersFoundedI;
 					
-					numOfFounded = queueFromKey(employersI, foundedEmployers, key, numOfEmployers);
-					foundedI = new Employee * [numOfFounded];
-					fillIndexArray(foundedEmployers, foundedI);
+					reader->numOfFounded = queueFromKey(reader->employersI, reader->employersFoundedQ, key, reader->numOfEmployers);
+					reader->employersFoundedI = new Employee * [reader->numOfFounded];
+					fillIndexArray(reader->employersFoundedQ, reader->employersFoundedI);
 
 					switch (mode)
 					{
@@ -263,7 +222,7 @@ void MainMenu::Run()
 					case Mode::Founded:
 						startFounded = 0;
 						endFounded = 20;
-						printTable(table, *&foundedI, numOfFounded, startFounded, endFounded);
+						printTable(table, *&reader->employersFoundedI, reader->numOfFounded, startFounded, endFounded);
 						break;
 					default:
 						break;
@@ -305,9 +264,4 @@ void MainMenu::Run()
 
 		window.display();
 	}
-	Delete(&employers.head);
-	Delete(&foundedEmployers.head);
-	delete[] employersI;
-	delete[] foundedI;
 }
-

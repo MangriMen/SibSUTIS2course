@@ -1,22 +1,15 @@
 #pragma once
 #include "Employee.h"
+#include "TreeVertex.h"
 
 class BTree
 {
 public:
 	int HR = true;
 	int VR = true;
-	class Vertex
-	{
-	public:
-		Vertex* right;
-		Vertex* left;
-		int balance;
-		Employee data;
-	};
-	Vertex* root = nullptr;
+	TreeVertex* root = nullptr;
 
-	void Print(Vertex* p) {
+	void Print(TreeVertex* p) {
 		if (p != nullptr) {
 			Print(p->left);
 			p->data.Print();
@@ -31,21 +24,21 @@ public:
 		}
 	}
 
-	int treeSize(Vertex* p) {
+	int treeSize(TreeVertex* p) {
 		if (p == nullptr) {
 			return 0;
 		}
 		return 1 + treeSize(p->left) + treeSize(p->right);
 	}
 
-	int treeHeight(Vertex* p) {
+	int treeHeight(TreeVertex* p) {
 		if (p == nullptr) {
 			return 0;
 		}
 		return 1 + max(treeHeight(p->left), treeHeight(p->right));
 	}
 
-	int averagePathLenght(Vertex* p, int level) {
+	int averagePathLenght(TreeVertex* p, int level) {
 		if (p == nullptr) {
 			return 0;
 		}
@@ -71,11 +64,11 @@ public:
 		}
 	}
 
-	void Add(Vertex*& p, Employee D)
+	void Add(TreeVertex*& p, Employee D)
 	{
 		if (p == nullptr)
 		{
-			p = new Vertex;
+			p = new TreeVertex;
 			p->data = D;
 			p->left = nullptr;
 			p->right = nullptr;
@@ -89,7 +82,7 @@ public:
 			{
 				if (p->balance == 0)
 				{
-					Vertex* q = p->left;
+					TreeVertex* q = p->left;
 					p->left = q->right;
 					q->right = p;
 					p = q;
@@ -119,7 +112,7 @@ public:
 			{
 				if (p->balance == 1)
 				{
-					Vertex* q = p->right;
+					TreeVertex* q = p->right;
 					p->right = q->left;
 					p->balance = 0;
 					q->balance = 0;
