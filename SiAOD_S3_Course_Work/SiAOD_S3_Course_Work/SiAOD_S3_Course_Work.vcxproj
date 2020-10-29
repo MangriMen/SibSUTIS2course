@@ -152,7 +152,6 @@
     <ClInclude Include="BTree.h" />
     <ClInclude Include="Employee.h" />
     <ClInclude Include="Form.h" />
-    <ClInclude Include="List.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Program.h" />
   </ItemGroup>

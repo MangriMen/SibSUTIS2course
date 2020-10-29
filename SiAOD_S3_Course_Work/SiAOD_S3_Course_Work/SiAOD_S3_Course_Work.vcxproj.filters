@@ -62,9 +62,6 @@
     <ClInclude Include="Form.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="List.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="Employee.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
