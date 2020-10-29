@@ -19,5 +19,7 @@ public:
 	void GetFromFile(ifstream& databaseFile);
 
 	void Print();
+
+	static bool Compare(Employee first, Employee second);
 };
 

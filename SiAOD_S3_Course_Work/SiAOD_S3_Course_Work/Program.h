@@ -15,5 +15,7 @@ public:
 	Program();
 
 	void Run();
+
+	static void zoomViewAt(Vector2i pixel, RenderWindow& window, float zoom);
 };
 

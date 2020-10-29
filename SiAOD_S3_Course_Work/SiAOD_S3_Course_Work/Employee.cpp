@@ -28,3 +28,16 @@ void Employee::Print()
 		<< "\t" << place
 		<< "\t" << birthDate;
 }
+
+bool Employee::Compare(Employee first, Employee second)
+{
+	if (first.departmentNumber < second.departmentNumber) {
+		return true;
+	}
+	else if (first.departmentNumber > second.departmentNumber) {
+		return false;
+	}
+	else {
+		return (string)first.FIO < (string)second.FIO;
+	}
+}

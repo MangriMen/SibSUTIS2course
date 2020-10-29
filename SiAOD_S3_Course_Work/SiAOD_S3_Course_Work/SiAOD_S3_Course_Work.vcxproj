@@ -150,12 +150,15 @@
     <Text Include="Variant.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BinarySearch.h" />
     <ClInclude Include="BTree.h" />
     <ClInclude Include="CPConvert.h" />
     <ClInclude Include="Employee.h" />
     <ClInclude Include="Form.h" />
     <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="MergeSort.h" />
     <ClInclude Include="Program.h" />
+    <ClInclude Include="Queue.h" />
     <ClInclude Include="VisualTree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -6,23 +6,13 @@
 #include "Employee.h"
 #include "BTree.h"
 #include "CPConvert.h"
+#include "Queue.h"
+#include "BinarySearch.h"
+#include "Program.h"
+#include "MergeSort.h"
 
 using namespace std;
 using namespace sf;
-
-struct stack {
-	stack* next;
-	Employee data;
-};
-
-struct queue {
-	stack* head{};
-	stack* tail{};
-};
-
-void Split(stack* head, stack** a, stack** b, int& n);
-void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail);
-int BinarySearch(Employee** employersI, short int key, size_t size);
 
 void printTable(form::Table table, Employee** employers, int n, int start, int end) {
 	int row = 0;
@@ -72,187 +62,6 @@ void printTable(form::Table table, Employee** employers, int n, int start, int e
 	}
 }
 
-void MergeSort(stack** head, int n) {
-	stack* a = NULL, * b = NULL, * head_p = *head;
-	int p, i, m, q, r;
-	Split(head_p, &a, &b, n);
-	queue c[2];
-	p = 1;
-	c[0].tail = (stack*)&c[0].head;
-	while (p < n) {
-		c[0].tail = (stack*)&c[0].head;
-		c[1].tail = (stack*)&c[1].head;
-		i = 0, m = n;
-		while (m > 0) {
-			if (m >= p)
-				q = p;
-			else
-				q = m;
-			m -= q;
-			if (m >= p)
-				r = p;
-			else
-				r = m;
-			m -= r;
-			Merge(&a, q, &b, r, &c[i].tail);
-			i = 1 - i;
-		}
-		a = c[0].head, b = c[1].head;
-		p *= 2;
-	}
-	c[0].tail->next = NULL;
-	*head = c[0].head;
-}
-
-void Delete(stack** head) {
-	if (*head == NULL)
-		return;
-	stack* p = *head, * temp;
-	while (p) {
-		temp = p;
-		p = p->next;
-		delete temp;
-	}
-	*head = NULL;
-}
-
-void Split(stack* head, stack** a, stack** b, int& n) {
-	stack* k, * p;
-	*a = head, * b = head->next;
-	n = 1;
-	k = *a;
-	p = *b;
-	while (p) {
-		++n;
-		k->next = p->next;
-		k = p;
-		p = p->next;
-	}
-}
-
-void StackToQueue(stack** head, stack** tail) {
-	(*tail)->next = *head;
-	*tail = *head;
-	*head = (*head)->next;
-	(*tail)->next = NULL;
-}
-
-bool compareEmployee(Employee first, Employee second) {
-	if (first.departmentNumber < second.departmentNumber) {
-		return true;
-	}
-	else if (first.departmentNumber > second.departmentNumber) {
-		return false;
-	}
-	else {
-		return (string)first.FIO < (string)second.FIO;
-	}
-}
-
-void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail) {
-	while (q != 0 && r != 0) {
-		if (compareEmployee((*head_a)->data, (*head_b)->data)) {
-			StackToQueue(head_a, c_tail);
-			q--;
-		}
-		else {
-			StackToQueue(head_b, c_tail);
-			r--;
-		}
-	}
-	while (q > 0) {
-		StackToQueue(head_a, c_tail);
-		q--;
-	}
-	while (r > 0) {
-		StackToQueue(head_b, c_tail);
-		r--;
-	}
-}
-
-void addToQueue(queue &queue, Employee employee) {
-	if (queue.head == nullptr) {
-		stack* temp = new stack;
-		temp->data = employee;
-		temp->next = nullptr;
-		queue.head = temp;
-		queue.tail = temp;
-	}
-	else {
-		stack* temp = new stack;
-		temp->data = employee;
-		temp->next = nullptr;
-		queue.tail->next = temp;
-		queue.tail = queue.tail->next;
-	}
-}
-
-void outRab(Employee rab) {
-	cout << "\t" << rab.FIO
-		 << "\t" << rab.departmentNumber
-		 << "\t" << rab.place
-		 << "\t" << rab.birthDate;
-}
-
-void out(queue& queue) {
-	stack* current = queue.head;
-	int i = 0;
-	while (current != nullptr) {
-		cout << "\t" << i;
-		outRab(current->data);
-		cout << endl;
-		current = current->next;
-		i++;
-	}
-}
-
-void fillIndexArray(queue queue, Employee** employersI) {
-	stack* current = queue.head;
-	int i = 0;
-	while (current != nullptr) {
-		employersI[i] = &current->data;
-		current = current->next;
-		i++;
-	}
-}
-
-int BinarySearch(Employee** employersI, short int key, size_t size) {
-	int L = 0, R = size - 1, m = 0;
-	while (L < R)
-	{
-		m = (L + R) / 2;
-		if (employersI[m]->departmentNumber < key) L = m + 1;
-		else R = m;
-	}
-	if (employersI[R]->departmentNumber == key) return R;
-	else return -1;
-}
-
-
-int queueFromIndex(queue& queue, Employee** employersI, int index, int n) {
-	int numOfFounded = 0;
-	for (int i = index; i < n-1; i++) {
-		if (employersI[i]->departmentNumber == employersI[i + 1]->departmentNumber) { numOfFounded++; }
-		else break;
-	}
-
-	for (int i = index; i < (index + numOfFounded); i++) {
-		addToQueue(queue, *employersI[i]);
-	}
-	return numOfFounded;
-}
-
-int queueFromKey(Employee** employersI, queue &foundedEmployers, int key, int numOfEmployers) {
-	int firstFounded = BinarySearch(*&employersI, key, numOfEmployers);
-
-	int numOfFounded = 0;
-	if (firstFounded != -1) {
-		numOfFounded = queueFromIndex(foundedEmployers, employersI, firstFounded, numOfEmployers);
-	}
-
-	return numOfFounded;
-}
-
 enum class Mode{
 	All,
 	Founded
@@ -261,18 +70,6 @@ enum class Mode{
 void MainMenu::RunThread()
 {
 	m_thread.launch();
-}
-
-void zoomViewAt(sf::Vector2i pixel, sf::RenderWindow& window, float zoom)
-{
-	const sf::Vector2f beforeCoord{ window.mapPixelToCoords(pixel) };
-	sf::View view{ window.getView() };
-	view.zoom(zoom);
-	window.setView(view);
-	const sf::Vector2f afterCoord{ window.mapPixelToCoords(pixel) };
-	const sf::Vector2f offsetCoords{ beforeCoord - afterCoord };
-	view.move(offsetCoords);
-	window.setView(view);
 }
 
 void MainMenu::Run()
@@ -370,9 +167,9 @@ void MainMenu::Run()
 			case Event::MouseWheelScrolled:
 				if (event.mouseWheelScroll.wheel == Mouse::VerticalWheel) {
 					if (event.mouseWheelScroll.delta > 0)
-						zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, (1.f / 1.1f));
+						Program::zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, (1.f / 1.1f));
 					else if (event.mouseWheelScroll.delta < 0)
-						zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, 1.1f);
+						Program::zoomViewAt({ event.mouseWheelScroll.x, event.mouseWheelScroll.y }, window, 1.1f);
 				}
 				break;
 			case Event::Resized:
