@@ -149,6 +149,7 @@
     <Text Include="Variant.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BTree.h" />
     <ClInclude Include="Employee.h" />
     <ClInclude Include="Form.h" />
     <ClInclude Include="List.h" />

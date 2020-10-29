@@ -303,17 +303,6 @@ int averagePathLenght(Vertex* p, int level) {
 	return level + averagePathLenght(p->left, level + 1) + averagePathLenght(p->right, level + 1);
 }
 
-int getLevel(Vertex* p, int X) {
-	int level = 1;
-	while (p != nullptr)
-	{
-		if (X < p->data) { p = p->left; level++; }
-		else if (X > p->data) { p = p->right; level++; }
-		else break;
-	}
-	return level;
-}
-
 void fillZero(int* A, int size) {
 	for (int i = 0; i < size; i++) {
 		A[i] = 0;

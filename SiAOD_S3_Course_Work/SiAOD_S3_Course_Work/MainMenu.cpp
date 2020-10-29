@@ -5,6 +5,7 @@
 #include "Form.h"
 #include "Employee.h"
 #include "List.h"
+#include "BTree.h"
 
 using namespace std;
 using namespace sf;
@@ -321,6 +322,8 @@ void MainMenu::Run(RenderWindow& window)
 
 	size_t numOfEmployers = length / sizeof(Employee);
 
+	BTree btree;
+
 	queue employers;
 	Employee** employersI = new Employee*[numOfEmployers];
 
@@ -335,6 +338,11 @@ void MainMenu::Run(RenderWindow& window)
 	MergeSort(&employers.head, numOfEmployers);
 
 	fillIndexArray(employers, employersI);
+
+	btree.From(employersI, numOfEmployers);
+
+	//btree.Print(btree.root);
+	//btree.Info();
 
 	queue foundedEmployers;
 

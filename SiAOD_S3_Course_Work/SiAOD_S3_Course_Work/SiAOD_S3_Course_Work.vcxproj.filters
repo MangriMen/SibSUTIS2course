@@ -68,5 +68,8 @@
     <ClInclude Include="Employee.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
+    <ClInclude Include="BTree.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
