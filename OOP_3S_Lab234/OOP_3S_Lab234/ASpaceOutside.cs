@@ -29,6 +29,7 @@ namespace OOP_3S_Lab234
         Texture2D loadingScreen;
         Player player;
         Enemy[] clones = new Enemy[9];
+        Projectile rocket1;
  
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -50,8 +51,9 @@ namespace OOP_3S_Lab234
             // Screen mode
             _graphics.IsFullScreen = false;
 
-            _graphics.SynchronizeWithVerticalRetrace = true; // vsync
-            IsFixedTimeStep = false; // Don't force equal timestep updates
+            _graphics.SynchronizeWithVerticalRetrace = false; // vsync
+            IsFixedTimeStep = true; // Don't force equal timestep updates
+            TargetElapsedTime = TimeSpan.FromSeconds(1 / 80.0f); // FPS lock (80 per second for now)
 
             // Auto resolution on fullscreen
             if (_graphics.IsFullScreen)
@@ -75,6 +77,9 @@ namespace OOP_3S_Lab234
 
             player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, 
                 _graphics.PreferredBackBufferHeight / 2));
+
+            rocket1 = new Projectile(new Vector2(_graphics.PreferredBackBufferWidth / 2,
+                _graphics.PreferredBackBufferHeight / 2), "laser");
 
             for (int i = 0; i < clones.Length; i++)
             {
@@ -121,6 +126,8 @@ namespace OOP_3S_Lab234
 
             player.Load(Content);
 
+            rocket1.Load(Content);
+
             //String[] bodies = new String[4] { "bugBody", "gamepadBody", "lunarBody", "massiveBody" };
             String[] cabins = new String[4] { "brickCabin", "conusCabinDouble", "ovalCabin", "raindropDoubleCabin" };
             String[] jets = new String[6] { "doubleBlueJet", "doubleGreenJet", "doubleOrangeJet", "monoBlueJet", "monoGreenJet", "monoOrangeJet" };
@@ -149,6 +156,7 @@ namespace OOP_3S_Lab234
                     player.isDamaged = true;
                 }
             }
+            if (rocket1.HitBox.Intersects(player.HitBox)) { player.isDamaged = true; }
         }
 
         protected override void Update(GameTime gameTime)
@@ -193,6 +201,8 @@ namespace OOP_3S_Lab234
         protected void UpdateGameplay(GameTime gameTime)
         {
             player.Update(gameTime, resolution);
+
+            rocket1.Update(gameTime, resolution);
            
             for (int i = 0; i < clones.Length; i++)
             {
@@ -223,6 +233,7 @@ namespace OOP_3S_Lab234
             }
 
             player.Draw(_spriteBatch);
+            rocket1.Draw(_spriteBatch);
 
             _spriteBatch.End();
         }

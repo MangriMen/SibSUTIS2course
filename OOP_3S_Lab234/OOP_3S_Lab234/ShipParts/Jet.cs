@@ -22,7 +22,7 @@ namespace OOP_3S_Lab234.ShipParts
         public Dictionary<string, Animation> _animations { get; set; }
         public string Color { get; set; }
         public string TypeOfJet { get; set; }
-        float Speed { get; set; }
+        public float Speed { get; set; } // tut mozet bit osshibka
         Texture2D Texture { get; set; }
         void Load(ContentManager Content, string texturePath, Dictionary<string, Animation> animations)
         {

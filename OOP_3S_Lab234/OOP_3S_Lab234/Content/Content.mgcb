@@ -135,6 +135,30 @@
 /processorParam:TextureFormat=Color
 /build:Images/Particles/warpParticles.png
 
+#begin Images/Projectales/laserProj.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Projectales/laserProj.png
+
+#begin Images/Projectales/r1Proj.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Projectales/r1Proj.png
+
 #begin Images/Projectales/rocket.gif
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -147,18 +171,6 @@
 /processorParam:TextureFormat=Color
 /build:Images/Projectales/rocket.gif
 
-#begin Images/Projectales/rocket1.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Images/Projectales/rocket1.png
-
 #begin Images/Projectales/rocket2.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -170,6 +182,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Images/Projectales/rocket2.png
+
+#begin Images/Projectales/rocketProj.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Projectales/rocketProj.png
 
 #begin Images/Shuttle/Body/batBody.png
 /importer:TextureImporter
