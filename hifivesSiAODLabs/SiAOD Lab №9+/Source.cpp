@@ -3,7 +3,7 @@
 #include <math.h>
 using namespace std;
 
-bool VR = true, HR = true;
+bool VR = 1, HR = 1;
 int* A;
 
 struct Vertex {
@@ -13,45 +13,45 @@ struct Vertex {
 	Vertex* right = nullptr;
 };
 
-void B2insert(Vertex*& p, int D) {
-	if (p == nullptr) {
-		p = new Vertex;
-		p->data = D;
-		p->left = nullptr;
-		p->right = nullptr;
-		p->balance = 0;
+void doubleBTreeAddNode(Vertex*& pointer, int D) {
+	if (pointer == nullptr) {
+		pointer = new Vertex;
+		pointer->data = D;
+		pointer->left = nullptr;
+		pointer->right = nullptr;
+		pointer->balance = 0;
 		VR = 1;
-	} else if (p->data > D) {
-		B2insert(p->left, D);
+	} else if (pointer->data > D) {
+		doubleBTreeAddNode(pointer->left, D);
 		if (VR == 1) {
-			if (p->balance == 0) {
-				Vertex* q = p->left;
-				p->left = q->right;
-				q->right = p;
-				p = q;
-				q->balance = 1;
+			if (pointer->balance == 0) {
+				Vertex* tempPointer = pointer->left;
+				pointer->left = tempPointer->right;
+				tempPointer->right = pointer;
+				tempPointer->balance = 1;
+				pointer = tempPointer;
 				VR = 0;
 				HR = 1;
 			} else {
-				p->balance = 0;
+				pointer->balance = 0;
 				VR = 1;
 				HR = 0;
 			}
 		} else HR = 0;
-	} else if (p->data < D) {
-		B2insert(p->right, D);
+	} else if (pointer->data < D) {
+		doubleBTreeAddNode(pointer->right, D);
 		if (VR == 1) {
-			p->balance = 1;
-			HR = 1;
+			pointer->balance = 1;
 			VR = 0;
+			HR = 1;
 		} else if (HR == 1) {
-			if (p->balance == 1) {
-				Vertex* q = p->right;
-				p->right = q->left;
-				p->balance = 0;
-				q->balance = 0;
-				q->left = p;
-				p = q;
+			if (pointer->balance == 1) {
+				Vertex* tempPointer = pointer->right;
+				pointer->right = tempPointer->left;
+				pointer->balance = 0;
+				tempPointer->balance = 0;
+				tempPointer->left = pointer;
+				pointer = tempPointer;
 				VR = 1;
 				HR = 0;
 			} else HR = 0;
@@ -143,7 +143,7 @@ int main() {
 
 	// Добавление вершин в дерево
 	for (int i = 0; i < numberOfVertex; i++) {
-		B2insert(pointer, A[i]);
+		doubleBTreeAddNode(pointer, A[i]);
 	}
 
 	dispalyVertexInfo(pointer, traversalType);
@@ -153,13 +153,13 @@ int main() {
 	//	cout << endl << endl << "Ведите высоту для удаления: ";
 	//	cin >> vertexToDelete;
 	//	cout << endl << endl;
-	//	B2insert(pointer, vertexToDelete);
+	//	(pointer, vertexToDelete);
 	//	dispalyVertexInfo(pointer, traversalType);
 	//}
 
 	// Для последовательного удаления всего дерева
 	//for (int i = 0; i < numberOfVertex; ++i) {
-	//	B2insert(pointer, A[i]);
+	//	(pointer, A[i]);
 	//	dispalyVertexInfo(pointer, traversalType);
 	//}
 
