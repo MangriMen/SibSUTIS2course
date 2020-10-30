@@ -92,7 +92,7 @@ void traversalTB(Vertex* p) {
 void traversalLR(Vertex* p) {
 	if (p != nullptr) {
 		traversalLR(p->left);
-		cout << (char)p->data << "(" << p->balance << ")" << " ";
+		cout << p->data << "(" << p->balance << ")" << " ";
 		traversalLR(p->right);
 	}
 }
@@ -224,9 +224,9 @@ int main()
 	A = new int[numberOfVertex];
 	fillRand(A, numberOfVertex);
 
-	A = new int[12]{ (int)'Ë', (int)'Å', (int)'Â', (int)'Ê', (int)'È', (int)'Í', (int)'Ã', (int)'Î', (int)'Ð', (int)'Ü', (int)'À', (int)'Ä' };
-	numberOfVertex = 12;
-	isChar = true;
+	//A = new int[12]{ (int)'Ë', (int)'Å', (int)'Â', (int)'Ê', (int)'È', (int)'Í', (int)'Ã', (int)'Î', (int)'Ð', (int)'Ü', (int)'À', (int)'Ä' };
+	//numberOfVertex = 12;
+	//isChar = true;
 	//A = new int[10]{ 44, 56, 40, 60, 23, 8, 48, 87, 66, 35 };
 	//numberOfVertex = 10;
 
@@ -237,6 +237,8 @@ int main()
 		BTree_add(root, A[i]);
 		cout << "Left to right: ";
 		traversalLR(root);
+		traversalGraph(root, numberOfVertex, isChar);
+		cout << endl;
 		cout << endl << endl;
 	}
 
@@ -255,8 +257,8 @@ int main()
 	traversalLR(root);
 	cout << endl << endl;
 
-	//traversalGraph(root, numberOfVertex, isChar);
-	//cout << endl;
+	traversalGraph(root, numberOfVertex, isChar);
+	cout << endl;
 
 	cout << "Tree size: " << treeSize(root);
 	cout << endl << endl << "Check sum: " << treeCheckSum(root);

@@ -24,21 +24,30 @@ public:
 		}
 	}
 
-	int treeSize(TreeVertex* p) {
+	void From(queue &A) {
+		root = nullptr;
+		stack* current = A.head;
+		while (current != nullptr) {
+			Add(root, current->data);
+			current = current->next;
+		}
+	}
+
+	static int treeSize(TreeVertex* p) {
 		if (p == nullptr) {
 			return 0;
 		}
 		return 1 + treeSize(p->left) + treeSize(p->right);
 	}
 
-	int treeHeight(TreeVertex* p) {
+	static int treeHeight(TreeVertex* p) {
 		if (p == nullptr) {
 			return 0;
 		}
 		return 1 + max(treeHeight(p->left), treeHeight(p->right));
 	}
 
-	int averagePathLenght(TreeVertex* p, int level) {
+	static int averagePathLenght(TreeVertex* p, int level) {
 		if (p == nullptr) {
 			return 0;
 		}
@@ -46,22 +55,11 @@ public:
 	}
 
 	void Info() {
+		cout << endl;
 		cout << "Tree size: " << treeSize(root);
 		cout << endl << endl << "Tree height: " << treeHeight(root);
 		cout << endl << endl << "Tree average height: " << averagePathLenght(root, 1) / (double)(treeSize(root));
 		cout << endl << endl;
-	}
-
-	bool compareEmployee(Employee first, Employee second) {
-		if (first.departmentNumber < second.departmentNumber) {
-			return true;
-		}
-		else if (first.departmentNumber > second.departmentNumber) {
-			return false;
-		}
-		else {
-			return (string)first.FIO < (string)second.FIO;
-		}
 	}
 
 	void Add(TreeVertex*& p, Employee D)
@@ -75,7 +73,7 @@ public:
 			p->balance = 0;
 			VR = 1;
 		}
-		else if (!compareEmployee(p->data, D))
+		else if (!Employee::Compare(p->data, D))
 		{
 			Add(p->left, D);
 			if (VR == 1)
@@ -99,7 +97,7 @@ public:
 			}
 			else HR = 0;
 		}
-		else if (compareEmployee(p->data, D))
+		else if (Employee::Compare(p->data, D))
 		{
 			Add(p->right, D);
 			if (VR == 1)

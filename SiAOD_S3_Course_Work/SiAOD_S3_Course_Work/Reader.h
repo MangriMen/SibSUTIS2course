@@ -44,9 +44,9 @@ public:
 
 		fillIndexArray(employersQ, employersI);
 
-		btree.From(employersI, numOfEmployers);
-
 		numOfFounded = queueFromKey(employersI, employersFoundedQ, 0, numOfEmployers);
+
+		btree.From(employersFoundedQ);
 
 		employersFoundedI = new Employee * [numOfFounded];
 

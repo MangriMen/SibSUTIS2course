@@ -215,6 +215,8 @@ void MainMenu::Run()
 					reader->employersFoundedI = new Employee * [reader->numOfFounded];
 					fillIndexArray(reader->employersFoundedQ, reader->employersFoundedI);
 
+					reader->btree.From(reader->employersFoundedQ);
+
 					switch (mode)
 					{
 					case Mode::All:
