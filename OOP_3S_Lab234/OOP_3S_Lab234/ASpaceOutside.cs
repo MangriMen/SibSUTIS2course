@@ -34,6 +34,7 @@ namespace OOP_3S_Lab234
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         Random random = new Random();
+        Texture2D white;
 
         public ASpaceOutside()
         {
@@ -79,7 +80,7 @@ namespace OOP_3S_Lab234
                 _graphics.PreferredBackBufferHeight / 2));
 
             rocket1 = new Projectile(new Vector2(_graphics.PreferredBackBufferWidth / 2,
-                _graphics.PreferredBackBufferHeight / 2), "laser");
+                _graphics.PreferredBackBufferHeight / 2), "rocket");
 
             for (int i = 0; i < clones.Length; i++)
             {
@@ -128,6 +129,8 @@ namespace OOP_3S_Lab234
 
             rocket1.Load(Content);
 
+            white = Content.Load<Texture2D>("Images/Backgrounds/white");
+
             //String[] bodies = new String[4] { "bugBody", "gamepadBody", "lunarBody", "massiveBody" };
             String[] cabins = new String[4] { "brickCabin", "conusCabinDouble", "ovalCabin", "raindropDoubleCabin" };
             String[] jets = new String[6] { "doubleBlueJet", "doubleGreenJet", "doubleOrangeJet", "monoBlueJet", "monoGreenJet", "monoOrangeJet" };
@@ -151,12 +154,12 @@ namespace OOP_3S_Lab234
             player.isDamaged = false;
             for (int i = 0; i < clones.Length; i++)
             {
-                if (clones[i].HitBox.Intersects(player.HitBox))
+                if (clones[i].Collider.Intersects(player.Collider))
                 {
                     player.isDamaged = true;
                 }
             }
-            if (rocket1.HitBox.Intersects(player.HitBox)) { player.isDamaged = true; }
+            if (rocket1.Collider.Intersects(player.Collider)) { player.isDamaged = true;}
         }
 
         protected override void Update(GameTime gameTime)

@@ -13,7 +13,7 @@ namespace OOP_3S_Lab234.Entities
 {
     public enum ProjectileType
     {
-        rocket
+        Rocket
     }
 
     class Projectile
@@ -24,54 +24,47 @@ namespace OOP_3S_Lab234.Entities
         public float Speed { get; set; }
         public float RotateAngle { get; set; }
         public Texture2D Texture { get; set; }
+        public Texture2D ColliderTexture { get; set; }
         public AnimationManager _animationManager { get; set; }
         public Dictionary<string, Animation> _animations { get; set; }
-
-        public Rectangle HitBox
+        public Rectangle Collider
         {
             get
             {
-                return new Rectangle((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
+                return new Rectangle((int)Math.Round(Position.X) - (_animationManager.Current.FrameWidth / 2),
+                                     (int)Math.Round(Position.Y) - (_animationManager.Current.FrameHeight / 2),
+                                     _animationManager.Current.FrameWidth,
+                                     _animationManager.Current.FrameHeight);
             }
         }
 
         public Projectile(Vector2 spawnPoint, string proj)
         {
             Position = spawnPoint;
-            //velocity_ = new Vector2(0.5f, 0.5f);
+            Speed = 50f;
             TypeOfProjectile = proj;
+            velocity_ = new Vector2(0.5f, 0.5f);
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            //_animationManager.Pivot = new Vector2(
-            //        Texture._animations["Working"].Texture.Width / Texture._animations["Working"].FrameCount / 2,
-            //        ShuttleJetOffset[TypeOfShuttle] - (Texture._animations["Working"].Texture.Height / 2) + 2
-            //        );
+            _animationManager.Pivot = new Vector2(
+                _animationManager.Current.FrameWidth / 2,
+                _animationManager.Current.FrameHeight / 2
+                );
+            _animationManager.RotateAngle = RotateAngle;
 
-            //_animationManager.RotateAngle = RotateAngle;
             _animationManager.Draw(_spriteBatch);
 
-            //_spriteBatch.Draw(
-            //    Texture,
-            //    Position,
-            //    null,
-            //    Color.White,
-            //    RotateAngle,
-            //    new Vector2(Texture.Width / 2, Texture.Height / 2),
-            //    Vector2.One,
-            //    SpriteEffects.None,
-            //    0f
-            //    );
+            Utils.Sprite.DrawCollider(_spriteBatch, ColliderTexture, Collider);
         }
 
         public virtual void Load(ContentManager Content)
         {
-            Random rand = new Random();
             Texture = Content.Load<Texture2D>("Images/Projectales/" + TypeOfProjectile.ToLower() + "Proj");
+            ColliderTexture = Content.Load<Texture2D>("Images/Backgrounds/white");
             _animations = new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Projectales/" + TypeOfProjectile.ToLower() + "Proj"), 5, 0.1f) };
             _animationManager = new AnimationManager(_animations.First().Value);
-
         }
 
         public void Update(GameTime gameTime, Vector2 resolution)
@@ -86,11 +79,11 @@ namespace OOP_3S_Lab234.Entities
             if (velocity_ != Vector2.Zero) { velocity_.Normalize(); }
 
             Position += velocity_ * Speed * delta;
+            Debug.WriteLine(Position);
 
             _animationManager.Position = Position;
-
-            //RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
-            //RotateAngle = 90.0f * ((float)Math.PI / 2.0f);
+            
+            RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
         }
     }
 }

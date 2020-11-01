@@ -45,12 +45,12 @@ namespace OOP_3S_Lab234.Entities
         public Texture2D Texture { get; set; }
         public Texture2D Cabin { get; set; }
         public bool isDamaged { get; set; }
-
-        public Rectangle HitBox
+        public Texture2D ColliderTexture { get; set; }
+        public Rectangle Collider
         {
             get
             {
-                return new Rectangle((int)Position.X, (int)Position.Y, Texture.Width, Texture.Height);
+                return new Rectangle((int)Math.Round(Position.X) - Texture.Width / 2, (int)Math.Round(Position.Y) - Texture.Height / 2, Texture.Width, Texture.Height);
             }
         }
         public IJet Jet = new SpeedJet();
@@ -100,12 +100,15 @@ namespace OOP_3S_Lab234.Entities
                 SpriteEffects.None,
                 0f
                 );
+
+            Utils.Sprite.DrawCollider(_spriteBatch, ColliderTexture, Collider);
         }
         public virtual void Load(ContentManager Content, string cabin)
         {
             Random rand = new Random();
             Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + TypeOfShuttle.ToLower() + "Body");
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabin);
+            ColliderTexture = Content.Load<Texture2D>("Images/Backgrounds/white");
             Jet.Load(
                 Content,
                 "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue") + "Jet",

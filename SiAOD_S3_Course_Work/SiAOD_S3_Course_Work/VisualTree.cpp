@@ -25,22 +25,26 @@ void VisualTree::getElements(TreeVertex* p, int level, int height, vector<pair<E
 }
 
 void VisualTree::traversalGraph(TreeVertex* root) {
-	int height = BTree::treeHeight(root);
+	const int height = BTree::treeHeight(root);
 
 	const int q = 2;
-	int an = pow(q, height - 1);
-	int sum = ((an * q) - 1) / (q - 1);
+	const int an = pow(q, height - 1);
+	const int sum = ((an * q) - 1) / (q - 1);
+	const int elSize = 40;
 
 	vector<pair<Employee*, int>> graph;
 
 	getElements(root, 1, height, graph);
 
+	cout << graph.size();
+
 	for (int i = 1; i <= height; i++) {
-		int el = ceil(sum / pow(2, i)) * 40;
-		int offset = floor(sum / pow(2, (i - 1 < 0 ? 0 : i - 1))) * 40 + 40;
-		int geom = pow(2, (i - 1 < 0 ? 0 : i - 1));
+		int el = ceil(sum / pow(2, i)) * elSize;
+		int offset = floor(sum / pow(2, (i - 1 < 0 ? 0 : i - 1))) * elSize + elSize;
+
 		for (int x = 0, of = 0, j = 0; x < graph.size(); x++) {
-			if (graph[x].second == i) { nodes[x]->circle.setPosition(el + ((offset + 1) * of), i * 120); of++; }
+			//if (graph[x].second == i) { nodes[x]->circle.setPosition(el + ((offset + 1) * of), i * 120); of++;}
+			if (graph[x].second == i) { nodes[x]->circle.setPosition(el + ((offset + 1) * of), i * 120);}
 		}
 	}
 }
@@ -50,10 +54,10 @@ void VisualTree::Run()
 	window.create(VideoMode(1024, 800), "VisualTree");
 	window.setVerticalSyncEnabled(true);
 	View view(FloatRect(0, 0, 1024, 800));
-	srand(time(0));
 
 	Build(*&reader->btree.root, 1, BTree::treeHeight(*&reader->btree.root));
 	traversalGraph(*&reader->btree.root);
+
 	while (window.isOpen()) {
 		Event event;
 		sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
@@ -84,11 +88,10 @@ void VisualTree::Run()
 				break;
 			}
 			for (int i = 0; i < size - 1; i++) {
-				if (nodes[i]->circle.getGlobalBounds().contains(worldPos)) {
-					if (event.type == event.MouseButtonReleased && event.mouseButton.button == Mouse::Left) {
-						if (nodes[i]->vertex != nullptr)
-							cout << nodes[i]->vertex->data.FIO << " " << nodes[i]->vertex->data.departmentNumber << endl;
-					}
+				if (nodes[i]->circle.getGlobalBounds().contains(worldPos) &&
+					event.type == event.MouseButtonReleased && event.mouseButton.button == Mouse::Left &&
+					nodes[i]->vertex) {
+					cout << nodes[i]->vertex->data.FIO << " " << nodes[i]->vertex->data.departmentNumber << endl;
 				}
 			}
 		}
@@ -97,7 +100,6 @@ void VisualTree::Run()
 
 		for (int i = 0; i < size-1; i++) {
 			window.draw(nodes[i]->circle);
-			//window.draw(nodes[i]->text);
 		}
 
 		window.display();

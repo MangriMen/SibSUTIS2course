@@ -19,6 +19,13 @@ namespace OOP_3S_Lab234.Managers
         public Vector2 Position { get; set; }
         public Vector2 Pivot { get; set; } = Vector2.Zero;
         public float RotateAngle { get; set; } = 0;
+        public Animation Current
+        {
+            get
+            {
+                return _animation;
+            }
+        }
 
         public AnimationManager(Animation animation)
         {

@@ -26,6 +26,7 @@ namespace OOP_3S_Lab234.Entities
         {
             Texture = Content.Load<Texture2D>("Images/Shuttle/Body/massiveBody");
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/brickCabin");
+            ColliderTexture = Content.Load<Texture2D>("Images/Backgrounds/white");
             TypeOfShuttle = "Massive";
             Jet.Load(Content,
                 "Images/Shuttle/Jet/slideBlueJet",
@@ -60,6 +61,7 @@ namespace OOP_3S_Lab234.Entities
 
             if (noKeyPressed)
             {
+                velocity_ *= 0;
                 if (!isStoped)
                 {
                     if (clearStep)
@@ -79,7 +81,7 @@ namespace OOP_3S_Lab234.Entities
                         clearStep = true;
                         isStoped = true;
                     }
-                }   
+                }
             }
             else
             {

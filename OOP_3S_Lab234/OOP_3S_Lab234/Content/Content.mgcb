@@ -39,18 +39,6 @@
 /processorParam:TextureFormat=Color
 /build:Images/Backgrounds/background.jpg
 
-#begin Images/Backgrounds/background_bck.jpg
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Images/Backgrounds/background_bck.jpg
-
 #begin Images/Backgrounds/bootloader.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -75,6 +63,18 @@
 /processorParam:TextureFormat=Color
 /build:Images/Backgrounds/menu.png
 
+#begin Images/Backgrounds/white.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Backgrounds/white.png
+
 #begin Images/Controls/button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -86,18 +86,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Images/Controls/button.png
-
-#begin Images/Particles/JetParticles.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Images/Particles/JetParticles.png
 
 #begin Images/Particles/slideParticles.png
 /importer:TextureImporter
