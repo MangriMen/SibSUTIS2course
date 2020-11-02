@@ -31,17 +31,66 @@ namespace OOP_3S_Lab234.Entities
         {
             get
             {
-                return new Rectangle((int)Math.Round(Position.X) - (_animationManager.Current.FrameWidth / 2),
-                                     (int)Math.Round(Position.Y) - (_animationManager.Current.FrameHeight / 2),
-                                     _animationManager.Current.FrameWidth,
-                                     _animationManager.Current.FrameHeight);
+                //return new Rectangle((int)Math.Round(Position.X) - (_animationManager.Current.FrameWidth / 2),
+                //                     (int)Math.Round(Position.Y) - (_animationManager.Current.FrameHeight / 2),
+                //                     _animationManager.Current.FrameWidth,
+                //                     _animationManager.Current.FrameHeight);
+                Point[] tmp = {
+                    Utils.RotatedRectangle.Rotate(
+                        new Vector2(
+                            (int)Math.Round(Position.X),
+                            (int)Math.Round(Position.Y)
+                            ),
+                        new Vector2(
+                            (int)Math.Round(Position.X) - (_animationManager.Current.FrameWidth / 2),
+                            (int)Math.Round(Position.Y) - (_animationManager.Current.FrameHeight / 2)
+                            ),
+                        RotateAngle).ToPoint(),
+                    Utils.RotatedRectangle.Rotate(
+                        new Vector2(
+                            (int)Math.Round(Position.X),
+                            (int)Math.Round(Position.Y)
+                            ),
+                        new Vector2(
+                            (int)Math.Round(Position.X) + (_animationManager.Current.FrameWidth / 2),
+                            (int)Math.Round(Position.Y) - (_animationManager.Current.FrameHeight / 2)
+                            ),
+                        RotateAngle).ToPoint(),
+                    Utils.RotatedRectangle.Rotate(
+                        new Vector2(
+                            (int)Math.Round(Position.X),
+                            (int)Math.Round(Position.Y)
+                            ),
+                        new Vector2(
+                            (int)Math.Round(Position.X) + (_animationManager.Current.FrameWidth / 2),
+                            (int)Math.Round(Position.Y) + (_animationManager.Current.FrameHeight / 2)
+                            ),
+                        RotateAngle).ToPoint(),
+                    Utils.RotatedRectangle.Rotate(
+                        new Vector2(
+                            (int)Math.Round(Position.X),
+                            (int)Math.Round(Position.Y)
+                            ),
+                        new Vector2(
+                            (int)Math.Round(Position.X) - (_animationManager.Current.FrameWidth / 2),
+                            (int)Math.Round(Position.Y) + (_animationManager.Current.FrameHeight / 2)
+                            ),
+                        RotateAngle).ToPoint(),
+                };
+
+                return new Rectangle(
+                    (int)Utils.RotatedRectangle.Smallest(tmp).X,
+                    (int)Utils.RotatedRectangle.Smallest(tmp).Y,
+                    (int)Utils.RotatedRectangle.Biggest(tmp).X - (int)Utils.RotatedRectangle.Smallest(tmp).X,
+                    (int)Utils.RotatedRectangle.Biggest(tmp).Y - (int)Utils.RotatedRectangle.Smallest(tmp).Y
+                    );
             }
         }
 
         public Projectile(Vector2 spawnPoint, string proj)
         {
             Position = spawnPoint;
-            Speed = 50f;
+            //Speed = 50f;
             TypeOfProjectile = proj;
             velocity_ = new Vector2(0.5f, 0.5f);
         }
@@ -79,11 +128,16 @@ namespace OOP_3S_Lab234.Entities
             if (velocity_ != Vector2.Zero) { velocity_.Normalize(); }
 
             Position += velocity_ * Speed * delta;
-            Debug.WriteLine(Position);
 
             _animationManager.Position = Position;
-            
-            RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
+
+            //RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
+            if (RotateAngle > 3.14f * 2)
+            {
+                RotateAngle = 0;
+            }
+
+            RotateAngle += 0.012f;
         }
     }
 }

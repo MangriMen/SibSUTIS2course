@@ -101,7 +101,7 @@ namespace OOP_3S_Lab234.Entities
                 0f
                 );
 
-            Utils.Sprite.DrawCollider(_spriteBatch, ColliderTexture, Collider);
+            //Utils.Sprite.DrawCollider(_spriteBatch, ColliderTexture, Collider);
         }
         public virtual void Load(ContentManager Content, string cabin)
         {

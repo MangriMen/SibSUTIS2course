@@ -1,14 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using OOP_3S_Lab234.Entities;
+using OOP_3S_Lab234.ShipParts;
 using System;
 using System.Threading;
-using OOP_3S_Lab234.Entities;
 using Color = Microsoft.Xna.Framework.Color;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
-using OOP_3S_Lab234.ShipParts;
-using System.Diagnostics;
-using System.Linq;
 
 namespace OOP_3S_Lab234
 {
@@ -30,11 +28,13 @@ namespace OOP_3S_Lab234
         Player player;
         Enemy[] clones = new Enemy[9];
         Projectile rocket1;
- 
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         Random random = new Random();
         Texture2D white;
+
+        Utils.Kvadr kvadr;
 
         public ASpaceOutside()
         {
@@ -61,7 +61,8 @@ namespace OOP_3S_Lab234
             {
                 resolution.X = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
                 resolution.Y = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-            } else
+            }
+            else
             {
                 resolution.X = 1280;
                 resolution.Y = 720;
@@ -76,11 +77,21 @@ namespace OOP_3S_Lab234
 
             _graphics.ApplyChanges();
 
-            player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2, 
+            player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2,
                 _graphics.PreferredBackBufferHeight / 2));
 
             rocket1 = new Projectile(new Vector2(_graphics.PreferredBackBufferWidth / 2,
                 _graphics.PreferredBackBufferHeight / 2), "rocket");
+
+            Point[] tmp =
+            {
+                new Point((int)resolution.X / 2 - 20, (int)resolution.Y / 2 - 20),
+                new Point((int)resolution.X / 2 + 20, (int)resolution.Y / 2 - 20),
+                new Point((int)resolution.X / 2 + 20, (int)resolution.Y / 2 + 20),
+                new Point((int)resolution.X / 2 - 20, (int)resolution.Y / 2 + 20),
+            };
+
+            kvadr = new Utils.Kvadr(tmp);
 
             for (int i = 0; i < clones.Length; i++)
             {
@@ -131,6 +142,8 @@ namespace OOP_3S_Lab234
 
             white = Content.Load<Texture2D>("Images/Backgrounds/white");
 
+            kvadr.Build();
+
             //String[] bodies = new String[4] { "bugBody", "gamepadBody", "lunarBody", "massiveBody" };
             String[] cabins = new String[4] { "brickCabin", "conusCabinDouble", "ovalCabin", "raindropDoubleCabin" };
             String[] jets = new String[6] { "doubleBlueJet", "doubleGreenJet", "doubleOrangeJet", "monoBlueJet", "monoGreenJet", "monoOrangeJet" };
@@ -159,7 +172,7 @@ namespace OOP_3S_Lab234
                     player.isDamaged = true;
                 }
             }
-            if (rocket1.Collider.Intersects(player.Collider)) { player.isDamaged = true;}
+            if (rocket1.Collider.Intersects(player.Collider)) { player.isDamaged = true; }
         }
 
         protected override void Update(GameTime gameTime)
@@ -206,7 +219,7 @@ namespace OOP_3S_Lab234
             player.Update(gameTime, resolution);
 
             rocket1.Update(gameTime, resolution);
-           
+
             for (int i = 0; i < clones.Length; i++)
             {
                 clones[i].Update(gameTime, resolution);
@@ -214,6 +227,7 @@ namespace OOP_3S_Lab234
 
             CollisionCheck();
         }
+        private int i = 0;
         protected void DrawGameplay()
         {
             _graphics.GraphicsDevice.Clear(Color.Black);
