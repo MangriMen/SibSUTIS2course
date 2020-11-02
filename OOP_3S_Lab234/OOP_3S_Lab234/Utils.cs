@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks.Dataflow;
 using System.Threading.Tasks.Sources;
@@ -18,6 +20,177 @@ namespace OOP_3S_Lab234
             public static bool getDown(Keys key)
             {
                 return Keyboard.GetState().IsKeyDown(key);
+            }
+        }
+        public class Line
+        {
+            Vector2 start;
+            Vector2 end;
+            float lenght;
+            public Vector2 Start
+            {
+                get
+                {
+                    return start;
+                }
+            }
+
+            public Vector2 End
+            {
+                get
+                {
+                    return end;
+                }
+            }
+
+            public Vector2 Center
+            {
+                get
+                {
+                    return new Vector2(lenght, lenght) / 2;
+                }
+            }
+
+            public Line (Vector2 start_, Vector2 end_)
+            {
+                start = start_;
+                end = end_;
+                lenght = (float)Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
+            }
+            public void SetPosition(Vector2 position_)
+            {
+                end = position_ + (end - start);
+                start = position_;
+            }
+            public void Move(Vector2 offset)
+            {
+                start += offset;
+                end += offset;
+            }
+            public void Draw(SpriteBatch _spriteBatch, Texture2D pixel)
+            {
+                for (int i = 0; i < lenght; i++)
+                {
+                    _spriteBatch.Draw(
+                        pixel,
+                        start + (end - start) * i/lenght,
+                        Color.White
+                        );
+                }
+            }
+        }
+        public class PolygonCollider
+        {
+            Line[] lines;
+            Line[] linesLocal;
+            Vector2 position_;
+            public Vector2 Position 
+            { 
+                get
+                {
+                    return position_;
+                }
+                set
+                {
+                    position_ = value;
+                    for (int i = 0; i < lines.Length; i++)
+                    {
+                        lines[i].SetPosition(value + linesLocal[i].Start - Pivot);
+                    }
+                } 
+            }
+            public Vector2 Pivot { get; set; }
+
+            public Line[] Lines
+            {
+                get
+                {
+                    return lines;
+                }
+            }
+
+            public PolygonCollider(Vector2[] points)
+            {
+                Init(points);
+            }
+
+            public void Init(Vector2[] points)
+            {
+                if (points == null) { return; }
+                lines = new Line[points.Length];
+                linesLocal = new Line[points.Length];
+
+                for (int i = 0; i < points.Length - 1; i++)
+                {
+                    lines[i] = new Line(points[i], points[i + 1]);
+                    linesLocal[i] = new Line(points[i], points[i + 1]);
+                }
+                lines[points.Length - 1] = new Line(points[points.Length - 1], points[0]);
+                linesLocal[points.Length - 1] = new Line(points[points.Length - 1], points[0]);
+                compute2DPolygonCentroid();
+            }
+
+            public void compute2DPolygonCentroid()
+            {
+                Vector2 centroid = Vector2.Zero;
+                float signedArea = 0f;
+                float x0 = 0f; // Current vertex X
+                float y0 = 0f; // Current vertex Y
+                float x1 = 0f; // Next vertex X
+                float y1 = 0f; // Next vertex Y
+                float a = 0f;  // Partial signed area
+
+                // For all vertices
+                int i = 0;
+                for (i = 0; i < lines.Length; i++)
+                {
+                    x0 = lines[i].Start.X;
+                    y0 = lines[i].Start.Y;
+                    x1 = lines[(i + 1) % lines.Length].Start.X;
+                    y1 = lines[(i + 1) % lines.Length].Start.Y;
+                    a = x0* y1 - x1* y0;
+                    signedArea += a;
+                    centroid.X += (x0 + x1)*a;
+                    centroid.Y += (y0 + y1)*a;
+                }
+
+                signedArea *= 0.5f;
+                centroid.X /= (6.0f * signedArea);
+                centroid.Y /= (6.0f * signedArea);
+
+                Pivot = centroid;
+            }
+
+    public static float UnderOrOverTheLine(Vector2 start, Vector2 end, Vector2 point)
+            {
+                return (end.X - start.X) * (point.Y - start.Y) - (end.Y - start.Y) * (point.X - start.X);
+            }
+
+            public bool Intersects(PolygonCollider collider)
+            {
+                bool isIntersect = false;
+
+                int i;
+                for (i = 0; i < lines.Length; i++)
+                {
+                    if (UnderOrOverTheLine(Lines[i].Start, Lines[i].End, new Vector2(640, 360)) < 0) { break; }
+
+                    //bool isPoint = true;
+                    //for (int j = 0; j < collider.lines.Length; j++)
+                    //{
+                    //    isPoint = false;
+                    //    if (UnderOrOverTheLine(lines[i].Start, lines[i].End, collider.lines[j].Start) < 0) { break; }
+                    //    isPoint = true;
+                    //}
+                    //if (!isPoint)
+                    //{
+                    //    break;
+                    //}
+                }
+
+                if (i == lines.Length) { isIntersect = true; }
+
+                return isIntersect;
             }
         }
         public static class Sprite
@@ -156,13 +329,17 @@ namespace OOP_3S_Lab234
         }
         public static class RotatedRectangle {
             public static Vector2 Rotate(Vector2 origin, Vector2 point, float angle) {
+                float cosFromAngle = (float)Math.Cos(angle);
+                float sinFromAngle = (float)Math.Sin(angle);
+
                 float ox = origin.X;
                 float oy = origin.Y;
                 float px = point.X;
                 float py = point.Y;
 
-                float qx = ox + (float)Math.Cos(angle) * (px - ox) - (float)Math.Sin(angle) * (py - oy);
-                float qy = oy + (float)Math.Sin(angle) * (px - ox) + (float)Math.Cos(angle) * (py - oy);
+                float qx = ox + cosFromAngle * (px - ox) - sinFromAngle * (py - oy);
+                float qy = oy + sinFromAngle * (px - ox) + cosFromAngle * (py - oy);
+
                 return new Vector2(qx, qy);
             }
             public static Vector2 Smallest(Point[] corners)

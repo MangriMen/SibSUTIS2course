@@ -9,6 +9,7 @@ using System.Threading;
 using System.Diagnostics;
 using OOP_3S_Lab234.Models;
 using System.Linq;
+using OOP_3S_Lab234.Utils;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -19,8 +20,6 @@ namespace OOP_3S_Lab234.Entities
         Lunar,
         Massive
     }
-
-
     abstract class Shuttle
     {
         public readonly Dictionary<string, int> ShuttleJetOffset = new Dictionary<string, int>
@@ -46,13 +45,7 @@ namespace OOP_3S_Lab234.Entities
         public Texture2D Cabin { get; set; }
         public bool isDamaged { get; set; }
         public Texture2D ColliderTexture { get; set; }
-        public Rectangle Collider
-        {
-            get
-            {
-                return new Rectangle((int)Math.Round(Position.X) - Texture.Width / 2, (int)Math.Round(Position.Y) - Texture.Height / 2, Texture.Width, Texture.Height);
-            }
-        }
+        public PolygonCollider Collider = new PolygonCollider(null);
         public IJet Jet = new SpeedJet();
 
         public void Draw(SpriteBatch _spriteBatch)
@@ -101,6 +94,10 @@ namespace OOP_3S_Lab234.Entities
                 0f
                 );
 
+
+            for (int i = 0; i < 4; i++)
+                Collider.Lines[i].Draw(_spriteBatch, ColliderTexture);
+
             //Utils.Sprite.DrawCollider(_spriteBatch, ColliderTexture, Collider);
         }
         public virtual void Load(ContentManager Content, string cabin)
@@ -114,6 +111,16 @@ namespace OOP_3S_Lab234.Entities
                 "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue") + "Jet",
                 new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Particles/" + Jet.TypeOfJet.ToLower() + "Particles"), 10, 0.1f) }
                 );
+
+            Vector2[] tmp =
+            {
+                new Vector2(Texture.Bounds.X, Texture.Bounds.Y),
+                new Vector2(Texture.Bounds.Width, Texture.Bounds.Y),
+                new Vector2(Texture.Bounds.Width, Texture.Bounds.Height),
+                new Vector2(Texture.Bounds.X, Texture.Bounds.Height),
+            };
+
+            Collider = new PolygonCollider(tmp);
         }
         protected virtual void BorderCollision(Vector2 offset, Vector2 resolution)
         {

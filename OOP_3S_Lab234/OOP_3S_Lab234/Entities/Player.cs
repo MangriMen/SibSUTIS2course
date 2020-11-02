@@ -32,6 +32,14 @@ namespace OOP_3S_Lab234.Entities
                 "Images/Shuttle/Jet/slideBlueJet",
                 new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Particles/slideParticles"), 10, 0.1f) }
                 );
+            Vector2[] tmp =
+{
+                new Vector2(Texture.Bounds.X, Texture.Bounds.Y),
+                new Vector2(Texture.Bounds.Width, Texture.Bounds.Y),
+                new Vector2(Texture.Bounds.Width, Texture.Bounds.Height),
+                new Vector2(Texture.Bounds.X, Texture.Bounds.Height),
+            };
+            Collider = new PolygonCollider(tmp);
         }
         protected override void BorderCollision(Vector2 offset, Vector2 resolution)
         {
@@ -114,6 +122,8 @@ namespace OOP_3S_Lab234.Entities
             Position += velocity_ * Jet.Speed * delta;
 
             Jet._animationManager.Position = Position;
+
+            Collider.Position = Position;
 
             if (Position - temp != Vector2.Zero)
                 RotateAngle = (float)Math.Atan2(Position.Y - temp.Y, Position.X - temp.X) + (float)Math.PI / 2;

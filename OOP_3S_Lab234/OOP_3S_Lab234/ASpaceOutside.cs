@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using OOP_3S_Lab234.Entities;
 using OOP_3S_Lab234.ShipParts;
+using OOP_3S_Lab234.Utils;
 using System;
 using System.Threading;
 using Color = Microsoft.Xna.Framework.Color;
@@ -33,8 +34,6 @@ namespace OOP_3S_Lab234
         private SpriteBatch _spriteBatch;
         Random random = new Random();
         Texture2D white;
-
-        Utils.Kvadr kvadr;
 
         public ASpaceOutside()
         {
@@ -82,16 +81,6 @@ namespace OOP_3S_Lab234
 
             rocket1 = new Projectile(new Vector2(_graphics.PreferredBackBufferWidth / 2,
                 _graphics.PreferredBackBufferHeight / 2), "rocket");
-
-            Point[] tmp =
-            {
-                new Point((int)resolution.X / 2 - 20, (int)resolution.Y / 2 - 20),
-                new Point((int)resolution.X / 2 + 20, (int)resolution.Y / 2 - 20),
-                new Point((int)resolution.X / 2 + 20, (int)resolution.Y / 2 + 20),
-                new Point((int)resolution.X / 2 - 20, (int)resolution.Y / 2 + 20),
-            };
-
-            kvadr = new Utils.Kvadr(tmp);
 
             for (int i = 0; i < clones.Length; i++)
             {
@@ -142,8 +131,6 @@ namespace OOP_3S_Lab234
 
             white = Content.Load<Texture2D>("Images/Backgrounds/white");
 
-            kvadr.Build();
-
             //String[] bodies = new String[4] { "bugBody", "gamepadBody", "lunarBody", "massiveBody" };
             String[] cabins = new String[4] { "brickCabin", "conusCabinDouble", "ovalCabin", "raindropDoubleCabin" };
             String[] jets = new String[6] { "doubleBlueJet", "doubleGreenJet", "doubleOrangeJet", "monoBlueJet", "monoGreenJet", "monoOrangeJet" };
@@ -167,12 +154,12 @@ namespace OOP_3S_Lab234
             player.isDamaged = false;
             for (int i = 0; i < clones.Length; i++)
             {
-                if (clones[i].Collider.Intersects(player.Collider))
+                if (player.Collider.Intersects(clones[i].Collider))
                 {
                     player.isDamaged = true;
                 }
             }
-            if (rocket1.Collider.Intersects(player.Collider)) { player.isDamaged = true; }
+            //if (rocket1.Collider.Intersects(player.Collider)) { player.isDamaged = true; }
         }
 
         protected override void Update(GameTime gameTime)
@@ -227,7 +214,6 @@ namespace OOP_3S_Lab234
 
             CollisionCheck();
         }
-        private int i = 0;
         protected void DrawGameplay()
         {
             _graphics.GraphicsDevice.Clear(Color.Black);
@@ -248,7 +234,6 @@ namespace OOP_3S_Lab234
             {
                 clone.Draw(_spriteBatch);
             }
-
             player.Draw(_spriteBatch);
             rocket1.Draw(_spriteBatch);
 

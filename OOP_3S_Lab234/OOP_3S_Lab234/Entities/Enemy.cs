@@ -60,6 +60,8 @@ namespace OOP_3S_Lab234.Entities
 
             Jet._animationManager.Position = Position;
 
+            Collider.Position = Position;
+
             RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
         }
     }
