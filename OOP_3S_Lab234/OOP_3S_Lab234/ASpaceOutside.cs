@@ -35,6 +35,8 @@ namespace OOP_3S_Lab234
         Random random = new Random();
         Texture2D white;
 
+        PolygonCollider poly;
+
         public ASpaceOutside()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -81,6 +83,18 @@ namespace OOP_3S_Lab234
 
             rocket1 = new Projectile(new Vector2(_graphics.PreferredBackBufferWidth / 2,
                 _graphics.PreferredBackBufferHeight / 2), "rocket");
+
+            Vector2[] tmp =
+            {
+                new Vector2(200, 200),
+                new Vector2(250, 200),
+                new Vector2(250, 250),
+                new Vector2(200, 250)
+            };
+
+            poly = new PolygonCollider(tmp);
+
+            poly.Position = new Vector2(225, 225);
 
             for (int i = 0; i < clones.Length; i++)
             {
@@ -159,7 +173,7 @@ namespace OOP_3S_Lab234
                     player.isDamaged = true;
                 }
             }
-            //if (rocket1.Collider.Intersects(player.Collider)) { player.isDamaged = true; }
+            if (player.Collider.Intersects(rocket1.Collider)) { player.isDamaged = true; }
         }
 
         protected override void Update(GameTime gameTime)
@@ -214,6 +228,9 @@ namespace OOP_3S_Lab234
 
             CollisionCheck();
         }
+        Vector2 ct = new Vector2(255, 255);
+
+        float i = 0;
         protected void DrawGameplay()
         {
             _graphics.GraphicsDevice.Clear(Color.Black);
@@ -237,6 +254,19 @@ namespace OOP_3S_Lab234
             player.Draw(_spriteBatch);
             rocket1.Draw(_spriteBatch);
 
+            foreach (var line in poly.Lines)
+            {
+                line.SetPosition(line.Start + new Vector2(1f, 1f));
+                line.Rotate(poly.Position, i);
+                line.Draw(_spriteBatch, white);
+            }
+
+            if (i > Math.PI * 2)
+            {
+                i = 0;
+            }
+
+            i += 0.012f;
             _spriteBatch.End();
         }
     }

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Employee::Employee()
+Employee::Employee() : FIO(" "), departmentNumber(0), place(" "), birthDate(" ")
 {
 }
 

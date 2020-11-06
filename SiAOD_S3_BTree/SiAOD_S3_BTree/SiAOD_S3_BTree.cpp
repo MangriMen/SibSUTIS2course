@@ -218,11 +218,13 @@ int main()
 	int isChar = false;
 
 	cout << "Enter number of vertex: ";
-	cin >> numberOfVertex;
+	//cin >> numberOfVertex;
 	cout << endl;
 
-	A = new int[numberOfVertex];
-	fillRand(A, numberOfVertex);
+	numberOfVertex = 3;
+
+	A = new int[numberOfVertex] { 1, 2, 3 };
+	//fillRand(A, numberOfVertex);
 
 	//A = new int[12]{ (int)'Ë', (int)'Å', (int)'Â', (int)'Ê', (int)'È', (int)'Í', (int)'Ã', (int)'Î', (int)'Ğ', (int)'Ü', (int)'À', (int)'Ä' };
 	//numberOfVertex = 12;

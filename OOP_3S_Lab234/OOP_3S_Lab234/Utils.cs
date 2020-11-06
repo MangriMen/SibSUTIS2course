@@ -26,12 +26,23 @@ namespace OOP_3S_Lab234
         {
             Vector2 start;
             Vector2 end;
-            float lenght;
+
+            Vector2 startNR;
+            Vector2 endNR;
+            float angle;
+            Vector2 origin;
+            
+            public float lenght;
             public Vector2 Start
             {
                 get
                 {
                     return start;
+                }
+                set
+                {
+                    start = value;
+                    startNR = value;
                 }
             }
 
@@ -40,6 +51,11 @@ namespace OOP_3S_Lab234
                 get
                 {
                     return end;
+                }
+                set
+                {
+                    end = value;
+                    endNR = value;
                 }
             }
 
@@ -53,19 +69,19 @@ namespace OOP_3S_Lab234
 
             public Line (Vector2 start_, Vector2 end_)
             {
-                start = start_;
-                end = end_;
+                Start = start_;
+                End = end_;
                 lenght = (float)Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
             }
             public void SetPosition(Vector2 position_)
             {
-                end = position_ + (end - start);
-                start = position_;
+                End = position_ + (End - Start);
+                Start = position_;
             }
             public void Move(Vector2 offset)
             {
-                start += offset;
-                end += offset;
+                Start += offset;
+                End += offset;
             }
             public void Draw(SpriteBatch _spriteBatch, Texture2D pixel)
             {
@@ -73,15 +89,22 @@ namespace OOP_3S_Lab234
                 {
                     _spriteBatch.Draw(
                         pixel,
-                        start + (end - start) * i/lenght,
+                        Start + (End - Start) * i/lenght,
                         Color.White
                         );
                 }
             }
+            public void Rotate(Vector2 origin_, float angle_)
+            {
+                start = RotatedRectangle.Rotate(origin_, startNR, angle_);
+                end = RotatedRectangle.Rotate(origin_, endNR, angle_);
+                angle = angle_;
+                origin = origin_;
+            }
         }
         public class PolygonCollider
         {
-            Line[] lines;
+            public Line[] lines;
             Line[] linesLocal;
             Vector2 position_;
             public Vector2 Position 
@@ -161,7 +184,7 @@ namespace OOP_3S_Lab234
                 Pivot = centroid;
             }
 
-    public static float UnderOrOverTheLine(Vector2 start, Vector2 end, Vector2 point)
+            public static float UnderOrOverTheLine(Vector2 start, Vector2 end, Vector2 point)
             {
                 return (end.X - start.X) * (point.Y - start.Y) - (end.Y - start.Y) * (point.X - start.X);
             }
@@ -173,19 +196,15 @@ namespace OOP_3S_Lab234
                 int i;
                 for (i = 0; i < lines.Length; i++)
                 {
-                    if (UnderOrOverTheLine(Lines[i].Start, Lines[i].End, new Vector2(640, 360)) < 0) { break; }
-
-                    //bool isPoint = true;
-                    //for (int j = 0; j < collider.lines.Length; j++)
-                    //{
-                    //    isPoint = false;
-                    //    if (UnderOrOverTheLine(lines[i].Start, lines[i].End, collider.lines[j].Start) < 0) { break; }
-                    //    isPoint = true;
-                    //}
-                    //if (!isPoint)
-                    //{
-                    //    break;
-                    //}
+                    int atLeastOne = 0;
+                    for (int j = 0; j < collider.lines.Length; j++)
+                    {
+                        if (UnderOrOverTheLine(lines[i].Start, lines[i].End, collider.lines[j].Start) > 0) { atLeastOne++; }
+                    }
+                    if (atLeastOne == 0)
+                    {
+                        break;
+                    }
                 }
 
                 if (i == lines.Length) { isIntersect = true; }

@@ -137,6 +137,13 @@ void form::Button::setSize(Vector2f rec_) {
 	rec.setPosition(rec.getPosition());
 }
 
+void form::Button::setOriginCenter()
+{
+	rec.setOrigin(rec.getLocalBounds().width / 2, rec.getLocalBounds().height / 2);
+	//text.setOrigin(text.getLocalBounds().width / 2, text.getLocalBounds().height / 2);
+	//text.setPosition(rec.getPosition());
+}
+
 Vector2f form::Button::getPosition()
 {
 	return rec.getPosition();

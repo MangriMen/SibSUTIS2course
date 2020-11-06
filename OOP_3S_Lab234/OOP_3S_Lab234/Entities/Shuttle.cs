@@ -95,7 +95,7 @@ namespace OOP_3S_Lab234.Entities
                 );
 
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < Collider.Lines.Length; i++)
                 Collider.Lines[i].Draw(_spriteBatch, ColliderTexture);
 
             //Utils.Sprite.DrawCollider(_spriteBatch, ColliderTexture, Collider);

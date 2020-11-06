@@ -58,6 +58,8 @@ namespace form
 
 		void setSize(Vector2f rec_);
 
+		void setOriginCenter();
+
 		Vector2f getPosition();
 
 		Vector2f getSize();

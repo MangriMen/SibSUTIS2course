@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{4d98f1b7-069c-4c28-b137-07bc7ce6f0b2}</ProjectGuid>
-    <RootNamespace>SiAODS3CourseWork</RootNamespace>
+    <ProjectGuid>{c77df8b8-d66a-419c-9734-e8c8c7d36be1}</ProjectGuid>
+    <RootNamespace>SiAODS3DOP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -139,36 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Employee.cpp" />
-    <ClCompile Include="Form.cpp" />
-    <ClCompile Include="InfoCard.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="MainMenu.cpp" />
-    <ClCompile Include="MergeSort.cpp" />
-    <ClCompile Include="Program.cpp" />
-    <ClCompile Include="Queue.cpp" />
-    <ClCompile Include="TreeColor.cpp" />
-    <ClCompile Include="TreeVertex.cpp" />
-    <ClCompile Include="Utils.cpp" />
-    <ClCompile Include="VisualTree.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Variant.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BTree.h" />
-    <ClInclude Include="Employee.h" />
-    <ClInclude Include="Form.h" />
-    <ClInclude Include="InfoCard.h" />
-    <ClInclude Include="TreeColor.h" />
-    <ClInclude Include="TreeVertex.h" />
-    <ClInclude Include="MainMenu.h" />
-    <ClInclude Include="MergeSort.h" />
-    <ClInclude Include="Program.h" />
-    <ClInclude Include="Queue.h" />
-    <ClInclude Include="Reader.h" />
-    <ClInclude Include="Utils.h" />
-    <ClInclude Include="VisualTree.h" />
+    <ClCompile Include="SiAOD_S3_DOP.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -31,7 +31,7 @@ public:
 		databaseFile.seekg(0, ios_base::beg);
 
 		numOfEmployers = length / sizeof(Employee);
-		numOfEmployers = 12;
+		numOfEmployers = 20;
 
 		employersI = new Employee * [numOfEmployers];
 

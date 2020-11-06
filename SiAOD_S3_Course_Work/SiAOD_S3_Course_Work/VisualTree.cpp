@@ -9,54 +9,41 @@
 #include "VisualTree.h"
 #include "Form.h"
 #include "BTree.h"
+#include "TreeColor.h"
+#include "InfoCard.h"
 
 using namespace std;
 
-void VisualTree::getElements(TreeVertex* p, int level, int height, vector<pair<Employee*, int>>& graph) {
-	if (p == nullptr) {
-		if (level <= height) {
-			graph.push_back(make_pair(nullptr, level));
-		}
-		return;
+bool isFullscreen = false;
+
+void switchFullScreen(RenderWindow& window) {
+	if (isFullscreen) {
+		window.create(VideoMode(1024, 800), "VisualTree", Style::Default);
 	}
-	graph.push_back(make_pair(&p->data, level));
-	getElements(p->left, level + 1, height, graph);
-	getElements(p->right, level + 1, height, graph);
-}
-
-void VisualTree::traversalGraph(TreeVertex* root) {
-	const int height = BTree::treeHeight(root);
-
-	const int q = 2;
-	const int an = pow(q, height - 1);
-	const int sum = ((an * q) - 1) / (q - 1);
-	const int elSize = 40;
-
-	vector<pair<Employee*, int>> graph;
-
-	getElements(root, 1, height, graph);
-
-	cout << graph.size();
-
-	for (int i = 1; i <= height; i++) {
-		int el = ceil(sum / pow(2, i)) * elSize;
-		int offset = floor(sum / pow(2, (i - 1 < 0 ? 0 : i - 1))) * elSize + elSize;
-
-		for (int x = 0, of = 0, j = 0; x < graph.size(); x++) {
-			//if (graph[x].second == i) { nodes[x]->circle.setPosition(el + ((offset + 1) * of), i * 120); of++;}
-			if (graph[x].second == i) { nodes[x]->circle.setPosition(el + ((offset + 1) * of), i * 120);}
-		}
+	else {
+		window.create(VideoMode(sf::VideoMode::getFullscreenModes()[0]), "VisualTree", Style::None);
 	}
+	isFullscreen = !isFullscreen;
 }
 
 void VisualTree::Run()
 {
-	window.create(VideoMode(1024, 800), "VisualTree");
+	ContextSettings settings;
+	settings.antialiasingLevel = 16;
+	window.create(VideoMode(1024, 800), "VisualTree", Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
 	View view(FloatRect(0, 0, 1024, 800));
 
-	Build(*&reader->btree.root, 1, BTree::treeHeight(*&reader->btree.root));
-	traversalGraph(*&reader->btree.root);
+	reader->btree.reload(reader->btree.root, Vector2f(0, 0), reader->btree.treeHeight(reader->btree.root));
+	reader->btree.verts(reader->btree.root);
+
+	info = new InfoCard();
+
+	TreeVertex* choosed = nullptr;
+	Color previous;
+
+	bool moving = false;
+	Vector2f oldPos;
 
 	while (window.isOpen()) {
 		Event event;
@@ -71,6 +58,33 @@ void VisualTree::Run()
 			case Event::Closed:
 				window.close();
 				break;
+			case Event::MouseButtonPressed:
+				if (event.mouseButton.button == Mouse::Button::Left) {
+					oldPos = worldPos;
+					moving = true;
+				}
+				break;
+			case Event::MouseButtonReleased:
+				if (event.mouseButton.button == Mouse::Button::Left) {
+					moving = false;
+				}
+				break;
+			case Event::MouseMoved:
+				if (moving) {
+
+					Vector2f newPos = worldPos;
+
+					Vector2f deltaPos = (newPos - oldPos) * 0.9f;
+
+					view = window.getView();
+
+					view.setCenter(view.getCenter() - deltaPos);
+
+					window.setView(view);
+
+					oldPos = worldPos;
+				}
+				break;
 			case Event::MouseWheelScrolled:
 				if (event.mouseWheelScroll.wheel == Mouse::VerticalWheel) {
 					if (event.mouseWheelScroll.delta > 0)
@@ -80,30 +94,101 @@ void VisualTree::Run()
 				}
 				break;
 			case Event::Resized:
-				view.reset(FloatRect(0.f, 0.f, event.size.width, event.size.height));
-				view.zoom(1.0f);
+				view.setSize(Vector2f(window.getSize()));
 				window.setView(view);
+				break;
+			case Event::KeyPressed:
+				switch (event.key.code)
+				{
+				case Keyboard::Enter:
+					if (Keyboard::isKeyPressed(Keyboard::LAlt) || Keyboard::isKeyPressed(Keyboard::RAlt)) {
+						switchFullScreen(window);
+					}
+					break;
+				default:
+					break;
+				}
 				break;
 			default:
 				break;
 			}
-			for (int i = 0; i < size - 1; i++) {
-				if (nodes[i]->circle.getGlobalBounds().contains(worldPos) &&
+			for (int i = 0; i < reader->btree.vertices.size(); i++) {
+				if (reader->btree.vertices[i]->circle.getGlobalBounds().contains(worldPos) &&
 					event.type == event.MouseButtonReleased && event.mouseButton.button == Mouse::Left &&
-					nodes[i]->vertex) {
-					cout << nodes[i]->vertex->data.FIO << " " << nodes[i]->vertex->data.departmentNumber << endl;
+					reader->btree.vertices[i]) {
+
+					system("cls");
+
+					if (choosed != nullptr) {
+						choosed->circle.setFillColor(previous);
+						choosed->circle.setScale(1, 1);
+						if (choosed->left != nullptr) {
+							choosed->left->circle.setFillColor(Color::White);
+							choosed->left->circle.setScale(1, 1);
+						}
+						if (choosed->right != nullptr) {
+							choosed->right->circle.setFillColor(Color::White);
+							choosed->right->circle.setScale(1, 1);
+						}
+					}
+
+					if (choosed != reader->btree.vertices[i]) {
+						previous = reader->btree.vertices[i]->circle.getFillColor();
+						info->setPosition(
+								reader->btree.vertices[i]->circle.getPosition() + 
+								Vector2f(
+									reader->btree.vertices[i]->circle.getLocalBounds().width * 0.12f,
+									-reader->btree.vertices[i]->circle.getLocalBounds().height * 0.12f
+								)
+							);
+
+						info->SetEmployee(
+							reader->btree.vertices[i]->data.FIO,
+							reader->btree.vertices[i]->data.departmentNumber,
+							reader->btree.vertices[i]->data.place,
+							reader->btree.vertices[i]->data.birthDate
+						);
+
+						reader->btree.vertices[i]->circle.setFillColor(TreeColor::Choosed);
+						reader->btree.vertices[i]->circle.setScale(1.5, 1.5);
+						cout << reader->btree.vertices[i]->data.FIO << " " << reader->btree.vertices[i]->data.departmentNumber << " " << "\tBal: " << reader->btree.vertices[i]->balance << endl;
+						if (reader->btree.vertices[i]->left != nullptr) {
+							reader->btree.vertices[i]->left->circle.setFillColor(TreeColor::Left);
+							reader->btree.vertices[i]->left->circle.setScale(1.5, 1.5);
+							cout << "\tLeft: " << reader->btree.vertices[i]->left->data.FIO << " " << reader->btree.vertices[i]->left->data.departmentNumber << endl;
+						}
+						if (reader->btree.vertices[i]->right != nullptr) {
+							reader->btree.vertices[i]->right->circle.setFillColor(TreeColor::Right);
+							reader->btree.vertices[i]->right->circle.setScale(1.5, 1.5);
+							cout << "\tRight: " << reader->btree.vertices[i]->right->data.FIO << " " << reader->btree.vertices[i]->right->data.departmentNumber << endl;
+						}
+						choosed = *&reader->btree.vertices[i];
+					}
+					else {
+						choosed = nullptr;
+					}
+
 				}
 			}
 		}
 
 		window.clear(form::fColor::Background);
 
-		for (int i = 0; i < size-1; i++) {
-			window.draw(nodes[i]->circle);
+		for (int i = 0; i < reader->btree.vertices.size(); i++) {
+			window.draw(reader->btree.vertices[i]->Left);
+			window.draw(reader->btree.vertices[i]->Right);
 		}
+
+		for (int i = 0; i < reader->btree.vertices.size(); i++) {
+			window.draw(reader->btree.vertices[i]->circle);
+		}
+		
+		if (choosed != nullptr)
+			info->Draw(window);
 
 		window.display();
 	}
+	delete info;
 }
 
 void VisualTree::RunThread()
