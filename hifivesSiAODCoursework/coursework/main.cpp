@@ -13,7 +13,7 @@ struct queue {
     stack* head;
     stack* tail;
 };
-
+ 
 void addToStack(stack** head, DatabaseNode node) {
     stack* temp = new stack;
     temp->data = node;
@@ -74,7 +74,7 @@ void DigitalSort(stack*& S, int q_length = 32) {
 
 short int BinarySearch(DatabaseNode** nodeArr, int key, size_t size) {
     int L = 1, m = 0;
-    int R = size - 1;
+    int R = (int)size - 1;
 
     while (L <= R) {
         m = (L + R) / 2;
@@ -109,6 +109,9 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     int tempRightBorder = 0;
     bool first20 = true;
     bool isSearchActive = false;
+    int searchResult = 0;
+    int searchResultNext = 0;
+
     DatabaseNode** nodesArray = new DatabaseNode*[size];
     fillIndexArray(operatingStack, nodesArray);
 
@@ -138,6 +141,8 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 } else {
                     leftBorder = rightBorder;
                     rightBorder += 20;
+                    if (rightBorder > size) rightBorder = size;
+
                     printArrayData(nodesArray, leftBorder, rightBorder);
                 }
             } else {
@@ -151,6 +156,8 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 
                 rightBorder = leftBorder;
                 leftBorder -= 20;
+                if (leftBorder < 0) leftBorder = 0;
+
                 printArrayData(nodesArray, leftBorder, rightBorder);
                 
                 if (leftBorder == 0) {
@@ -163,14 +170,13 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
         case '3':
             cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                 << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
-            printArrayData(nodesArray, 0, size);
+            printArrayData(nodesArray, 0, (int)size);
             break;
         case '4':
             int choosenDepNumber;
-            int searchResult;
             isSearchActive = !isSearchActive;
             if (!isSearchActive) {
-                cout << "Exiting search mode.\n";
+                cout << "Exiting search mode.\n\n";
                 leftBorder = tempLeftBorder;
                 rightBorder = tempRightBorder;
                 break;
@@ -178,14 +184,24 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             tempLeftBorder = leftBorder;
             tempRightBorder = rightBorder;
 
-            cout << "\t Enter the department number: ";
+            cout << "\t Enter the department number (dozens from 0 to 240): ";
             cin >> choosenDepNumber;
-            searchResult = BinarySearch(nodesArray, choosenDepNumber, size) - (2 * bool(!choosenDepNumber));
-            cout << "Employee with department number of " << choosenDepNumber <<
-                    " are loocated at the " << searchResult + 1 << "th position.\n";
-            rightBorder = searchResult;
+            if (!bool(choosenDepNumber % 10) && choosenDepNumber < 250) {
+                searchResult = BinarySearch(nodesArray, choosenDepNumber, size) - (2 * bool(!choosenDepNumber));
+                searchResultNext = searchResult;
+                while (nodesArray[searchResultNext]->departmentNumber == nodesArray[searchResult]->departmentNumber) {
+                    ++searchResultNext;
+                }
+                cout << "Employee with department number of " << choosenDepNumber <<
+                    " are located at the " << searchResult + 1 << "th position.\n\n";
+                cout << searchResultNext << " + 1" << endl << endl;
+                rightBorder = searchResult;
+            } else {
+                cout << "Invalid number.\n\n";
+                isSearchActive = !isSearchActive;
+            }
+
             first20 = false;
-            _getch();
             break;
         default:
             cout << "\n\nError: unsupported argument entered\n\n";
