@@ -373,7 +373,7 @@ void fillRand(int size) {
 	}
 }
 
-void dispalyVertexInfo(Vertex* root, int traversalType) {
+void dispalyTreeInfo(Vertex* root, int traversalType) {
 	cout << "\n-----------------------------------------------------\n\n";
 	if (root == nullptr) {
 		cout << "Дерево пусто.\n";
