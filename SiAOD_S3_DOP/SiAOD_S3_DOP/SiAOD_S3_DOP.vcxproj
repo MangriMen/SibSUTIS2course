@@ -139,7 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Form.cpp" />
     <ClCompile Include="SiAOD_S3_DOP.cpp" />
+    <ClCompile Include="TreeColor.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Form.h" />
+    <ClInclude Include="TreeColor.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -17,6 +17,12 @@ private:
 
 	InfoCard* info;
 
+	void findSides(TreeVertex* p, FloatRect& rect);
+
+	void createRect(TreeVertex* p, string side);
+
+	void align(TreeVertex* p, string side, float delta);
+
 	void Run();
 public:
 	Reader* reader;

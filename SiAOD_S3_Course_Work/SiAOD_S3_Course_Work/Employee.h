@@ -20,6 +20,6 @@ public:
 
 	void Print();
 
-	static bool Compare(Employee first, Employee second);
+	static bool Compare(Employee first, Employee second, int type);
 };
 

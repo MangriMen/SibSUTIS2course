@@ -17,13 +17,77 @@ using namespace std;
 bool isFullscreen = false;
 
 void switchFullScreen(RenderWindow& window) {
+	ContextSettings settings;
+	settings.antialiasingLevel = 16;
 	if (isFullscreen) {
-		window.create(VideoMode(1024, 800), "VisualTree", Style::Default);
+		window.create(VideoMode(1024, 800), "VisualTree", Style::Default, settings);
 	}
 	else {
-		window.create(VideoMode(sf::VideoMode::getFullscreenModes()[0]), "VisualTree", Style::None);
+		window.create(VideoMode(sf::VideoMode::getFullscreenModes()[0]), "VisualTree", Style::None, settings);
 	}
+	window.setVerticalSyncEnabled(true);
 	isFullscreen = !isFullscreen;
+}
+
+FloatRect rectL = FloatRect(INT_MAX, INT_MAX, -INT_MAX, -INT_MAX);
+FloatRect rectR = FloatRect(INT_MAX, INT_MAX, -INT_MAX, -INT_MAX);
+
+void VisualTree::findSides(TreeVertex* p, FloatRect& rect) {
+	if (p != nullptr) {
+		Vector2f pos = p->circle.getPosition();
+
+		if (pos.x < rect.left)
+			rect.left = pos.x;
+
+		if (pos.y < rect.top)
+			rect.top = pos.y;
+
+		if (pos.x > rect.width)
+			rect.width = pos.x;
+
+		if (pos.y > rect.height)
+			rect.height = pos.y;
+
+		findSides(p->left, rect);
+		findSides(p->right, rect);
+	}
+}
+
+void VisualTree::createRect(TreeVertex* p, string side) {
+	if (p != nullptr) {
+		if (side == "Root") {
+			return;
+		}
+		else if (side == "L") {
+			findSides(p, rectL);
+		}
+		else if (side == "R") {
+			findSides(p, rectR);
+		}
+	}
+}
+
+
+void VisualTree::align(TreeVertex* p, string side, float delta) {
+	if (p != nullptr) {
+		align(p->left, "L", delta);
+		align(p->right, "R", delta);
+		rectL = FloatRect(INT_MAX, INT_MAX, -INT_MAX, -INT_MAX);
+		rectR = FloatRect(INT_MAX, INT_MAX, -INT_MAX, -INT_MAX);
+		createRect(p->left, "L");
+		createRect(p->right, "R");
+		float offset = rectL.width - rectR.left;
+		if (offset >= 0) {
+			if (p->left != nullptr)
+				p->left->circle.move(-offset * 0.5 - 80, 0);
+			if (p->right != nullptr)
+				p->right->circle.move(offset * 0.5 + 80, 0);
+			reader->btree.rebuild(p->left, p->left->circle.getPosition(), reader->btree.treeHeight(p->left));
+			reader->btree.rebuild(p->right, p->right->circle.getPosition(), reader->btree.treeHeight(p->right));
+			p->Left[1].position = p->left->circle.getPosition();
+			p->Right[1].position = p->right->circle.getPosition();
+		}
+	}
 }
 
 void VisualTree::Run()
@@ -34,7 +98,7 @@ void VisualTree::Run()
 	window.setVerticalSyncEnabled(true);
 	View view(FloatRect(0, 0, 1024, 800));
 
-	reader->btree.reload(reader->btree.root, Vector2f(0, 0), reader->btree.treeHeight(reader->btree.root));
+	reader->btree.rebuild(reader->btree.root, Vector2f(0, 0), reader->btree.treeHeight(reader->btree.root));
 	reader->btree.verts(reader->btree.root);
 
 	info = new InfoCard();
@@ -44,6 +108,8 @@ void VisualTree::Run()
 
 	bool moving = false;
 	Vector2f oldPos;
+
+	Clock clock;
 
 	while (window.isOpen()) {
 		Event event;
@@ -104,6 +170,9 @@ void VisualTree::Run()
 					if (Keyboard::isKeyPressed(Keyboard::LAlt) || Keyboard::isKeyPressed(Keyboard::RAlt)) {
 						switchFullScreen(window);
 					}
+					break;
+				case Keyboard::B:
+					reader->btree.Print(reader->btree.root);
 					break;
 				default:
 					break;
@@ -183,6 +252,8 @@ void VisualTree::Run()
 			window.draw(reader->btree.vertices[i]->circle);
 		}
 		
+		align(reader->btree.root, "Root", clock.restart().asSeconds());
+
 		if (choosed != nullptr)
 			info->Draw(window);
 

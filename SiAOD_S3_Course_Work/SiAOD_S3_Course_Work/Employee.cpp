@@ -29,15 +29,25 @@ void Employee::Print()
 		<< "\t" << birthDate;
 }
 
-bool Employee::Compare(Employee first, Employee second)
+bool Employee::Compare(Employee first, Employee second, int type)
 {
-	if (first.departmentNumber < second.departmentNumber) {
-		return true;
-	}
-	else if (first.departmentNumber > second.departmentNumber) {
-		return false;
-	}
-	else {
-		return (string)first.FIO < (string)second.FIO;
+	switch (type)
+	{
+	case 1:
+		if (first.departmentNumber < second.departmentNumber) {
+			return true;
+		}
+		else if (first.departmentNumber > second.departmentNumber) {
+			return false;
+		}
+		else {
+			return (string)first.FIO < (string)second.FIO;
+		}
+		break;
+	case 2:
+		return (string)first.place < (string)second.place;
+		break;
+	default:
+		break;
 	}
 }

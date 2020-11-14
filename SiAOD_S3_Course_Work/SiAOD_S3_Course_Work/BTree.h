@@ -30,8 +30,24 @@ public:
 			verts(p->right);
 		}
 	}
+	bool isCollision = true;
+	vector<bool> is;
+	void align(TreeVertex* p) {
+		if (p != nullptr) {
+			if (isCollision) {
+				for (int j = 0; j < vertices.size(); j++) {
+					if (p->circle.getGlobalBounds().intersects(vertices[j]->circle.getGlobalBounds())) {
+						p->circle.move((p->circle.getPosition().x > 0 ? 0.01 : (p->circle.getPosition().x < 0 ? -0.01 : 0)), 0);
+						is.push_back(true);
+					}
+				}
+			}
+			align(p->left);
+			align(p->right);
+		}
+	}
 
-	void reload(TreeVertex* p, Vector2f pos, int level) {
+	void rebuild(TreeVertex* p, Vector2f pos, int level) {
 		if (p != nullptr) {
 			if (pos == Vector2f(0, 0)) {
 				p->circle.setFillColor(TreeColor::Root);
@@ -66,12 +82,14 @@ public:
 			p->Left[1].color = TreeColor::Left;
 			p->Right[1].color = TreeColor::Right;
 
-			reload(p->left, p->circle.getPosition() + Vector2f(-OFFSET_X * level, OFFSET_Y), level);
+			rebuild(p->left, p->circle.getPosition() + Vector2f(-OFFSET_X * level, OFFSET_Y), level);
 			if (p->balance == 1) {
-				reload(p->right, p->circle.getPosition() + Vector2f(OFFSET_X * ++level, 0), level);
+				p->Right[0].color = Color::Red;
+				p->Right[1].color = Color::Red;
+				rebuild(p->right, p->circle.getPosition() + Vector2f(OFFSET_X * ++level, 0), level);
 			}
 			else {
-				reload(p->right, p->circle.getPosition() + Vector2f(OFFSET_X * level, OFFSET_Y), level);
+				rebuild(p->right, p->circle.getPosition() + Vector2f(OFFSET_X * level, OFFSET_Y), level);
 			}
 		}
 	}
@@ -120,6 +138,8 @@ public:
 		cout << endl << endl;
 	}
 
+	int lvl = 0;
+
 	void Add(TreeVertex*& p, Employee D, string sibling, Vector2f parent)
 	{
 		if (p == nullptr)
@@ -137,20 +157,24 @@ public:
 			p->Right.resize(2);
 
 			p->circle.setRadius(20);
+			p->circle.setFillColor(TreeColor::Root);
 			p->circle.setOutlineColor(Color::Black);
 			p->circle.setOutlineThickness(-4);
 			p->circle.setOrigin(p->circle.getLocalBounds().width / 2, p->circle.getLocalBounds().height / 2);
 
 			if (sibling == "R") {
 				p->circle.setPosition(parent + Vector2f(OFFSET_X, OFFSET_Y));
+				p->circle.setFillColor(Color::White);
 			}
 			else if (sibling == "L") {
 				p->circle.setPosition(parent + Vector2f(-OFFSET_X, OFFSET_Y));
+				p->circle.setFillColor(Color::White);
 			}
 
+			lvl = 0;
 			VR = 1;
 		}
-		else if (!Employee::Compare(p->data, D))
+		else if (!Employee::Compare(p->data, D, 2))
 		{
 			Add(p->left, D, "L", p->circle.getPosition());
 			if (VR == 1)
@@ -178,7 +202,7 @@ public:
 			}
 			else HR = 0;
 		}
-		else if (Employee::Compare(p->data, D))
+		else if (Employee::Compare(p->data, D, 2))
 		{
 			Add(p->right, D, "R", p->circle.getPosition());
 			if (VR == 1)

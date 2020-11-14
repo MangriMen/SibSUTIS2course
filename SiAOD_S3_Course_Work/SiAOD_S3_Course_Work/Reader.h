@@ -15,6 +15,8 @@ public:
 	queue employersFoundedQ;
 	Employee** employersFoundedI;
 
+	queue employersFoundedTreeQ;
+
 	BTree btree;
 
 	Reader() {
@@ -31,7 +33,6 @@ public:
 		databaseFile.seekg(0, ios_base::beg);
 
 		numOfEmployers = length / sizeof(Employee);
-		numOfEmployers = 20;
 
 		employersI = new Employee * [numOfEmployers];
 
@@ -41,13 +42,13 @@ public:
 
 		databaseFile.close();
 
-		MergeSort(&employersQ.head, numOfEmployers);
+		MergeSort(&employersQ.head, numOfEmployers, 1);
 
 		fillIndexArray(employersQ, employersI);
 
 		numOfFounded = queueFromKey(employersI, employersFoundedQ, 0, numOfEmployers);
 
-		btree.From(employersQ);
+		btree.From(employersFoundedQ);
 
 		employersFoundedI = new Employee * [numOfFounded];
 

@@ -300,7 +300,7 @@ int averagePathLenght(Vertex* p, int level) {
 	if (p == nullptr) {
 		return 0;
 	}
-	return level + averagePathLenght(p->left, level + 1) + averagePathLenght(p->right, level + 1);
+	return level * p->w + averagePathLenght(p->left, level + 1) + averagePathLenght(p->right, level + 1);
 }
 
 void fillZero(int* A, int size) {

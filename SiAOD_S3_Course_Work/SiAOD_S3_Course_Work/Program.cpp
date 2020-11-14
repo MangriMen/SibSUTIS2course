@@ -18,6 +18,6 @@ void Program::Run() {
 	mainMenu.reader = *&reader;
 	visualTree.reader = *&reader;
 
-	//mainMenu.RunThread();
+	mainMenu.RunThread();
 	visualTree.RunThread();
 }
