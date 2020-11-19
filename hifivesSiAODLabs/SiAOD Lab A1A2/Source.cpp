@@ -176,18 +176,13 @@ int searchLevel(Vertex* pointer, int key) {
 	}
 }
 
-double treeHeight(size_t size) {
-	double W = 0;
-	l = new int[size];
-	int h = 0;
 
-	for (int i = 1; i < size; ++i) {
-		l[i] = searchLevel(root, V[i]);
-		W += w[i];
-		h += w[i] * l[i];
-	}
+double treeHeight(Vertex* pointer, int level) {
+	return pointer != nullptr ? ((level * pointer->weight) + treeHeight(pointer->left, level + 1) + treeHeight(pointer->right, level + 1)) : 0;
+}
 
-	return (double)h / W;
+int weightSum(Vertex* pointer, int level) {
+	return pointer != nullptr ? (pointer->weight + weightSum(pointer->left, level + 1) + weightSum(pointer->right, level + 1)) : 0;
 }
 
 int sum(Vertex* pointer) {
@@ -252,13 +247,16 @@ int main() {
 	cout << "Введите тип прохода (1 - сверху вниз, 2 - справа налево, 3 - снизу вверх): ";
 	cin >> traversalType;
 
-	w = new int[numberOfVertex++];
-	V = new int[numberOfVertex];
+	w = new int[numberOfVertex + 1];
+	V = new int[numberOfVertex + 1];
+	fillRand(numberOfVertex + 1, V);
+	fillRand(numberOfVertex + 1, w);
+	int* V1 = new int[numberOfVertex + 1], * W1 = new int[numberOfVertex + 1];
+	int* V2 = new int[numberOfVertex + 1], * W2 = new int[numberOfVertex + 1];
 	int temp;
-	fillRand(numberOfVertex, V);
-	fillRand(numberOfVertex, w);
-	for (int i = 0; i < numberOfVertex; i++) {
-		for (int j = i; j < numberOfVertex; ++j) {
+	
+	for (int i = 0; i < numberOfVertex + 1; i++) {
+		for (int j = i; j < numberOfVertex + 1; ++j) {
 			if (V[i] < V[j]) {
 				temp = V[j];
 				V[j] = V[i];
@@ -267,51 +265,40 @@ int main() {
 		}
 	}
 
-	cout << "\nИзначальный массив:\n";
-	for (int i = 1; i < numberOfVertex; ++i) {
-		cout << V[i] << "(" << w[i] << ")" << " ";
-	}
-
-	AWCompute(numberOfVertex);
-	APARCompute(numberOfVertex);
+	AWCompute(numberOfVertex + 1);
+	APARCompute(numberOfVertex + 1);
 	cout << "\n\nМатрица Aw:\n";
-	printMatrix(Aw, numberOfVertex);
+	printMatrix(Aw, numberOfVertex + 1);
 	cout << "Матрица Ap:\n";
-	printMatrix(Ap, numberOfVertex);
+	printMatrix(Ap, numberOfVertex + 1);
 	cout << "Матрица Ar:\n";
-	printMatrix(Ar, numberOfVertex);
+	printMatrix(Ar, numberOfVertex + 1);
 
-	cout << "\n\n-------------------------------------------------------------\n";
+	cout << "\n\n--------------------------------\n";
 	cout << "\nДерево оптимального поиска:\n";
-	createTree(0, numberOfVertex - 1);
-	dispalyTreeInfo(root, traversalType);
+	createTree(0, numberOfVertex);
+	cout << "\n--------------------------------\n\n";
+	cout << "Обход " << traversalType << " типа:\n";
+	traversal(root, traversalType);
+	cout << "\n\nКоличество вершин: " << amount(root);
+	cout << "\n\nСумма элементов: " << sum(root);
+	cout << "\n\nВысота по матрице: " << (double)Ap[0][numberOfVertex] / Aw[0][numberOfVertex] << endl;
+	cout << "\nВысота дерева: " << treeHeight(root, 1) / (double)weightSum(root, 1);
 
-	numberOfVertex--;
-	int* V = new int[numberOfVertex], * W = new int[numberOfVertex];
-	int* V1 = new int[numberOfVertex], * W1 = new int[numberOfVertex];
 	delete root;
 	root = nullptr;
-	fillRand(numberOfVertex, V);
-	fillRand(numberOfVertex, W);
+
+	//Копируем
 	for (int i = 0; i < numberOfVertex; i++) {
-		V1[i] = V[i];
-		W1[i] = W[i];
+		V1[i] = V[i + 1];
+		W1[i] = w[i + 1];
+		V2[i] = V[i + 1];
+		W2[i] = w[i + 1];
 	}
+	//Сортировка весов
 	for (int i = 0; i < numberOfVertex; i++) {
 		for (int j = 0; j < numberOfVertex; j++) {
-			if (W[i] > W[j]) {
-				temp = W[i];
-				W[i] = W[j];
-				W[j] = temp;
-				temp = V[i];
-				V[i] = V[j];
-				V[j] = temp;
-			}
-		}
-	}
-	for (int i = 0; i < numberOfVertex; i++) {
-		for (int j = 0; j < numberOfVertex; j++) {
-			if (V1[i] < V1[j]) {
+			if (W1[i] < W1[j]) {
 				temp = W1[i];
 				W1[i] = W1[j];
 				W1[j] = temp;
@@ -321,14 +308,27 @@ int main() {
 			}
 		}
 	}
+	//Сортировка вершин
+	for (int i = 0; i < numberOfVertex; i++) {
+		for (int j = 0; j < numberOfVertex; j++) {
+			if (V2[i] < V2[j]) {
+				temp = W2[i];
+				W2[i] = W2[j];
+				W2[j] = temp;
+				temp = V2[i];
+				V2[i] = V2[j];
+				V2[j] = temp;
+			}
+		}
+	}
 
 	cout << "\n\n-------------------------------------------------------------\n";
 	cout << "\nДерево A1:\n";
 	cout << "\nИзначальный массив:\n";
-	for (int i = 1; i < numberOfVertex; ++i) {
-		cout << V[i] << "(" << W[i] << ")" << " ";
+	for (int i = 0; i < numberOfVertex; ++i) {
+		cout << V1[i] << "(" << W1[i] << ")" << " ";
 	}
-	A1_add(root, V, W, numberOfVertex);
+	A1_add(root, V1, W1, numberOfVertex);
 	dispalyTreeInfo(root, traversalType);
 
 	delete root;
@@ -337,10 +337,10 @@ int main() {
 	cout << "\n\n-------------------------------------------------------------\n";
 	cout << "\nДерево A2:\n";
 	cout << "\nИзначальный массив:\n";
-	for (int i = 1; i < numberOfVertex; ++i) {
-		cout << V1[i] << "(" << W1[i] << ")" << " ";
+	for (int i = 0; i < numberOfVertex; ++i) {
+		cout << V2[i] << "(" << W2[i] << ")" << " ";
 	}
-	A2_add(root, V1, W1, 0, numberOfVertex - 1);
+	A2_add(root, V2, W2, 0, numberOfVertex - 1);
 	dispalyTreeInfo(root, traversalType);
 	
 	cout << "\n\n-------------------------------------------------------------\n";
