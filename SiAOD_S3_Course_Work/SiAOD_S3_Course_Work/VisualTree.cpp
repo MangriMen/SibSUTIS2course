@@ -110,6 +110,7 @@ void VisualTree::Run()
 	Vector2f oldPos;
 
 	Clock clock;
+	string key = "";
 
 	while (window.isOpen()) {
 		Event event;
@@ -171,8 +172,13 @@ void VisualTree::Run()
 						switchFullScreen(window);
 					}
 					break;
+				case Keyboard::F:
+					cin >> key;
+					reader->btree.search(reader->btree.root, Employee::Sort::departmentNumber, key)->data.Print();
+					break;
 				case Keyboard::B:
 					reader->btree.Print(reader->btree.root);
+					reader->btree.Info();
 					break;
 				default:
 					break;

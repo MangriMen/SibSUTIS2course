@@ -14,6 +14,75 @@ public:
 	TreeVertex* root = nullptr;
 	vector<TreeVertex*> vertices;
 
+	TreeVertex* search(TreeVertex*& p, Employee::Sort type, string value) {
+		while (p != nullptr)
+		{
+			if (!Employee::Compare(p->data, value, type))
+			{
+				p = p->left;
+			}
+			else if (Employee::Compare(p->data, value, type))
+			{
+				p = p->right;
+			}
+			else break;
+		}
+		return p;
+	}
+
+	void deleteSDP(Employee* X, TreeVertex*& Root)
+	{
+		TreeVertex** p = &Root;
+		TreeVertex* q = nullptr, * R = nullptr, * s = nullptr;
+		while (*p != nullptr)
+		{
+			if (!Employee::Compare((*p)->data, *X, Employee::Sort::Tree))
+			{
+				p = &((*p)->left);
+			}
+			else if (Employee::Compare((*p)->data, *X, Employee::Sort::Tree))
+			{
+				p = &((*p)->right);
+			}
+			else break;
+		}
+		if (*p != nullptr)
+		{
+			q = *p;
+			if (q->left == nullptr)
+			{
+				*p = q->right;
+			}
+			else if (q->right == nullptr)  //1
+			{
+				*p = q->left;
+			}
+			else
+			{
+				R = q->left;
+				s = q;
+				if (R->right == nullptr)  //3
+				{
+					R->right = q->right;
+					*p = R;
+				}
+				else
+				{
+					while (R->right != nullptr)   //2
+					{
+						s = R;
+						R = R->right;
+					}
+					s->right = R->left;
+					R->left = q->left;
+					R->right = q->right;
+					*p = R;
+				}
+			}
+			delete q;
+		}
+	}
+
 	void Print(TreeVertex* p) {
 		if (p != nullptr) {
 			Print(p->left);
@@ -174,7 +243,7 @@ public:
 			lvl = 0;
 			VR = 1;
 		}
-		else if (!Employee::Compare(p->data, D, 2))
+		else if (!Employee::Compare(p->data, D, Employee::Sort::Tree))
 		{
 			Add(p->left, D, "L", p->circle.getPosition());
 			if (VR == 1)
@@ -202,7 +271,7 @@ public:
 			}
 			else HR = 0;
 		}
-		else if (Employee::Compare(p->data, D, 2))
+		else if (Employee::Compare(p->data, D, Employee::Sort::Tree))
 		{
 			Add(p->right, D, "R", p->circle.getPosition());
 			if (VR == 1)

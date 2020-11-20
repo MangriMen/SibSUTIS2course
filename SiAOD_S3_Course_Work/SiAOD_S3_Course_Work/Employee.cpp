@@ -29,11 +29,11 @@ void Employee::Print()
 		<< "\t" << birthDate;
 }
 
-bool Employee::Compare(Employee first, Employee second, int type)
+bool Employee::Compare(Employee first, Employee second, Sort type)
 {
 	switch (type)
 	{
-	case 1:
+	case Sort::Merge:
 		if (first.departmentNumber < second.departmentNumber) {
 			return true;
 		}
@@ -44,9 +44,34 @@ bool Employee::Compare(Employee first, Employee second, int type)
 			return (string)first.FIO < (string)second.FIO;
 		}
 		break;
-	case 2:
-		return (string)first.place < (string)second.place;
+	case Sort::Tree:
+		if ((string)first.place < (string)second.place) {
+			return true;
+		}
+		else if ((string)first.place > (string)second.place) {
+			return false;
+		}
+		else {
+			return (string)first.FIO < (string)second.FIO;
+		}
 		break;
+	default:
+		break;
+	}
+}
+
+bool Employee::Compare(Employee first, string value, Sort type)
+{
+	switch (type)
+	{
+	case Sort::FIO:
+		return (string)first.FIO < value;
+	case Sort::departmentNumber:
+		return first.departmentNumber < atoi(value.c_str());
+	case Sort::place:
+		return (string)first.place < value;
+	case Sort::birthDate:
+		return (string)first.birthDate < value;
 	default:
 		break;
 	}

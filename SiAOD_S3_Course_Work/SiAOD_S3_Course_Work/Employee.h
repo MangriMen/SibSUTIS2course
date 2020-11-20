@@ -11,6 +11,16 @@ public:
 	short int departmentNumber;
 	char place[22];
 	char birthDate[10];
+
+	static enum class Sort {
+		Null,
+		Merge,
+		Tree,
+		FIO,
+		departmentNumber,
+		place,
+		birthDate
+	};
 	
 	Employee();
 
@@ -20,6 +30,7 @@ public:
 
 	void Print();
 
-	static bool Compare(Employee first, Employee second, int type);
+	static bool Compare(Employee first, Employee second, Sort type);
+	static bool Compare(Employee first, string value, Sort type);
 };
 

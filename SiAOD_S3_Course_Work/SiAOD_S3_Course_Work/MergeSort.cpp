@@ -1,6 +1,6 @@
 #include "MergeSort.h"
 
-void MergeSort(stack** head, int n, int type) {
+void MergeSort(stack** head, int n, Employee::Sort type) {
 	stack* a = NULL, * b = NULL, * head_p = *head;
 	int p, i, m, q, r;
 	Split(head_p, &a, &b, n);
@@ -55,7 +55,7 @@ void Split(stack* head, stack** a, stack** b, int& n) {
 }
 
 
-void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail, int type) {
+void Merge(stack** head_a, int q, stack** head_b, int r, stack** c_tail, Employee::Sort type) {
 	while (q != 0 && r != 0) {
 		if (Employee::Compare((*head_a)->data, (*head_b)->data, type)) {
 			StackToQueue(head_a, c_tail);

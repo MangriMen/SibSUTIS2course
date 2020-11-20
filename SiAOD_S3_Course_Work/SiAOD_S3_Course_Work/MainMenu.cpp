@@ -215,7 +215,17 @@ void MainMenu::Run()
 					reader->employersFoundedI = new Employee * [reader->numOfFounded];
 					fillIndexArray(reader->employersFoundedQ, reader->employersFoundedI);
 
+					for (int i = 0; i < reader->numOfFounded; i++)
+					{
+						reader->btree.deleteSDP(reader->employersFoundedI[i], reader->btree.root);
+					}
+					reader->btree.root = nullptr;
+					reader->btree.vertices.clear();
+
 					reader->btree.From(reader->employersFoundedQ);
+
+					reader->btree.rebuild(reader->btree.root, Vector2f(0, 0), reader->btree.treeHeight(reader->btree.root));
+					reader->btree.verts(reader->btree.root);
 
 					switch (mode)
 					{

@@ -42,7 +42,7 @@ public:
 
 		databaseFile.close();
 
-		MergeSort(&employersQ.head, numOfEmployers, 1);
+		MergeSort(&employersQ.head, numOfEmployers, Employee::Sort::Merge);
 
 		fillIndexArray(employersQ, employersI);
 
