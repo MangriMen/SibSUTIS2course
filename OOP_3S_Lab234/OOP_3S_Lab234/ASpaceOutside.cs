@@ -2,9 +2,12 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using OOP_3S_Lab234.Entities;
+using OOP_3S_Lab234.Models;
 using OOP_3S_Lab234.ShipParts;
 using OOP_3S_Lab234.Utils;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using Color = Microsoft.Xna.Framework.Color;
 using Vector2 = Microsoft.Xna.Framework.Vector2;
@@ -28,6 +31,10 @@ namespace OOP_3S_Lab234
         Texture2D loadingScreen;
         Player player;
         Enemy[] clones = new Enemy[9];
+
+        public static Dictionary<string, Texture2D> projectilesTexture = new Dictionary<string, Texture2D>();
+        public static Dictionary<string, Dictionary<string, Texture2D>> projectilesAnimation = new Dictionary<string, Dictionary<string, Texture2D>>();
+
         Projectile rocket1;
 
         private GraphicsDeviceManager _graphics;
@@ -35,7 +42,7 @@ namespace OOP_3S_Lab234
         Random random = new Random();
         Texture2D white;
 
-        PolygonCollider poly;
+        RenderTarget2D viewport;
 
         public ASpaceOutside()
         {
@@ -51,11 +58,10 @@ namespace OOP_3S_Lab234
             Window.Title = "A Space Outside!";
 
             // Screen mode
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
 
             _graphics.SynchronizeWithVerticalRetrace = false; // vsync
             IsFixedTimeStep = true; // Don't force equal timestep updates
-            TargetElapsedTime = TimeSpan.FromSeconds(1 / 80.0f); // FPS lock (80 per second for now)
 
             // Auto resolution on fullscreen
             if (_graphics.IsFullScreen)
@@ -73,28 +79,20 @@ namespace OOP_3S_Lab234
             _graphics.PreferredBackBufferWidth = (int)resolution.X;
             _graphics.PreferredBackBufferHeight = (int)resolution.Y;
 
+            resolution = new Vector2(1920, 1080);
+
             _graphics.PreferMultiSampling = true;
             GraphicsDevice.PresentationParameters.MultiSampleCount = 8;
 
             _graphics.ApplyChanges();
 
-            player = new Player(new Vector2(_graphics.PreferredBackBufferWidth / 2,
-                _graphics.PreferredBackBufferHeight / 2));
+            player = new Player(new Vector2(resolution.X / 2,
+                resolution.Y / 2));
 
-            rocket1 = new Projectile(new Vector2(_graphics.PreferredBackBufferWidth / 2,
-                _graphics.PreferredBackBufferHeight / 2), "rocket");
+            rocket1 = new Projectile(new Vector2(resolution.X / 2,
+                resolution.Y / 4), "rocket", new Vector2(0.5f, 0.5f));
 
-            Vector2[] tmp =
-            {
-                new Vector2(200, 200),
-                new Vector2(250, 200),
-                new Vector2(250, 250),
-                new Vector2(200, 250)
-            };
-
-            poly = new PolygonCollider(tmp);
-
-            poly.Position = new Vector2(225, 225);
+            viewport = new RenderTarget2D(GraphicsDevice, (int)resolution.X, (int)resolution.Y);
 
             for (int i = 0; i < clones.Length; i++)
             {
@@ -145,6 +143,16 @@ namespace OOP_3S_Lab234
 
             white = Content.Load<Texture2D>("Images/Backgrounds/white");
 
+            projectilesTexture.Add("rocket", Content.Load<Texture2D>("Images/Projectales/rocketProj"));
+            projectilesTexture.Add("pixel", Content.Load<Texture2D>("Images/Backgrounds/white"));
+
+            projectilesAnimation.Add(
+                "rocket",
+                new Dictionary<string, Texture2D> {
+                    ["Working"] = Content.Load<Texture2D>("Images/Projectales/rocketProj"),
+                    ["Exploding"] = Content.Load<Texture2D>("Images/Particles/projectileExplosionPariclesBig")
+                });
+
             //String[] bodies = new String[4] { "bugBody", "gamepadBody", "lunarBody", "massiveBody" };
             String[] cabins = new String[4] { "brickCabin", "conusCabinDouble", "ovalCabin", "raindropDoubleCabin" };
             String[] jets = new String[6] { "doubleBlueJet", "doubleGreenJet", "doubleOrangeJet", "monoBlueJet", "monoGreenJet", "monoOrangeJet" };
@@ -160,6 +168,8 @@ namespace OOP_3S_Lab234
 
         private void GameLoaded(object obj)
         {
+            TargetElapsedTime = TimeSpan.FromSeconds(1 / 80.0f); // FPS lock (80 per second for now)
+
             State = GameState.MainMenu;
         }
 
@@ -169,17 +179,29 @@ namespace OOP_3S_Lab234
             for (int i = 0; i < clones.Length; i++)
             {
                 if (player.Collider.Intersects(clones[i].Collider))
-                {
                     player.isDamaged = true;
-                }
+
+                foreach (var projectile in clones[i].projectiles)
+                    if (projectile.IsExists && projectile.Collider.Intersects(player.Collider))
+                    {
+                        player.isDamaged = true;
+                        projectile.Blow();
+                    };
+                foreach (var projectile in player.projectiles)
+                    if (projectile.IsExists && projectile.Collider.Intersects(clones[i].Collider))
+                    {
+                        clones[i].isDamaged = true;
+                        projectile.Blow();
+                    };
             }
-            if (player.Collider.Intersects(rocket1.Collider)) { player.isDamaged = true; }
+            if (rocket1.IsExists)
+                if (rocket1.Collider.Intersects(player.Collider)) { player.isDamaged = true; rocket1.Blow(); }
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            //    Exit();
 
             switch (State)
             {
@@ -217,6 +239,9 @@ namespace OOP_3S_Lab234
 
         protected void UpdateGameplay(GameTime gameTime)
         {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+                State = GameState.MainMenu;
+
             player.Update(gameTime, resolution);
 
             rocket1.Update(gameTime, resolution);
@@ -228,11 +253,11 @@ namespace OOP_3S_Lab234
 
             CollisionCheck();
         }
-        Vector2 ct = new Vector2(255, 255);
 
-        float i = 0;
         protected void DrawGameplay()
         {
+
+            _graphics.GraphicsDevice.SetRenderTarget(viewport);
             _graphics.GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
 
@@ -248,25 +273,23 @@ namespace OOP_3S_Lab234
                 );
 
             foreach (var clone in clones)
-            {
                 clone.Draw(_spriteBatch);
-            }
+
             player.Draw(_spriteBatch);
             rocket1.Draw(_spriteBatch);
 
-            foreach (var line in poly.Lines)
-            {
-                line.SetPosition(line.Start + new Vector2(1f, 1f));
-                line.Rotate(poly.Position, i);
-                line.Draw(_spriteBatch, white);
-            }
+            _spriteBatch.End();
 
-            if (i > Math.PI * 2)
-            {
-                i = 0;
-            }
+            _graphics.GraphicsDevice.SetRenderTarget(null);
 
-            i += 0.012f;
+            _spriteBatch.Begin();
+
+            _spriteBatch.Draw(
+                viewport,
+                GraphicsDevice.Viewport.Bounds,
+                Color.White
+                );
+            
             _spriteBatch.End();
         }
     }

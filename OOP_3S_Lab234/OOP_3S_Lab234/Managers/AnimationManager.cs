@@ -15,6 +15,7 @@ namespace OOP_3S_Lab234.Managers
         private Animation _animation;
 
         private float _timer;
+        public bool isFinished = false;
         public Color Color { get; set; } = Color.White;
         public Vector2 Position { get; set; }
         public Vector2 Pivot { get; set; } = Vector2.Zero;
@@ -64,21 +65,26 @@ namespace OOP_3S_Lab234.Managers
             _timer = 0f;
 
             _animation.CurrentFrame = 0;
+
+            isFinished = true;
         }
 
         public void Update(GameTime gameTime)
         {
             _timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            if (_timer > _animation.FrameSpeed)
-            {
-                _timer = 0f;
+            if (!isFinished)
+                if (_timer > _animation.FrameSpeed)
+                {
+                    _timer = 0f;
 
-                _animation.CurrentFrame++;
+                    _animation.CurrentFrame++;
 
-                if (_animation.CurrentFrame >= _animation.FrameCount)
-                    _animation.CurrentFrame = 0;
-            }
+                    if (!_animation.IsLooping && _animation.CurrentFrame == _animation.FrameCount) Stop();
+                    
+                    if (_animation.CurrentFrame >= _animation.FrameCount)
+                        _animation.CurrentFrame = 0;
+                }
         }
     }
 }

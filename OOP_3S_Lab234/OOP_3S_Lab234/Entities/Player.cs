@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Collections.Generic;
 using OOP_3S_Lab234.Models;
+using System.Linq;
 
 namespace OOP_3S_Lab234.Entities
 {
@@ -19,8 +20,9 @@ namespace OOP_3S_Lab234.Entities
         public Player(Vector2 spawnPoint)
         {
             Jet = new SpeedJet();
-            Jet.Speed = 250;
+            Jet.Speed = 375;
             Position = spawnPoint;
+            attackDelay = 0.2f;
         }
         public void Load(ContentManager Content)
         {
@@ -32,14 +34,18 @@ namespace OOP_3S_Lab234.Entities
                 "Images/Shuttle/Jet/slideBlueJet",
                 new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Particles/slideParticles"), 10, 0.1f) }
                 );
-            Vector2[] tmp =
-{
+
+            projectiles = new List<Projectile>();
+
+            Vector2[] colliderPoints =
+            {
                 new Vector2(Texture.Bounds.X, Texture.Bounds.Y),
                 new Vector2(Texture.Bounds.Width, Texture.Bounds.Y),
                 new Vector2(Texture.Bounds.Width, Texture.Bounds.Height),
                 new Vector2(Texture.Bounds.X, Texture.Bounds.Height),
             };
-            Collider = new PolygonCollider(tmp);
+
+            Collider = new PolygonCollider(colliderPoints);
         }
         protected override void BorderCollision(Vector2 offset, Vector2 resolution)
         {
@@ -59,13 +65,38 @@ namespace OOP_3S_Lab234.Entities
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            attackTimer += delta;
+
+            if (attackTimer >= attackDelay) { isAbleToAttack = true; attackTimer = 0; /*Debug.WriteLine("----------" + Convert.ToString(projectiles.Count) + "-----------")*/; }
+
+            if (Kb.getDown(Keys.Space))
+            {
+                Attack();
+            }
+
+            projectilesDestroyTimer += delta;
+
+            if (projectilesDestroyTimer >= 0.5f)
+            {
+                for (int i = 0; i < projectiles.Count; i++)
+                {
+                    if (!projectiles[i].IsExists) { projectiles[i] = null; projectiles.Remove(projectiles[i]); }
+                }
+                projectilesDestroyTimer = 0f;
+            }
+
+            foreach (var projectile in projectiles)
+            {
+                projectile.Update(gameTime, resolution);
+            }
+
             Jet._animationManager.Play(Jet._animations["Working"]);
             Jet._animationManager.Update(gameTime);
 
             bool noKeyPressed = !(Kb.getDown(Keys.Up) || Kb.getDown(Keys.Down) || Kb.getDown(Keys.Left) || Kb.getDown(Keys.Right) ||
                 Kb.getDown(Keys.W) || Kb.getDown(Keys.S) || Kb.getDown(Keys.A) || Kb.getDown(Keys.D));
 
-            Vector2 temp = Position;
+            Vector2 prevPos = Position;
 
             if (noKeyPressed)
             {
@@ -125,8 +156,11 @@ namespace OOP_3S_Lab234.Entities
 
             Collider.Position = Position;
 
-            if (Position - temp != Vector2.Zero)
-                RotateAngle = (float)Math.Atan2(Position.Y - temp.Y, Position.X - temp.X) + (float)Math.PI / 2;
+            if (Position - prevPos != Vector2.Zero)
+                RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
+
+            Collider.Rotate(Collider.Position, RotateAngle);
+
         }
     }
 }

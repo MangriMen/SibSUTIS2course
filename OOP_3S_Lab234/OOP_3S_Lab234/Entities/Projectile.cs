@@ -29,103 +29,54 @@ namespace OOP_3S_Lab234.Entities
         public Texture2D ColliderTexture { get; set; }
         public AnimationManager _animationManager { get; set; }
         public Dictionary<string, Animation> _animations { get; set; }
+        public bool IsExists { get; set; }
 
-        public PolygonCollider Collider = new PolygonCollider(null);
+        public bool IsDestroyed { get; set; }
 
-        //public Rectangle Collider
-        //{
-        //    get
-        //    {
-        //        //return new Rectangle((int)Math.Round(Position.X) - (_animationManager.Current.FrameWidth / 2),
-        //        //                     (int)Math.Round(Position.Y) - (_animationManager.Current.FrameHeight / 2),
-        //        //                     _animationManager.Current.FrameWidth,
-        //        //                     _animationManager.Current.FrameHeight);
-        //        Point[] tmp = {
-        //            Utils.RotatedRectangle.Rotate(
-        //                new Vector2(
-        //                    (int)Math.Round(Position.X),
-        //                    (int)Math.Round(Position.Y)
-        //                    ),
-        //                new Vector2(
-        //                    (int)Math.Round(Position.X) - (_animationManager.Current.FrameWidth / 2),
-        //                    (int)Math.Round(Position.Y) - (_animationManager.Current.FrameHeight / 2)
-        //                    ),
-        //                RotateAngle).ToPoint(),
-        //            Utils.RotatedRectangle.Rotate(
-        //                new Vector2(
-        //                    (int)Math.Round(Position.X),
-        //                    (int)Math.Round(Position.Y)
-        //                    ),
-        //                new Vector2(
-        //                    (int)Math.Round(Position.X) + (_animationManager.Current.FrameWidth / 2),
-        //                    (int)Math.Round(Position.Y) - (_animationManager.Current.FrameHeight / 2)
-        //                    ),
-        //                RotateAngle).ToPoint(),
-        //            Utils.RotatedRectangle.Rotate(
-        //                new Vector2(
-        //                    (int)Math.Round(Position.X),
-        //                    (int)Math.Round(Position.Y)
-        //                    ),
-        //                new Vector2(
-        //                    (int)Math.Round(Position.X) + (_animationManager.Current.FrameWidth / 2),
-        //                    (int)Math.Round(Position.Y) + (_animationManager.Current.FrameHeight / 2)
-        //                    ),
-        //                RotateAngle).ToPoint(),
-        //            Utils.RotatedRectangle.Rotate(
-        //                new Vector2(
-        //                    (int)Math.Round(Position.X),
-        //                    (int)Math.Round(Position.Y)
-        //                    ),
-        //                new Vector2(
-        //                    (int)Math.Round(Position.X) - (_animationManager.Current.FrameWidth / 2),
-        //                    (int)Math.Round(Position.Y) + (_animationManager.Current.FrameHeight / 2)
-        //                    ),
-        //                RotateAngle).ToPoint(),
-        //        };
+        public PolygonCollider Collider;
 
-        //        return new Rectangle(
-        //            (int)Utils.RotatedRectangle.Smallest(tmp).X,
-        //            (int)Utils.RotatedRectangle.Smallest(tmp).Y,
-        //            (int)Utils.RotatedRectangle.Biggest(tmp).X - (int)Utils.RotatedRectangle.Smallest(tmp).X,
-        //            (int)Utils.RotatedRectangle.Biggest(tmp).Y - (int)Utils.RotatedRectangle.Smallest(tmp).Y
-        //            );
-        //    }
-        //}
-
-        public Projectile(Vector2 spawnPoint, string proj)
+        public Projectile(Vector2 spawnPoint, string proj, Vector2 velocity)
         {
             Position = spawnPoint;
-            //Speed = 50f;
+            Speed = 600f;
             TypeOfProjectile = proj;
-            velocity_ = new Vector2(0.5f, 0.5f);
+            velocity_ = velocity;
+            IsExists = true;
         }
 
         public void Draw(SpriteBatch _spriteBatch)
         {
-            _animationManager.Pivot = new Vector2(
+            if (!_animationManager.isFinished)
+            {
+                _animationManager.Pivot = new Vector2(
                 _animationManager.Current.FrameWidth / 2,
                 _animationManager.Current.FrameHeight / 2
                 );
-            //_animationManager.RotateAngle = RotateAngle;
+                _animationManager.RotateAngle = RotateAngle;
 
-            _animationManager.Draw(_spriteBatch);
+                _animationManager.Draw(_spriteBatch);
 
-            for (int i = 0; i < Collider.Lines.Length; i++)
-            {
-                Collider.lines[i].Rotate(Collider.Position, RotateAngle);
+                Collider.Rotate(Collider.Position, RotateAngle);
+
+                //Collider.Draw(_spriteBatch, ColliderTexture);
             }
-
-            for (int i = 0; i < Collider.Lines.Length; i++)
-                Collider.Lines[i].Draw(_spriteBatch, ColliderTexture);
         }
 
-        public virtual void Load(ContentManager Content)
+        public void Load(ContentManager Content)
         {
             Texture = Content.Load<Texture2D>("Images/Projectales/" + TypeOfProjectile.ToLower() + "Proj");
+
             ColliderTexture = Content.Load<Texture2D>("Images/Backgrounds/white");
-            _animations = new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Projectales/" + TypeOfProjectile.ToLower() + "Proj"), 5, 0.1f) };
+
+            _animations = new Dictionary<string, Animation> {
+                ["Working"] = new Animation(Content.Load<Texture2D>("Images/Projectales/" + TypeOfProjectile.ToLower() + "Proj"), 5, 0.1f),
+                ["Exploding"] = new Animation(Content.Load<Texture2D>("Images/Particles/projectileExplosionPariclesBig"), 8, 0.08f, false)
+            };
+
             _animationManager = new AnimationManager(_animations.First().Value);
-            Vector2[] tmp =
+            _animationManager.Play(_animations["Working"]);
+
+            Vector2[] colliderPoints =
             {
                 new Vector2(Texture.Bounds.X, Texture.Bounds.Y),
                 new Vector2(Texture.Bounds.Width / _animationManager.Current.FrameCount, Texture.Bounds.Y),
@@ -133,22 +84,46 @@ namespace OOP_3S_Lab234.Entities
                 new Vector2(Texture.Bounds.X, Texture.Bounds.Height),
             };
 
-            //Vector2[] tmp =
-            //{
-            //    new Vector2(0, 4),
-            //    new Vector2(7, 9),
-            //    new Vector2(3, 15),
-            //    new Vector2(0, 10),
-            //};
-
-            Collider = new PolygonCollider(tmp);
+            Collider = new PolygonCollider(colliderPoints);
         }
-        int i = 0;
+
+        public void Load(Texture2D texture, Texture2D pixel, Dictionary<string, Animation> animations)
+        {
+            Texture = texture;
+
+            ColliderTexture = pixel;
+
+            _animations = animations;
+
+            //_animations = animations.Keys.ToDictionary(_ => _, _ => animations[_]);
+
+            _animationManager = new AnimationManager(_animations.First().Value);
+
+            _animationManager.Play(_animations["Working"]);
+
+            Vector2[] colliderPoints =
+            {
+                new Vector2(Texture.Bounds.X, Texture.Bounds.Y),
+                new Vector2(Texture.Bounds.Width / _animationManager.Current.FrameCount, Texture.Bounds.Y),
+                new Vector2(Texture.Bounds.Width / _animationManager.Current.FrameCount, Texture.Bounds.Height),
+                new Vector2(Texture.Bounds.X, Texture.Bounds.Height),
+            };
+
+            Collider = new PolygonCollider(colliderPoints);
+        }
+
+        public void Blow()
+        {
+            _animationManager.Play(_animations["Exploding"]);
+            IsExists = false;
+        }
+
         public void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            _animationManager.Play(_animations["Working"]);
+            if (Position.X > resolution.X || Position.X < 0 || Position.Y < 0 || Position.Y > resolution.Y) IsExists = false;
+
             _animationManager.Update(gameTime);
 
             Vector2 prevPos = Position;
@@ -161,15 +136,9 @@ namespace OOP_3S_Lab234.Entities
 
             Collider.Position = Position;
 
-            //RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
-            if (RotateAngle > 3.14f * 2)
-            {
-                RotateAngle = 0;
-            }
+            RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
 
-            Collider.lines[0].Rotate(Collider.lines[0].Start + (Collider.lines[0].End - Collider.lines[0].Start) / 2, RotateAngle);
-
-            RotateAngle += 0.012f;
+            Collider.Rotate(Collider.Position, RotateAngle / 100f);
         }
     }
 }

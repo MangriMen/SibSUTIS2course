@@ -15,13 +15,13 @@ namespace OOP_3S_Lab234.Models
         public bool IsLooping { get; set; }
         public Texture2D Texture { get; private set; }
 
-        public Animation(Texture2D texture, int frameCount, float frameSpeed)
+        public Animation(Texture2D texture, int frameCount, float frameSpeed, bool isLoop = true)
         {
             Texture = texture;
 
             FrameCount = frameCount;
 
-            IsLooping = true;
+            IsLooping = isLoop;
 
             FrameSpeed = frameSpeed;
         }

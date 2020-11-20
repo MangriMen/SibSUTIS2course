@@ -45,7 +45,12 @@ namespace OOP_3S_Lab234.Entities
         public Texture2D Cabin { get; set; }
         public bool isDamaged { get; set; }
         public Texture2D ColliderTexture { get; set; }
-        public PolygonCollider Collider = new PolygonCollider(null);
+        protected bool isAbleToAttack = true;
+        protected float attackDelay = 0.2f;
+        protected float attackTimer = 0;
+        protected float projectilesDestroyTimer = 0;
+        public List<Projectile> projectiles;
+        public PolygonCollider Collider;
         public IJet Jet = new SpeedJet();
 
         public void Draw(SpriteBatch _spriteBatch)
@@ -94,11 +99,10 @@ namespace OOP_3S_Lab234.Entities
                 0f
                 );
 
+            foreach (var projectile in projectiles)
+                    projectile.Draw(_spriteBatch);
 
-            for (int i = 0; i < Collider.Lines.Length; i++)
-                Collider.Lines[i].Draw(_spriteBatch, ColliderTexture);
-
-            //Utils.Sprite.DrawCollider(_spriteBatch, ColliderTexture, Collider);
+            //Collider.Draw(_spriteBatch, ColliderTexture);
         }
         public virtual void Load(ContentManager Content, string cabin)
         {
@@ -112,7 +116,9 @@ namespace OOP_3S_Lab234.Entities
                 new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Particles/" + Jet.TypeOfJet.ToLower() + "Particles"), 10, 0.1f) }
                 );
 
-            Vector2[] tmp =
+            projectiles = new List<Projectile>();
+
+            Vector2[] colliderPoints =
             {
                 new Vector2(Texture.Bounds.X, Texture.Bounds.Y),
                 new Vector2(Texture.Bounds.Width, Texture.Bounds.Y),
@@ -120,7 +126,7 @@ namespace OOP_3S_Lab234.Entities
                 new Vector2(Texture.Bounds.X, Texture.Bounds.Height),
             };
 
-            Collider = new PolygonCollider(tmp);
+            Collider = new PolygonCollider(colliderPoints);
         }
         protected virtual void BorderCollision(Vector2 offset, Vector2 resolution)
         {
@@ -134,6 +140,22 @@ namespace OOP_3S_Lab234.Entities
                 Position.X + offset.X > resolution.X - Texture.Height / 2)
             {
                 velocity_.X = -velocity_.X;
+            }
+        }
+
+        public void Attack()
+        {
+            if (isAbleToAttack)
+            {
+                projectiles.Add(new Projectile(Position, "rocket", -(Collider.points_[1] + (Collider.points_[0] - Position) - Position)));
+                projectiles.Last().Load(
+                    ASpaceOutside.projectilesTexture["rocket"],
+                    ASpaceOutside.projectilesTexture["pixel"],
+                    new Dictionary<string, Animation> {
+                        ["Working"] = new Animation(ASpaceOutside.projectilesAnimation["rocket"]["Working"], 5, 0.1f),
+                        ["Exploding"] = new Animation(ASpaceOutside.projectilesAnimation["rocket"]["Exploding"], 8, 0.04f, false),
+                    });
+                isAbleToAttack = false;
             }
         }
 

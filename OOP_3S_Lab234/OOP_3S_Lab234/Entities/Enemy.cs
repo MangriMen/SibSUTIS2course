@@ -42,10 +42,30 @@ namespace OOP_3S_Lab234.Entities
             Position = spawnPoint;
             //velocity_ = new Vector2(0.5f, 0.5f);
         }
-
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
             float delta = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            projectilesDestroyTimer += delta;
+
+            if (projectilesDestroyTimer >= 0.5f)
+            {
+                for (int i = 0; i < projectiles.Count; i++)
+                {
+                    if (!projectiles[i].IsExists) { projectiles[i] = null; projectiles.Remove(projectiles[i]); }
+                }
+                projectilesDestroyTimer = 0f;
+            }
+
+            attackTimer += delta;
+
+            if (attackTimer >= attackDelay) { isAbleToAttack = true; attackTimer = 0; }
+            
+            if (isAbleToAttack)
+                Attack();
+
+            foreach (var projectile in projectiles)
+                projectile.Update(gameTime, resolution);
 
             Jet._animationManager.Play(Jet._animations["Working"]);
             Jet._animationManager.Update(gameTime);
@@ -62,7 +82,10 @@ namespace OOP_3S_Lab234.Entities
 
             Collider.Position = Position;
 
-            RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
+            if (Position - prevPos != Vector2.Zero)
+                RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
+
+            Collider.Rotate(Collider.Position, RotateAngle);
         }
     }
 }

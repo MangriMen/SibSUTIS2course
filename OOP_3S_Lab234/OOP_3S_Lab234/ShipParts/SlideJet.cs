@@ -20,7 +20,7 @@ namespace OOP_3S_Lab234.ShipParts
         public Texture2D Particles { get; set; }
         public SlideJet()
         {
-            Speed = 200f;
+            Speed = 300f;
         }
         void IJet.Boost()
         {

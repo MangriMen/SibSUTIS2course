@@ -22,137 +22,45 @@ namespace OOP_3S_Lab234
                 return Keyboard.GetState().IsKeyDown(key);
             }
         }
-        public class Line
-        {
-            Vector2 start;
-            Vector2 end;
-
-            Vector2 startNR;
-            Vector2 endNR;
-            float angle;
-            Vector2 origin;
-            
-            public float lenght;
-            public Vector2 Start
-            {
-                get
-                {
-                    return start;
-                }
-                set
-                {
-                    start = value;
-                    startNR = value;
-                }
-            }
-
-            public Vector2 End
-            {
-                get
-                {
-                    return end;
-                }
-                set
-                {
-                    end = value;
-                    endNR = value;
-                }
-            }
-
-            public Vector2 Center
-            {
-                get
-                {
-                    return new Vector2(lenght, lenght) / 2;
-                }
-            }
-
-            public Line (Vector2 start_, Vector2 end_)
-            {
-                Start = start_;
-                End = end_;
-                lenght = (float)Math.Sqrt(Math.Pow(end.X - start.X, 2) + Math.Pow(end.Y - start.Y, 2));
-            }
-            public void SetPosition(Vector2 position_)
-            {
-                End = position_ + (End - Start);
-                Start = position_;
-            }
-            public void Move(Vector2 offset)
-            {
-                Start += offset;
-                End += offset;
-            }
-            public void Draw(SpriteBatch _spriteBatch, Texture2D pixel)
-            {
-                for (int i = 0; i < lenght; i++)
-                {
-                    _spriteBatch.Draw(
-                        pixel,
-                        Start + (End - Start) * i/lenght,
-                        Color.White
-                        );
-                }
-            }
-            public void Rotate(Vector2 origin_, float angle_)
-            {
-                start = RotatedRectangle.Rotate(origin_, startNR, angle_);
-                end = RotatedRectangle.Rotate(origin_, endNR, angle_);
-                angle = angle_;
-                origin = origin_;
-            }
-        }
         public class PolygonCollider
         {
-            public Line[] lines;
-            Line[] linesLocal;
+            Vector2[] pointsO_;
+            public Vector2[] points_;
+            Vector2 pivot_;
             Vector2 position_;
-            public Vector2 Position 
-            { 
+            public Vector2 Pivot
+            {
+                get
+                {
+                    return pivot_;
+                }
+            }
+            public Vector2 Position
+            {
                 get
                 {
                     return position_;
                 }
                 set
                 {
-                    position_ = value;
-                    for (int i = 0; i < lines.Length; i++)
+                    for (int i = 0; i < points_.Length; i++)
                     {
-                        lines[i].SetPosition(value + linesLocal[i].Start - Pivot);
+                        points_[i] = value - (pointsO_[i] - pivot_);
                     }
-                } 
-            }
-            public Vector2 Pivot { get; set; }
-
-            public Line[] Lines
-            {
-                get
-                {
-                    return lines;
+                    position_ = value;
                 }
             }
-
             public PolygonCollider(Vector2[] points)
             {
                 Init(points);
             }
-
             public void Init(Vector2[] points)
             {
-                if (points == null) { return; }
-                lines = new Line[points.Length];
-                linesLocal = new Line[points.Length];
+                pointsO_ = (Vector2[])points.Clone();
+                points_ = (Vector2[])points.Clone();
 
-                for (int i = 0; i < points.Length - 1; i++)
-                {
-                    lines[i] = new Line(points[i], points[i + 1]);
-                    linesLocal[i] = new Line(points[i], points[i + 1]);
-                }
-                lines[points.Length - 1] = new Line(points[points.Length - 1], points[0]);
-                linesLocal[points.Length - 1] = new Line(points[points.Length - 1], points[0]);
                 compute2DPolygonCentroid();
             }
-
             public void compute2DPolygonCentroid()
             {
                 Vector2 centroid = Vector2.Zero;
@@ -164,54 +72,77 @@ namespace OOP_3S_Lab234
                 float a = 0f;  // Partial signed area
 
                 // For all vertices
-                int i = 0;
-                for (i = 0; i < lines.Length; i++)
+                for (int i = 0; i < points_.Length; i++)
                 {
-                    x0 = lines[i].Start.X;
-                    y0 = lines[i].Start.Y;
-                    x1 = lines[(i + 1) % lines.Length].Start.X;
-                    y1 = lines[(i + 1) % lines.Length].Start.Y;
-                    a = x0* y1 - x1* y0;
+                    x0 = points_[i].X;
+                    y0 = points_[i].Y;
+                    x1 = points_[(i + 1) % points_.Length].X;
+                    y1 = points_[(i + 1) % points_.Length].Y;
+                    a = x0 * y1 - x1 * y0;
                     signedArea += a;
-                    centroid.X += (x0 + x1)*a;
-                    centroid.Y += (y0 + y1)*a;
+                    centroid.X += (x0 + x1) * a;
+                    centroid.Y += (y0 + y1) * a;
                 }
 
                 signedArea *= 0.5f;
                 centroid.X /= (6.0f * signedArea);
                 centroid.Y /= (6.0f * signedArea);
 
-                Pivot = centroid;
+                pivot_ = centroid - points_[0];
+
+                pivot_.X = (float)Math.Abs(pivot_.X);
+                pivot_.Y = (float)Math.Abs(pivot_.Y);
+            }
+            public void Draw(SpriteBatch _spriteBatch, Texture2D pixel)
+            {
+                for (int i = 0; i < points_.Length; i++)
+                {
+                    float lenght = (float)Math.Sqrt(
+                        Math.Pow(points_[(i + 1) % points_.Length].X - points_[i].X, 2) +
+                        Math.Pow(points_[(i + 1) % points_.Length].Y - points_[i].Y, 2)
+                        );
+                    for (int h = 0; h < lenght; h++)
+                    {
+                        _spriteBatch.Draw(
+                            pixel,
+                            points_[i] + (points_[(i+1) % points_.Length] - points_[i]) * h / lenght,
+                            Color.White
+                            );
+                    }
+
+                }
+
+            }
+
+            public void Rotate(Vector2 origin_, float angle)
+            {
+                for (int i = 0; i < points_.Length; i++)
+                {
+                    points_[i] = Point.Rotate(origin_, points_[i], angle);
+                }
             }
 
             public static float UnderOrOverTheLine(Vector2 start, Vector2 end, Vector2 point)
             {
-                return (end.X - start.X) * (point.Y - start.Y) - (end.Y - start.Y) * (point.X - start.X);
+                return ((end.X - start.X) * (point.Y - start.Y) - (end.Y - start.Y) * (point.X - start.X));
             }
 
             public bool Intersects(PolygonCollider collider)
             {
-                bool isIntersect = false;
+                int j = 0;
 
-                int i;
-                for (i = 0; i < lines.Length; i++)
+                for (int i = 0; i < points_.Length; i++)
                 {
-                    int atLeastOne = 0;
-                    for (int j = 0; j < collider.lines.Length; j++)
-                    {
-                        if (UnderOrOverTheLine(lines[i].Start, lines[i].End, collider.lines[j].Start) > 0) { atLeastOne++; }
-                    }
-                    if (atLeastOne == 0)
-                    {
-                        break;
-                    }
+                    for (j = 0; j < collider.points_.Length; j++)
+                        if (UnderOrOverTheLine(collider.points_[j], collider.points_[(j + 1) % collider.points_.Length], points_[i]) < 0) break;
+
+                    if (j == collider.points_.Length) break;
                 }
 
-                if (i == lines.Length) { isIntersect = true; }
-
-                return isIntersect;
+                return (j == collider.points_.Length);
             }
         }
+
         public static class Sprite
         {
             public static void DrawCollider(SpriteBatch _spriteBatch, Texture2D ColliderTexture, Rectangle Collider)
@@ -272,81 +203,7 @@ namespace OOP_3S_Lab234
                 }
             }
         }
-        public class Kvadr
-        {
-            Point[] corners = new Point[4];
-            Vector2[] points;
-            int els = 0;
-            public Kvadr(Point[] corners_)
-            {
-                corners = corners_;
-                points = new Vector2[500];
-            }
-
-            public void Build(Point[] corners_ = null)
-            {
-                if (corners_ != null)
-                {
-                    corners = corners_;
-                }
-                int i = 0;
-                int k = 1;
-                while (i < 500)
-                {
-                    points[i] = corners[0].ToVector2() + (corners[1].ToVector2() - corners[0].ToVector2()) * k/100;
-                    if (points[i] == corners[1].ToVector2())
-                    {
-                        break;
-                    }
-                    k++;
-                    i++;
-                }
-                k = 1;
-                while (i < 500)
-                {
-                    points[i] = corners[1].ToVector2() + (corners[2].ToVector2() - corners[1].ToVector2()) * k / 100;
-                    if (points[i] == corners[2].ToVector2())
-                    {
-                        break;
-                    }
-                    k++;
-                    i++;
-                }
-                k = 1;
-                while (i < 500)
-                {
-                    points[i] = corners[2].ToVector2() + (corners[3].ToVector2() - corners[2].ToVector2()) * k / 100;
-                    if (points[i] == corners[3].ToVector2())
-                    {
-                        break;
-                    }
-                    k++;
-                    i++;
-                }
-                k = 1;
-                while (i < 500)
-                {
-                    points[i] = corners[3].ToVector2() + (corners[0].ToVector2() - corners[3].ToVector2()) * k / 100;
-                    if (points[i] == corners[0].ToVector2())
-                    {
-                        break;
-                    }
-                    k++;
-                    i++;
-                }
-                els = i;
-            }
-            public void Draw(SpriteBatch _spriteBatch, Texture2D white)
-            {
-                for (int i = 0; i < els; i++)
-                    _spriteBatch.Draw(
-                        white,
-                        points[i],
-                        Color.White
-                        );
-            }
-        }
-        public static class RotatedRectangle {
+        public static class Point {
             public static Vector2 Rotate(Vector2 origin, Vector2 point, float angle) {
                 float cosFromAngle = (float)Math.Cos(angle);
                 float sinFromAngle = (float)Math.Sin(angle);
@@ -360,40 +217,6 @@ namespace OOP_3S_Lab234
                 float qy = oy + sinFromAngle * (px - ox) + cosFromAngle * (py - oy);
 
                 return new Vector2(qx, qy);
-            }
-            public static Vector2 Smallest(Point[] corners)
-            {
-                Vector2 smallest = Vector2.Zero;
-                Vector2 sm1;
-                Vector2 sm2;
-
-                sm1.X = Math.Min(corners[0].X, corners[1].X);
-                sm1.Y = Math.Min(corners[0].Y, corners[1].Y);
-
-                sm2.X = Math.Min(corners[2].X, corners[3].X);
-                sm2.Y = Math.Min(corners[2].Y, corners[3].Y);
-
-                smallest.X = Math.Min(sm1.X, sm2.X);
-                smallest.Y = Math.Min(sm1.Y, sm2.Y);
-
-                return smallest;
-            }
-            public static Vector2 Biggest(Point[] corners)
-            {
-                Vector2 biggest = Vector2.Zero;
-                Vector2 bg1;
-                Vector2 bg2;
-
-                bg1.X = Math.Max(corners[0].X, corners[1].X);
-                bg1.Y = Math.Max(corners[0].Y, corners[1].Y);
-
-                bg2.X = Math.Max(corners[2].X, corners[3].X);
-                bg2.Y = Math.Max(corners[2].Y, corners[3].Y);
-
-                biggest.X = Math.Max(bg1.X, bg2.X);
-                biggest.Y = Math.Max(bg1.Y, bg2.Y);
-
-                return biggest;
             }
         }
     }
