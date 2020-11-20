@@ -35,8 +35,6 @@ namespace OOP_3S_Lab234
         public static Dictionary<string, Texture2D> projectilesTexture = new Dictionary<string, Texture2D>();
         public static Dictionary<string, Dictionary<string, Texture2D>> projectilesAnimation = new Dictionary<string, Dictionary<string, Texture2D>>();
 
-        Projectile rocket1;
-
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         Random random = new Random();
@@ -89,9 +87,6 @@ namespace OOP_3S_Lab234
             player = new Player(new Vector2(resolution.X / 2,
                 resolution.Y / 2));
 
-            rocket1 = new Projectile(new Vector2(resolution.X / 2,
-                resolution.Y / 4), "rocket", new Vector2(0.5f, 0.5f));
-
             viewport = new RenderTarget2D(GraphicsDevice, (int)resolution.X, (int)resolution.Y);
 
             for (int i = 0; i < clones.Length; i++)
@@ -138,8 +133,6 @@ namespace OOP_3S_Lab234
             backgroundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 
             player.Load(Content);
-
-            rocket1.Load(Content);
 
             white = Content.Load<Texture2D>("Images/Backgrounds/white");
 
@@ -194,8 +187,6 @@ namespace OOP_3S_Lab234
                         projectile.Blow();
                     };
             }
-            if (rocket1.IsExists)
-                if (rocket1.Collider.Intersects(player.Collider)) { player.isDamaged = true; rocket1.Blow(); }
         }
 
         protected override void Update(GameTime gameTime)
@@ -244,8 +235,6 @@ namespace OOP_3S_Lab234
 
             player.Update(gameTime, resolution);
 
-            rocket1.Update(gameTime, resolution);
-
             for (int i = 0; i < clones.Length; i++)
             {
                 clones[i].Update(gameTime, resolution);
@@ -276,7 +265,6 @@ namespace OOP_3S_Lab234
                 clone.Draw(_spriteBatch);
 
             player.Draw(_spriteBatch);
-            rocket1.Draw(_spriteBatch);
 
             _spriteBatch.End();
 
