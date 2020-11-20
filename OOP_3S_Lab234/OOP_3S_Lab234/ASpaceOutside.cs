@@ -128,7 +128,7 @@ namespace OOP_3S_Lab234
 
         protected void LoadGame()
         {
-            MainMenu.Load(Content, GraphicsDevice);
+            MainMenu.Load(Content, resolution);
 
             backgroundTexture = Content.Load<Texture2D>("Images/Backgrounds/background");
 

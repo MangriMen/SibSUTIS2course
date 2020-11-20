@@ -24,25 +24,25 @@ namespace OOP_3S_Lab234
 
         public static Texture2D Texture { get; set; }
 
-        public static void Load(ContentManager Content, GraphicsDevice GraphicsDevice)
+        public static void Load(ContentManager Content, Vector2 resolution)
         {
             Font = Content.Load<SpriteFont>("Fonts/default");
             ShadowFont = Content.Load<SpriteFont>("Fonts/shadow");
             Texture = Content.Load<Texture2D>("Images/Backgrounds/menu");
             Button PlayButton = new Button(Content.Load<Texture2D>("Images/Controls/button"), Content.Load<SpriteFont>("Fonts/default"))
             {
-                Position = new Vector2(GraphicsDevice.Viewport.Width * 0.65f, GraphicsDevice.Viewport.Height * 0.4f),
+                Position = new Vector2(resolution.X * 0.44f, resolution.Y * 0.55f),
                 Text = "Play",
             };
             PlayButton.Click += PlayButton_Click;
             Button SettingsButton = new Button(Content.Load<Texture2D>("Images/Controls/button"), Content.Load<SpriteFont>("Fonts/default"))
             {
-                Position = new Vector2(GraphicsDevice.Viewport.Width * 0.65f, GraphicsDevice.Viewport.Height * 0.65f),
+                Position = new Vector2(resolution.X * 0.80f, resolution.Y * 0.85f),
                 Text = "Settings",
             };
             Button ExitButton = new Button(Content.Load<Texture2D>("Images/Controls/button"), Content.Load<SpriteFont>("Fonts/default"))
             {
-                Position = new Vector2(GraphicsDevice.Viewport.Height * 0.05f, GraphicsDevice.Viewport.Height * 0.85f),
+                Position = new Vector2(resolution.X * 0.03f, resolution.Y * 0.85f),
                 Text = "Exit",
             };
             ExitButton.Click += ExitButton_Click;
