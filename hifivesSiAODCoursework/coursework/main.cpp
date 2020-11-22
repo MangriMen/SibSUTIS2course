@@ -107,13 +107,13 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode *data) {
             }
             else {
                 if (pointer->left->balance < 0) {
-                    cout << endl;
+                    //cout << endl;
                     leftLeftTurn(pointer);
                     //cout << "LL ";
                     isIncreased = false;
                 }
                 else {
-                    cout << endl;
+                    //cout << endl;
                     leftRightTurn(pointer);
                     //cout << "LR ";
                     isIncreased = false;
@@ -131,12 +131,12 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode *data) {
                 isIncreased = true;
             } else {
                 if (pointer->right->balance > 0) {
-                    cout << endl;
+                    //cout << endl;
                     rightRightTurn(pointer);
                     //cout << "RR ";
                     isIncreased = false;
                 } else {
-                    cout << endl;
+                    //cout << endl;
                     rightLeftTurn(pointer);
                     //cout << "RL ";
                     isIncreased = false;
@@ -149,20 +149,45 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode *data) {
 void traversal(Vertex* pointer, int type) {
     if (pointer != nullptr) {
         if (type == 1) {
-            cout << "\t\t\t(" << pointer->balance << ") " << endl;
+            cout << "(" << pointer->balance << ") " << endl;
             pointer->data->nodePrint();
         }
         traversal(pointer->left, type);
         if (type == 2) {
-            cout << "\t\t\t(" << pointer->balance << ") " << endl;
+            cout << "(" << pointer->balance << ") " << endl;
             pointer->data->nodePrint();
         }
         traversal(pointer->right, type);
         if (type == 3) {
-            cout << "\t\t\t(" << pointer->balance << ") " << endl;
+            cout << "(" << pointer->balance << ") " << endl;
             pointer->data->nodePrint();
         }
     }
+}
+
+int height(Vertex* pointer) {
+    return pointer != nullptr ? 1 + max(height(pointer->left), height(pointer->right)) : 0;
+}
+
+int amount(Vertex* pointer) {
+    return pointer != nullptr ? 1 + amount(pointer->left) + amount(pointer->right) : 0;
+}
+
+double treeHeightSum(Vertex* pointer, int level) {
+    return pointer != nullptr ? level + treeHeightSum(pointer->left, level + 1) + treeHeightSum(pointer->right, level + 1) : 0;
+}
+
+void dispalyVertexInfo(Vertex* pointer, int traversalType) {
+    cout << endl << "-----------------------------------------------------" << endl << endl;
+    if (pointer == nullptr) {
+        cout << "Дерево пусто." << endl;
+        return;
+    }
+    cout << "Traversal type: " << traversalType << endl;
+    traversal(pointer, traversalType);
+    cout << endl << endl << "Number of vertexes: " << amount(pointer) + 1;
+    cout << endl << endl << "Tree height: " << height(pointer);
+    cout << endl << endl << "Average tree height: " << treeHeightSum(pointer, 1) / amount(pointer) << endl << endl << endl;
 }
 
 void addToStack(stack** head, DatabaseNode node) {
@@ -306,7 +331,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
         case '2':
             if (leftBorder > 0) {
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
-                    << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
+                    << "Post: " << "\t\t\t" << "Date of birth: " << endl;
                 
                 rightBorder = leftBorder;
                 leftBorder -= 20;
@@ -323,14 +348,14 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             break;
         case '3':
             cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
-                << "Post: " << "\t\t\t" << "Date of birth: " << "\n";
+                << "Post: " << "\t\t\t" << "Date of birth: " << endl;
             printArrayData(nodesArray, 0, (int)size);
             break;
         case '4':
             int choosenDepNumber;
             isSearchActive = !isSearchActive;
             if (!isSearchActive) {
-                cout << "Exiting search mode.\n\n";
+                cout << "Exiting search mode." << endl << endl;
                 leftBorder = tempLeftBorder;
                 rightBorder = tempRightBorder;
                 searchResult = 0;
@@ -345,15 +370,14 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             if (!bool(choosenDepNumber % 10) && choosenDepNumber < 250) {
                 searchResult = binarySearch(nodesArray, choosenDepNumber, size) + bool(choosenDepNumber);
                 searchResultLast = searchResult;
-                while (nodesArray[searchResultLast]->departmentNumber == nodesArray[searchResult]->departmentNumber) {
+                while (searchResultLast != 4000 && nodesArray[searchResultLast]->departmentNumber == nodesArray[searchResult]->departmentNumber) {
                     ++searchResultLast;
                 }
                 cout << "Employee with department number of " << choosenDepNumber <<
-                    " are located at the " << searchResult << "th position.\n\n";
+                    " are located at the " << searchResult << "th position." << endl << endl;
                 rightBorder = searchResult;
-                cout << endl << searchResultLast;
             } else {
-                cout << "Invalid number.\n\n";
+                cout << "Invalid number." << endl << endl;
                 isSearchActive = !isSearchActive;
             }
 
@@ -369,7 +393,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 AVLTreeAddNode(pointer, nodesArray[i]);
             }
 
-            traversal(pointer, 2);
+            dispalyVertexInfo(pointer, 2);
 
             break;
         default:
