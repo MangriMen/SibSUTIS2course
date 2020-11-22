@@ -42,7 +42,7 @@ void printArrayData(DatabaseNode** nodeArray, int leftBorder, int rightBorder) {
     }
 }
 
-void DigitalSort(stack*& S, int q_length = 32) {
+void digitalSort(stack*& S, int q_length = 32) {
     int* KDI = new int[q_length];
     for (int i = 0; i < q_length; ++i) { KDI[i] = i; }
     
@@ -72,7 +72,7 @@ void DigitalSort(stack*& S, int q_length = 32) {
     delete[] KDI;
 }
 
-short int BinarySearch(DatabaseNode** nodeArr, int key, size_t size) {
+short int binarySearch(DatabaseNode** nodeArr, int key, size_t size) {
     int L = 1, m = 0;
     int R = (int)size - 1;
 
@@ -84,6 +84,7 @@ short int BinarySearch(DatabaseNode** nodeArr, int key, size_t size) {
             R = m - 1;
         }
     }
+    cout << endl << m << endl;
     if (nodeArr[m]->departmentNumber == key)
         return m;
     else if (nodeArr[m + 1]->departmentNumber == key)
@@ -110,7 +111,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     bool first20 = true;
     bool isSearchActive = false;
     int searchResult = 0;
-    int searchResultNext = 0;
+    int searchResultLast = 0;
 
     DatabaseNode** nodesArray = new DatabaseNode*[size];
     fillIndexArray(operatingStack, nodesArray);
@@ -187,14 +188,14 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             cout << "\t Enter the department number (dozens from 0 to 240): ";
             cin >> choosenDepNumber;
             if (!bool(choosenDepNumber % 10) && choosenDepNumber < 250) {
-                searchResult = BinarySearch(nodesArray, choosenDepNumber, size) - (2 * bool(!choosenDepNumber));
-                searchResultNext = searchResult;
-                while (nodesArray[searchResultNext]->departmentNumber == nodesArray[searchResult]->departmentNumber) {
-                    ++searchResultNext;
+                searchResult = binarySearch(nodesArray, choosenDepNumber, size);// - (2 * !bool(choosenDepNumber));
+                searchResultLast = searchResult;
+                while (nodesArray[searchResultLast]->departmentNumber == nodesArray[searchResult]->departmentNumber) {
+                    ++searchResultLast;
                 }
                 cout << "Employee with department number of " << choosenDepNumber <<
                     " are located at the " << searchResult + 1 << "th position.\n\n";
-                cout << searchResultNext << " + 1" << endl << endl;
+                cout << searchResultLast << endl << endl;
                 rightBorder = searchResult;
             } else {
                 cout << "Invalid number.\n\n";
@@ -246,7 +247,7 @@ int main() {
         ShowMenu(dbFile, &nodesReference, nodesNumber);
         break;
     case '2':
-        DigitalSort(nodes);
+        digitalSort(nodes);
         ShowMenu(dbFile, &nodes, nodesNumber);
         break;
     case '0':
