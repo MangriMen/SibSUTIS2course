@@ -23,6 +23,7 @@ namespace OOP_3S_Lab234.Entities
             Jet.Speed = 375;
             Position = spawnPoint;
             attackDelay = 0.2f;
+            isExist = true;
         }
         public void Load(ContentManager Content)
         {
@@ -30,8 +31,8 @@ namespace OOP_3S_Lab234.Entities
             Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/brickCabin");
             ColliderTexture = Content.Load<Texture2D>("Images/Backgrounds/white");
             TypeOfShuttle = "Massive";
-            Jet.Load(Content,
-                "Images/Shuttle/Jet/slideBlueJet",
+            Jet.Load(
+                ASpaceOutside.jetTexture["SlideBlue"],
                 new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Particles/slideParticles"), 10, 0.1f) }
                 );
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -88,7 +89,14 @@ namespace OOP_3S_Lab234.Control
             _previousMouse = _currentMouse;
             _currentMouse = Mouse.GetState();
 
-            var mouseRectangle = new Rectangle(_currentMouse.X, _currentMouse.Y, 1, 1);
+            float resMultiplier = ASpaceOutside.resolution.X / ASpaceOutside.WindowResolution.X;
+
+            var mouseRectangle = new Rectangle(
+                (int)(_currentMouse.X * resMultiplier),
+                (int)(_currentMouse.Y * resMultiplier),
+                1,
+                1
+                );
 
             _isHovering = false;
             _pressedOffset = 0;

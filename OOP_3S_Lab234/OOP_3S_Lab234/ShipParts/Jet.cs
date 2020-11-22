@@ -24,9 +24,9 @@ namespace OOP_3S_Lab234.ShipParts
         public string TypeOfJet { get; set; }
         public float Speed { get; set; } // tut mozet bit osshibka
         Texture2D Texture { get; set; }
-        void Load(ContentManager Content, string texturePath, Dictionary<string, Animation> animations)
+        void Load(Texture2D texture, Dictionary<string, Animation> animations)
         {
-            Texture = Content.Load<Texture2D>(texturePath);
+            Texture = texture;
 
             _animations = animations;
             _animationManager = new AnimationManager(_animations.First().Value);

@@ -52,6 +52,7 @@ namespace OOP_3S_Lab234.Entities
         public List<Projectile> projectiles;
         public PolygonCollider Collider;
         public IJet Jet = new SpeedJet();
+        public bool isExist;
 
         public void Draw(SpriteBatch _spriteBatch)
         {
@@ -104,16 +105,15 @@ namespace OOP_3S_Lab234.Entities
 
             //Collider.Draw(_spriteBatch, ColliderTexture);
         }
-        public virtual void Load(ContentManager Content, string cabin)
+        public virtual void Load(string cabin)
         {
             Random rand = new Random();
-            Texture = Content.Load<Texture2D>("Images/Shuttle/Body/" + TypeOfShuttle.ToLower() + "Body");
-            Cabin = Content.Load<Texture2D>("Images/Shuttle/Cabin/" + cabin);
-            ColliderTexture = Content.Load<Texture2D>("Images/Backgrounds/white");
+            Texture = ASpaceOutside.shuttleTexture[TypeOfShuttle];
+            Cabin = ASpaceOutside.cabinTexture[cabin];
+            ColliderTexture = ASpaceOutside.white;
             Jet.Load(
-                Content,
-                "Images/Shuttle/Jet/" + Jet.TypeOfJet.ToLower() + (rand.Next(0, 2) == 0 ? "Green" : "Blue") + "Jet",
-                new Dictionary<string, Animation> { ["Working"] = new Animation(Content.Load<Texture2D>("Images/Particles/" + Jet.TypeOfJet.ToLower() + "Particles"), 10, 0.1f) }
+                ASpaceOutside.jetTexture[Jet.TypeOfJet + (rand.Next(0, 2) == 0 ? "Green" : "Blue")],
+                new Dictionary<string, Animation> { ["Working"] = new Animation(ASpaceOutside.jetAnimations[Jet.TypeOfJet.ToLower()], 10, 0.1f) }
                 );
 
             projectiles = new List<Projectile>();

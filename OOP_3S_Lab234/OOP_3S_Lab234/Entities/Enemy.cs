@@ -40,7 +40,8 @@ namespace OOP_3S_Lab234.Entities
                     break;
             }
             Position = spawnPoint;
-            //velocity_ = new Vector2(0.5f, 0.5f);
+            velocity_ = new Vector2(0.5f, 0.5f);
+            isExist = true;
         }
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
@@ -60,7 +61,7 @@ namespace OOP_3S_Lab234.Entities
             attackTimer += delta;
 
             if (attackTimer >= attackDelay) { isAbleToAttack = true; attackTimer = 0; }
-            
+
             if (isAbleToAttack)
                 Attack();
 
