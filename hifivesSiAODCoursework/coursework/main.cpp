@@ -1,8 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <conio.h>
+#include <string>
+#include <algorithm>
 #include "DatabaseNode.h"
 using namespace std;
+
+bool isIncreased = true;
 
 struct stack {
     stack* next;
@@ -13,7 +17,154 @@ struct queue {
     stack* head;
     stack* tail;
 };
- 
+
+struct Vertex {
+    DatabaseNode *data = nullptr;
+    int balance = 0;
+    Vertex* left = nullptr;
+    Vertex* right = nullptr;
+};
+
+void leftLeftTurn(Vertex*& pointer) {
+    Vertex* tempPointer = pointer->left;
+    pointer->balance = 0;
+    tempPointer->balance = 0;
+    pointer->left = tempPointer->right;
+    tempPointer->right = pointer;
+    pointer = tempPointer;
+}
+
+void rightRightTurn(Vertex*& pointer) {
+    Vertex* tempPointer = pointer->right;
+    pointer->balance = 0;
+    tempPointer->balance = 0;
+    pointer->right = tempPointer->left;
+    tempPointer->left = pointer;
+    pointer = tempPointer;
+}
+
+void leftRightTurn(Vertex*& pointer) {
+    Vertex* tempPointer = pointer->left;
+    Vertex* r = tempPointer->right;
+
+    pointer->balance = (r->balance < 0 ? 1 : 0);
+    tempPointer->balance = (r->balance > 0 ? -1 : 0);
+
+    r->balance = 0;
+    tempPointer->right = r->left;
+    pointer->left = r->right;
+    r->left = tempPointer;
+    r->right = pointer;
+    pointer = r;
+}
+
+void rightLeftTurn(Vertex*& pointer) {
+    Vertex* tempPointer = pointer->right;
+    Vertex* r = tempPointer->left;
+
+    pointer->balance = (r->balance > 0 ? -1 : 0);
+    tempPointer->balance = (r->balance < 0 ? 1 : 0);
+
+    r->balance = 0;
+    pointer->right = r->left;
+    tempPointer->left = r->right;
+    r->left = pointer;
+    r->right = tempPointer;
+    pointer = r;
+}
+
+bool compare(DatabaseNode* first, DatabaseNode* second) {
+    string temp1 = " ";
+    string temp2 = " ";
+    temp2 = temp2 + first->birthDate[6] + first->birthDate[7] + first->birthDate[3] + first->birthDate[4] + first->birthDate[0] + first->birthDate[1];
+    temp1 = temp1 + second->birthDate[6] + second->birthDate[7] + second->birthDate[3] + second->birthDate[4] + second->birthDate[0] + second->birthDate[1];
+    if (temp2 < temp1) {
+        return  true;
+    } else if (temp2 > temp1) {
+        return false;
+    }
+}
+
+void AVLTreeAddNode(Vertex*& pointer, DatabaseNode *data) {
+    if (pointer == nullptr) {
+        pointer = new Vertex;
+        pointer->data = data;
+        pointer->balance = 0;
+        pointer->left = nullptr;
+        pointer->right = nullptr;
+        isIncreased = true;
+    }
+    else if (!compare(pointer->data, data)) {
+        AVLTreeAddNode(*&pointer->left, data);
+        if (isIncreased) {
+            if (pointer->balance > 0) {
+                pointer->balance = 0;
+                isIncreased = false;
+            }
+            else if (pointer->balance == 0) {
+                pointer->balance = -1;
+                isIncreased = true;
+            }
+            else {
+                if (pointer->left->balance < 0) {
+                    cout << endl;
+                    leftLeftTurn(pointer);
+                    //cout << "LL ";
+                    isIncreased = false;
+                }
+                else {
+                    cout << endl;
+                    leftRightTurn(pointer);
+                    //cout << "LR ";
+                    isIncreased = false;
+                }
+            }
+        }
+    } else if (compare(pointer->data, data)) {
+        AVLTreeAddNode(*&pointer->right, data);
+        if (isIncreased) {
+            if (pointer->balance < 0) {
+                pointer->balance = 0;
+                isIncreased = false;
+            } else if (pointer->balance == 0) {
+                pointer->balance = 1;
+                isIncreased = true;
+            } else {
+                if (pointer->right->balance > 0) {
+                    cout << endl;
+                    rightRightTurn(pointer);
+                    //cout << "RR ";
+                    isIncreased = false;
+                } else {
+                    cout << endl;
+                    rightLeftTurn(pointer);
+                    //cout << "RL ";
+                    isIncreased = false;
+                }
+            }
+        }
+    }
+}
+
+void traversal(Vertex* pointer, int type) {
+    if (pointer != nullptr) {
+        if (type == 1) {
+            cout << "\t\t\t(" << pointer->balance << ") " << endl;
+            pointer->data->nodePrint();
+        }
+        traversal(pointer->left, type);
+        if (type == 2) {
+            cout << "\t\t\t(" << pointer->balance << ") " << endl;
+            pointer->data->nodePrint();
+        }
+        traversal(pointer->right, type);
+        if (type == 3) {
+            cout << "\t\t\t(" << pointer->balance << ") " << endl;
+            pointer->data->nodePrint();
+        }
+    }
+}
+
 void addToStack(stack** head, DatabaseNode node) {
     stack* temp = new stack;
     temp->data = node;
@@ -84,7 +235,6 @@ short int binarySearch(DatabaseNode** nodeArr, int key, size_t size) {
             R = m - 1;
         }
     }
-    cout << endl << m << endl;
     if (nodeArr[m]->departmentNumber == key)
         return m;
     else if (nodeArr[m + 1]->departmentNumber == key)
@@ -113,6 +263,8 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     int searchResult = 0;
     int searchResultLast = 0;
 
+    Vertex* pointer = nullptr;
+
     DatabaseNode** nodesArray = new DatabaseNode*[size];
     fillIndexArray(operatingStack, nodesArray);
 
@@ -123,6 +275,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
              << "\"2\" to print information about previous 20 workers" << endl
              << "\"3\" to print information about all personal" << endl
              << "\"4\" to search specific employees by their department" << endl
+             << "\"5\" to make a tree of employees (use only after search)" << endl
              << "\"0\" to exit the program" << endl;
         char chooseNumber = _getch();
         system("CLS");
@@ -180,6 +333,8 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 cout << "Exiting search mode.\n\n";
                 leftBorder = tempLeftBorder;
                 rightBorder = tempRightBorder;
+                searchResult = 0;
+                searchResultLast = 0;
                 break;
             }
             tempLeftBorder = leftBorder;
@@ -188,21 +343,34 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             cout << "\t Enter the department number (dozens from 0 to 240): ";
             cin >> choosenDepNumber;
             if (!bool(choosenDepNumber % 10) && choosenDepNumber < 250) {
-                searchResult = binarySearch(nodesArray, choosenDepNumber, size);// - (2 * !bool(choosenDepNumber));
+                searchResult = binarySearch(nodesArray, choosenDepNumber, size) + bool(choosenDepNumber);
                 searchResultLast = searchResult;
                 while (nodesArray[searchResultLast]->departmentNumber == nodesArray[searchResult]->departmentNumber) {
                     ++searchResultLast;
                 }
                 cout << "Employee with department number of " << choosenDepNumber <<
-                    " are located at the " << searchResult + 1 << "th position.\n\n";
-                cout << searchResultLast << endl << endl;
+                    " are located at the " << searchResult << "th position.\n\n";
                 rightBorder = searchResult;
+                cout << endl << searchResultLast;
             } else {
                 cout << "Invalid number.\n\n";
                 isSearchActive = !isSearchActive;
             }
 
             first20 = false;
+            break;
+        case '5':
+            if (!searchResultLast) {
+                cout << "Works only in search mode!\n\n";
+                break;
+            }
+
+            for (int i = searchResult; i < searchResultLast; ++i) {
+                AVLTreeAddNode(pointer, nodesArray[i]);
+            }
+
+            traversal(pointer, 2);
+
             break;
         default:
             cout << "\n\nError: unsupported argument entered\n\n";
