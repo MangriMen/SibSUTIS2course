@@ -90,6 +90,62 @@ void VisualTree::align(TreeVertex* p, string side, float delta) {
 	}
 }
 
+void VisualTree::hightlightNode(TreeVertex* node) {
+	if (choosed != nullptr) {
+		choosed->circle.setFillColor(previous);
+		choosed->circle.setScale(1, 1);
+		if (choosed->left != nullptr) {
+			choosed->left->circle.setFillColor(Color::White);
+			choosed->left->circle.setScale(1, 1);
+		}
+		if (choosed->right != nullptr) {
+			choosed->right->circle.setFillColor(Color::White);
+			choosed->right->circle.setScale(1, 1);
+		}
+	}
+
+	if (choosed != node && node != nullptr) {
+		previous = node->circle.getFillColor();
+		info->setPosition(
+			node->circle.getPosition() +
+			Vector2f(
+				node->circle.getLocalBounds().width * 0.12f,
+				-node->circle.getLocalBounds().height * 0.12f
+			)
+		);
+
+		info->SetEmployee(
+			node->data.FIO,
+			node->data.departmentNumber,
+			node->data.place,
+			node->data.birthDate
+		);
+
+		node->circle.setFillColor(TreeColor::Choosed);
+		node->circle.setScale(1.5, 1.5);
+		node->data.Print();
+		cout << "\t" << "Bal: " << node->balance << endl;
+		if (node->left != nullptr) {
+			node->left->circle.setFillColor(TreeColor::Left);
+			node->left->circle.setScale(1.5, 1.5);
+			cout << "\t\tLeft: ";
+			node->left->data.Print();
+			cout << "\t" << "Bal: " << node->left->balance << endl;
+		}
+		if (node->right != nullptr) {
+			node->right->circle.setFillColor(TreeColor::Right);
+			node->right->circle.setScale(1.5, 1.5);
+			cout << "\t\tRight: ";
+			node->right->data.Print();
+			cout << "\t" << "Bal: " << node->right->balance << endl;
+		}
+		choosed = *&node;
+	}
+	else {
+		choosed = nullptr;
+	}
+}
+
 void VisualTree::Run()
 {
 	ContextSettings settings;
@@ -103,14 +159,17 @@ void VisualTree::Run()
 
 	info = new InfoCard();
 
-	TreeVertex* choosed = nullptr;
 	Color previous;
+	TreeVertex* founded = nullptr;
 
 	bool moving = false;
 	Vector2f oldPos;
 
 	Clock clock;
 	string key = "";
+
+	string found_place;
+	string found_FIO;
 
 	while (window.isOpen()) {
 		Event event;
@@ -173,8 +232,14 @@ void VisualTree::Run()
 					}
 					break;
 				case Keyboard::F:
-					cin >> key;
-					reader->btree.search(reader->btree.root, Employee::Sort::departmentNumber, key)->data.Print();
+					key = "";
+					cout << "Key: ";
+					getline(cin, key);
+
+					founded = reader->btree.search(reader->btree.root, key);
+
+					if (founded == nullptr) cout << endl << "Node not found" << endl;
+					else hightlightNode(founded);
 					break;
 				case Keyboard::B:
 					reader->btree.Print(reader->btree.root);
@@ -194,55 +259,7 @@ void VisualTree::Run()
 
 					system("cls");
 
-					if (choosed != nullptr) {
-						choosed->circle.setFillColor(previous);
-						choosed->circle.setScale(1, 1);
-						if (choosed->left != nullptr) {
-							choosed->left->circle.setFillColor(Color::White);
-							choosed->left->circle.setScale(1, 1);
-						}
-						if (choosed->right != nullptr) {
-							choosed->right->circle.setFillColor(Color::White);
-							choosed->right->circle.setScale(1, 1);
-						}
-					}
-
-					if (choosed != reader->btree.vertices[i]) {
-						previous = reader->btree.vertices[i]->circle.getFillColor();
-						info->setPosition(
-								reader->btree.vertices[i]->circle.getPosition() + 
-								Vector2f(
-									reader->btree.vertices[i]->circle.getLocalBounds().width * 0.12f,
-									-reader->btree.vertices[i]->circle.getLocalBounds().height * 0.12f
-								)
-							);
-
-						info->SetEmployee(
-							reader->btree.vertices[i]->data.FIO,
-							reader->btree.vertices[i]->data.departmentNumber,
-							reader->btree.vertices[i]->data.place,
-							reader->btree.vertices[i]->data.birthDate
-						);
-
-						reader->btree.vertices[i]->circle.setFillColor(TreeColor::Choosed);
-						reader->btree.vertices[i]->circle.setScale(1.5, 1.5);
-						cout << reader->btree.vertices[i]->data.FIO << " " << reader->btree.vertices[i]->data.departmentNumber << " " << "\tBal: " << reader->btree.vertices[i]->balance << endl;
-						if (reader->btree.vertices[i]->left != nullptr) {
-							reader->btree.vertices[i]->left->circle.setFillColor(TreeColor::Left);
-							reader->btree.vertices[i]->left->circle.setScale(1.5, 1.5);
-							cout << "\tLeft: " << reader->btree.vertices[i]->left->data.FIO << " " << reader->btree.vertices[i]->left->data.departmentNumber << endl;
-						}
-						if (reader->btree.vertices[i]->right != nullptr) {
-							reader->btree.vertices[i]->right->circle.setFillColor(TreeColor::Right);
-							reader->btree.vertices[i]->right->circle.setScale(1.5, 1.5);
-							cout << "\tRight: " << reader->btree.vertices[i]->right->data.FIO << " " << reader->btree.vertices[i]->right->data.departmentNumber << endl;
-						}
-						choosed = *&reader->btree.vertices[i];
-					}
-					else {
-						choosed = nullptr;
-					}
-
+					hightlightNode(reader->btree.vertices[i]);
 				}
 			}
 		}

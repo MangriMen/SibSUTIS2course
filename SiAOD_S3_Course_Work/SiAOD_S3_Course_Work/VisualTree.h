@@ -17,11 +17,17 @@ private:
 
 	InfoCard* info;
 
+	TreeVertex* choosed = nullptr;
+
+	Color previous;
+
 	void findSides(TreeVertex* p, FloatRect& rect);
 
 	void createRect(TreeVertex* p, string side);
 
 	void align(TreeVertex* p, string side, float delta);
+
+	void hightlightNode(TreeVertex* node);
 
 	void Run();
 public:

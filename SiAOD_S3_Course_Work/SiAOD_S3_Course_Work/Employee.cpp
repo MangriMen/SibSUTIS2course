@@ -45,14 +45,14 @@ bool Employee::Compare(Employee first, Employee second, Sort type)
 		}
 		break;
 	case Sort::Tree:
-		if ((string)first.place < (string)second.place) {
+		if ((string)first.FIO < (string)second.FIO) {
 			return true;
 		}
-		else if ((string)first.place > (string)second.place) {
+		else if ((string)first.FIO > (string)second.FIO) {
 			return false;
 		}
 		else {
-			return (string)first.FIO < (string)second.FIO;
+			return (string)first.place < (string)second.place;
 		}
 		break;
 	default:
@@ -60,19 +60,20 @@ bool Employee::Compare(Employee first, Employee second, Sort type)
 	}
 }
 
-bool Employee::Compare(Employee first, string value, Sort type)
+int Employee::intResultCompare(string first, string second) {
+	if (second.size() < first.size()) second += string(first.size() - second.size(), ' ');
+	if (first < second) return 1;
+	else if (first > second) return -1;
+	else return 0;
+}
+
+int Employee::intResultCompare(int first, int second) {
+	if (first < second) return 1;
+	else if (first > second) return -1;
+	else return 0;
+}
+
+int Employee::Compare(Employee employer, string FIO)
 {
-	switch (type)
-	{
-	case Sort::FIO:
-		return (string)first.FIO < value;
-	case Sort::departmentNumber:
-		return first.departmentNumber < atoi(value.c_str());
-	case Sort::place:
-		return (string)first.place < value;
-	case Sort::birthDate:
-		return (string)first.birthDate < value;
-	default:
-		break;
-	}
+	return intResultCompare((string)employer.FIO, FIO);
 }

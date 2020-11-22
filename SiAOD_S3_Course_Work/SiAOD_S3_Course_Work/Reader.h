@@ -15,8 +15,6 @@ public:
 	queue employersFoundedQ;
 	Employee** employersFoundedI;
 
-	queue employersFoundedTreeQ;
-
 	BTree btree;
 
 	Reader() {

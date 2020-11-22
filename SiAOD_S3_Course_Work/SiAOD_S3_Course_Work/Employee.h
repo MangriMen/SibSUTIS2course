@@ -30,7 +30,10 @@ public:
 
 	void Print();
 
+	static int intResultCompare(string first, string second);
+	static int intResultCompare(int first, int second);
+
 	static bool Compare(Employee first, Employee second, Sort type);
-	static bool Compare(Employee first, string value, Sort type);
+	static int Compare(Employee employer, string FIO);
 };
 

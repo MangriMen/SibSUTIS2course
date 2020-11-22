@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "Employee.h"
 #include "TreeVertex.h"
 #include "TreeColor.h"
@@ -14,14 +15,17 @@ public:
 	TreeVertex* root = nullptr;
 	vector<TreeVertex*> vertices;
 
-	TreeVertex* search(TreeVertex*& p, Employee::Sort type, string value) {
+	TreeVertex* search(TreeVertex*& root, string key) {
+		int result = 0;
+		TreeVertex* p = root;
 		while (p != nullptr)
 		{
-			if (!Employee::Compare(p->data, value, type))
+			result = Employee::Compare(p->data, key);
+			if (result == -1)
 			{
 				p = p->left;
 			}
-			else if (Employee::Compare(p->data, value, type))
+			else if (result == 1)
 			{
 				p = p->right;
 			}
@@ -169,7 +173,7 @@ public:
 		}
 	}
 
-	void From(queue &A) {
+	void From(queue& A) {
 		root = nullptr;
 		stack* current = A.head;
 		while (current != nullptr) {
