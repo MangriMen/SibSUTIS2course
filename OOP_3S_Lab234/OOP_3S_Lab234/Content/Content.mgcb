@@ -51,6 +51,18 @@
 /processorParam:TextureFormat=Color
 /build:Images/Backgrounds/bootloader.png
 
+#begin Images/Backgrounds/gameover.jpg
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Backgrounds/gameover.jpg
+
 #begin Images/Backgrounds/menu.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -87,6 +99,30 @@
 /processorParam:TextureFormat=Color
 /build:Images/Controls/button.png
 
+#begin Images/Controls/guiElementLeft.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Controls/guiElementLeft.png
+
+#begin Images/Controls/guiElementRight.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Controls/guiElementRight.png
+
 #begin Images/Particles/projectileExplosionParicles.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -110,6 +146,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Images/Particles/projectileExplosionPariclesBig.png
+
+#begin Images/Particles/shield.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Images/Particles/shield.png
 
 #begin Images/Particles/slideParticles.png
 /importer:TextureImporter

@@ -44,9 +44,9 @@ namespace OOP_3S_Lab234.Entities
         public Texture2D Texture { get; set; }
         public Texture2D Cabin { get; set; }
         public bool isDamaged { get; set; }
-        public Texture2D ColliderTexture { get; set; }
-        protected bool isAbleToAttack = true;
+        protected Texture2D ColliderTexture { get; set; }
         protected float attackDelay = 0.2f;
+        protected bool isAbleToAttack = true;
         protected float attackTimer = 0;
         protected float projectilesDestroyTimer = 0;
         public List<Projectile> projectiles;

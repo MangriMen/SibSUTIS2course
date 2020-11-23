@@ -7,8 +7,14 @@ namespace OOP_3S_Lab234.Entities
 {
     class Enemy : Shuttle
     {
-        public Enemy(Vector2 spawnPoint, ShuttleType shuttle, JetType jet)
+        public Enemy(Vector2 spawnPoint, ShuttleType shuttle, JetType jet, Vector2 _velocity, bool _isAbleToAttack = true, float _attackDelay = 0.2f)
         {
+            Position = spawnPoint;
+            velocity_ = _velocity;
+            isExist = true;
+            isAbleToAttack = _isAbleToAttack;
+            attackDelay = _attackDelay;
+
             switch (shuttle)
             {
                 case ShuttleType.Bat:
@@ -39,9 +45,6 @@ namespace OOP_3S_Lab234.Entities
                     Jet.TypeOfJet = "Warp";
                     break;
             }
-            Position = spawnPoint;
-            velocity_ = new Vector2(0.5f, 0.5f);
-            isExist = true;
         }
         public override void Update(GameTime gameTime, Vector2 resolution)
         {
@@ -84,7 +87,9 @@ namespace OOP_3S_Lab234.Entities
             Collider.Position = Position;
 
             if (Position - prevPos != Vector2.Zero)
+            {
                 RotateAngle = (float)Math.Atan2(Position.Y - prevPos.Y, Position.X - prevPos.X) + (float)Math.PI / 2;
+            }
 
             Collider.Rotate(Collider.Position, RotateAngle);
         }

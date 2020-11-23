@@ -168,7 +168,7 @@ namespace OOP_3S_Lab234
             MainMenu.Load(Content, resolution);
 
             // Loading Mode: waves
-            waves.Load(Content);
+            waves.Load(Content, resolution);
 
             // Creating timer for end loading for (fixed + loading) time
             Timer timer = new Timer(new TimerCallback(GameLoaded), null, 800, Timeout.Infinite);

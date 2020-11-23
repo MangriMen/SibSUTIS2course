@@ -68,7 +68,7 @@ namespace OOP_3S_Lab234.Entities
 
             attackTimer += delta;
 
-            if (attackTimer >= attackDelay) { isAbleToAttack = true; attackTimer = 0; /*Debug.WriteLine("----------" + Convert.ToString(projectiles.Count) + "-----------")*/; }
+            if (attackTimer >= attackDelay) { isAbleToAttack = true; attackTimer = 0; }
 
             if (Kb.getDown(Keys.Space))
             {
@@ -101,7 +101,7 @@ namespace OOP_3S_Lab234.Entities
 
             if (noKeyPressed)
             {
-                velocity_ *= 0;
+                //velocity_ *= 0;
                 if (!isStoped)
                 {
                     if (clearStep)
@@ -111,7 +111,7 @@ namespace OOP_3S_Lab234.Entities
                     }
                     if (step <= 1)
                     {
-                        step += 0.007f;
+                        step += 0.7f * delta;
                         clearStep = false;
                         t = 1 - SmoothStep(step);
                         velocity_ = tmpVel * t;
