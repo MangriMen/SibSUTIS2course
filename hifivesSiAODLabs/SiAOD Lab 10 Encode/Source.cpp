@@ -46,137 +46,129 @@ string yCode(int number) {
     return keywordFirst + " " + keywordSecond;
 }
 
-void wCodeRec(string& word, int number) {
+void wCodeBody(string& word, int number) {
     if (number == 1) return;
     pair<string, int> tempPair = stringToBinary(number);
 
     word.insert(0, tempPair.first + " ");
     number = tempPair.first.length() - 1;
 
-    wCodeRec(word, number);
+    wCodeBody(word, number);
 }
 
-string wCode(int number) {
+string wCodeStart(int number) {
     if (!number) return "nan";
 
     string keyword = "0";
-    wCodeRec(keyword, number);
+    wCodeBody(keyword, number);
 
     return keyword;
 }
 
 void createTab(size_t size) {
     cout << "Number\t| Fixed + Variable | y-code Alias | w-code Alias" << endl;
-    for (int i = 0; i < size; ++i) {
+    for (int i = 0; i < (int)size; ++i) {
         cout << setw(2) << i << "\t| " << setw(16) << fixedVariable(i) 
-               << " | " << setw(12) << yCode(i) << " | " << setw(12) << wCode(i) << endl;
+               << " | " << setw(12) << yCode(i) << " | " << setw(12) << wCodeStart(i) << endl;
     }
 }
-
-vector<string>& split(const string& s, char delim, vector<string>& elems) {
-    stringstream ss(s);
-    string item;
-    while (getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
-
-string deleteSpaces(const string& s) {
-    string nospace;
-    for (int i = 0; i < s.size(); i++)
-        if (s[i] != ' ')
-            nospace += s[i];
-    return nospace;
-}
-
-string RLE(string number, int type) {
-    vector<string> tmpSeries;
-    string outRLE = "";
-
-    split(number, '1', tmpSeries);
-
-    for (auto ser : tmpSeries)
-        switch (type) {
-        case 1:
-            outRLE += fixedVariable(ser.length() + 1);
-            break;
-        case 2:
-            outRLE += yCode(ser.length() + 1);
-            break;
-        case 3:
-            outRLE += wCode(ser.length() + 1);
-            break;
-        default:
-            cerr << endl << "[RLE]: Unknown coding type!" << endl;
-            exit(-10);
-            break;
-        }
-
-    outRLE = deleteSpaces(outRLE);
-
-    return outRLE;
-}
-
+//
+//vector<string>& split(const string& s, char delim, vector<string>& elems) {
+//    stringstream ss(s);
+//    string item;
+//    while (getline(ss, item, delim)) {
+//        elems.push_back(item);
+//    }
+//    return elems;
+//}
+//
+//string deleteSpaces(const string& s) {
+//    string nospace;
+//    for (int i = 0; i < (int)s.size(); i++)
+//        if (s[i] != ' ')
+//            nospace += s[i];
+//    return nospace;
+//}
+//
+//string RLE(string number, int type) {
+//    vector<string> tmpSeries;
+//    string outRLE = "";
+//
+//    split(number, '1', tmpSeries);
+//
+//    for (auto ser : tmpSeries)
+//        switch (type) {
+//        case 1:
+//            outRLE += fixedVariable(ser.length() + 1);
+//            break;
+//        case 2:
+//            outRLE += yCode(ser.length() + 1);
+//            break;
+//        case 3:
+//            outRLE += wCodeStart(ser.length() + 1);
+//            break;
+//        default:
+//            cerr << endl << "[RLE]: Unknown coding type!" << endl;
+//            exit(-10);
+//            break;
+//        }
+//
+//    outRLE = deleteSpaces(outRLE);
+//
+//    return outRLE;
+//}
+//
 int main() {
     int lastTabNumber = 0;
+    string toCode = "";
+    string Original = "";
+    string encodedFPV = "";
+    string encodedGamma = "";
+    string encodedOmega = "";
+    ofstream codedOut;
+
     cout << "Create a table up to number: ";
     cin >> lastTabNumber;
 
     createTab(++lastTabNumber);
 
-    string toCode = "";
-
-    for (int i = 0; i < 1024; i++)
+    /*for (int i = 0; i < 4096; i++)
         toCode += (rand() % 100 > 85 ? '1' : '0');
 
-    cout << toCode << endl;
-    cout << endl;
+    cout << endl << "Binary representation of encoded string:"
+         << endl << endl << toCode;
 
-    ofstream codedOut;
-
-    codedOut.open("Original.dat", ios::binary);
+    codedOut.open("original.dat", ios::binary);
     codedOut << toCode;
     codedOut.close();
-
-    codedOut.open("FPV.dat", ios::binary);
+    codedOut.open("FPV-encoded.dat", ios::binary);
     codedOut << RLE(toCode, 1);
     codedOut.close();
-
-    codedOut.open("Gamma.dat", ios::binary);
+    codedOut.open("y-encoded.dat", ios::binary);
     codedOut << RLE(toCode, 2);
     codedOut.close();
-
-    codedOut.open("Omega.dat", ios::binary);
+    codedOut.open("w-encoded.dat", ios::binary);
     codedOut << RLE(toCode, 3);
     codedOut.close();
 
-    string Original = "";
-    string codedFPV = "";
-    string codedGamma = "";
-    string codedOmega = "";
-
     ifstream codedIn;
-
-    codedIn.open("Original.dat");
+    codedIn.open("original.dat");
     getline(codedIn, Original);
     codedIn.close();
-
-    codedIn.open("FPV.dat");
-    getline(codedIn, codedFPV);
+    codedIn.open("FPV-encoded.dat");
+    getline(codedIn, encodedFPV);
+    codedIn.close();
+    codedIn.open("y-encoded.dat");
+    getline(codedIn, encodedGamma);
+    codedIn.close();
+    codedIn.open("w-encoded.dat");
+    getline(codedIn, encodedOmega);
     codedIn.close();
 
-    codedIn.open("Gamma.dat");
-    getline(codedIn, codedGamma);
-    codedIn.close();
-
-    codedIn.open("Omega.dat");
-    getline(codedIn, codedOmega);
-    codedIn.close();
-
-    cout << setw(18) << "Fixed + Variable: " << codedFPV.size() / (double)Original.size() * 100 << "%" << endl;
-    cout << setw(18) << "Gamma: " << codedGamma.size() / (double)Original.size() * 100 << "%" << endl;
-    cout << setw(18) << "Omega: " << codedOmega.size() / (double)Original.size() * 100 << "%" << endl;
+    cout << endl << endl;
+    cout << "Fixed + Variable: " << encodedFPV.size() / (double)Original.size() * 100 << "%" << endl
+         << "y-Code: " << encodedGamma.size() / (double)Original.size() * 100 << "%" << endl
+         << "w-Code: " << encodedOmega.size() / (double)Original.size() * 100 << "%" << endl;*/
 
     return 0;
 }
