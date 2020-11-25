@@ -80,9 +80,9 @@ bool yearTreeCompare(DatabaseNode* first, DatabaseNode* second) {
 
     temp1 = temp1 + first->birthDate[6] + first->birthDate[7];
     temp2 = temp2 + second->birthDate[6] + second->birthDate[7];
-    if (temp1 > temp2) {
+    if (temp1 < temp2) {
         return  true;
-    } else if (temp1 < temp2) {
+    } else if (temp1 > temp2) {
         return false;
     }
 }
@@ -95,7 +95,7 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode* data) {
         pointer->left = nullptr;
         pointer->right = nullptr;
         isIncreased = true;
-    } else if (yearTreeCompare(pointer->data, data)) {
+    } else if (!yearTreeCompare(pointer->data, data)) {
         AVLTreeAddNode(*&pointer->left, data);
         if (isIncreased) {
             if (pointer->balance > 0) {
@@ -114,7 +114,7 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode* data) {
                 }
             }
         }
-    } else if (!yearTreeCompare(pointer->data, data)) {
+    } else if (yearTreeCompare(pointer->data, data)) {
         AVLTreeAddNode(*&pointer->right, data);
         if (isIncreased) {
             if (pointer->balance < 0) {
