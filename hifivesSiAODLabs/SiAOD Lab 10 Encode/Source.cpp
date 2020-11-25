@@ -8,12 +8,6 @@
 #include <fstream>
 using namespace std;
 
-enum class RLEType {
-    FPV,
-    Gamma,
-    Omega
-};
-
 pair<string, int> stringToBinary(int number) {
     string binaryNumber = "";
     int powerOfTwo = 0;
@@ -96,37 +90,7 @@ string deleteSpaces(const string& s) {
     return nospace;
 }
 
-string RLE(int number, RLEType type) {
-    pair<string, int> convertedNum = stringToBinary(number);
-    vector<string> tmpSeries;
-    string outRLE = "";
-
-    split(convertedNum.first, '1', tmpSeries);
-
-    for (auto ser : tmpSeries)
-        switch (type)
-        {
-        case RLEType::FPV:
-            outRLE += fixedVariable(ser.length() + 1);
-            break;
-        case RLEType::Gamma:
-            outRLE += yCode(ser.length() + 1);
-            break;
-        case RLEType::Omega:
-            outRLE += wCode(ser.length() + 1);
-            break;
-        default:
-            cerr << endl << "[RLE]: Unknown coding type!" << endl;
-            exit(-10);
-            break;
-        }
-
-    outRLE = deleteSpaces(outRLE);
-
-    return outRLE;
-}
-
-string RLE(string number, RLEType type) {
+string RLE(string number, int type) {
     vector<string> tmpSeries;
     string outRLE = "";
 
@@ -134,13 +98,13 @@ string RLE(string number, RLEType type) {
 
     for (auto ser : tmpSeries)
         switch (type) {
-        case RLEType::FPV:
+        case 1:
             outRLE += fixedVariable(ser.length() + 1);
             break;
-        case RLEType::Gamma:
+        case 2:
             outRLE += yCode(ser.length() + 1);
             break;
-        case RLEType::Omega:
+        case 3:
             outRLE += wCode(ser.length() + 1);
             break;
         default:
@@ -176,15 +140,15 @@ int main() {
     codedOut.close();
 
     codedOut.open("FPV.dat", ios::binary);
-    codedOut << RLE(toCode, RLEType::FPV);
+    codedOut << RLE(toCode, 1);
     codedOut.close();
 
     codedOut.open("Gamma.dat", ios::binary);
-    codedOut << RLE(toCode, RLEType::Gamma);
+    codedOut << RLE(toCode, 2);
     codedOut.close();
 
     codedOut.open("Omega.dat", ios::binary);
-    codedOut << RLE(toCode, RLEType::Omega);
+    codedOut << RLE(toCode, 3);
     codedOut.close();
 
     string Original = "";
