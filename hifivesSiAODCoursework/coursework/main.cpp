@@ -3,6 +3,7 @@
 #include <conio.h>
 #include <string>
 #include <algorithm>
+#include <vector>
 #include "DatabaseNode.h"
 using namespace std;
 
@@ -19,7 +20,7 @@ struct queue {
 };
 
 struct Vertex {
-    DatabaseNode *data = nullptr;
+    DatabaseNode* data = nullptr;
     int balance = 0;
     Vertex* left = nullptr;
     Vertex* right = nullptr;
@@ -73,19 +74,20 @@ void rightLeftTurn(Vertex*& pointer) {
     pointer = r;
 }
 
-bool compare(DatabaseNode* first, DatabaseNode* second) {
+bool yearTreeCompare(DatabaseNode* first, DatabaseNode* second) {
     string temp1 = " ";
     string temp2 = " ";
-    temp2 = temp2 + first->birthDate[6] + first->birthDate[7] + first->birthDate[3] + first->birthDate[4] + first->birthDate[0] + first->birthDate[1];
-    temp1 = temp1 + second->birthDate[6] + second->birthDate[7] + second->birthDate[3] + second->birthDate[4] + second->birthDate[0] + second->birthDate[1];
-    if (temp2 < temp1) {
+
+    temp1 = temp1 + first->birthDate[6] + first->birthDate[7];
+    temp2 = temp2 + second->birthDate[6] + second->birthDate[7];
+    if (temp1 > temp2) {
         return  true;
-    } else if (temp2 > temp1) {
+    } else if (temp1 < temp2) {
         return false;
     }
 }
 
-void AVLTreeAddNode(Vertex*& pointer, DatabaseNode *data) {
+void AVLTreeAddNode(Vertex*& pointer, DatabaseNode* data) {
     if (pointer == nullptr) {
         pointer = new Vertex;
         pointer->data = data;
@@ -93,34 +95,26 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode *data) {
         pointer->left = nullptr;
         pointer->right = nullptr;
         isIncreased = true;
-    }
-    else if (!compare(pointer->data, data)) {
+    } else if (yearTreeCompare(pointer->data, data)) {
         AVLTreeAddNode(*&pointer->left, data);
         if (isIncreased) {
             if (pointer->balance > 0) {
                 pointer->balance = 0;
                 isIncreased = false;
-            }
-            else if (pointer->balance == 0) {
+            } else if (pointer->balance == 0) {
                 pointer->balance = -1;
                 isIncreased = true;
-            }
-            else {
+            } else {
                 if (pointer->left->balance < 0) {
-                    //cout << endl;
                     leftLeftTurn(pointer);
-                    //cout << "LL ";
                     isIncreased = false;
-                }
-                else {
-                    //cout << endl;
+                } else {
                     leftRightTurn(pointer);
-                    //cout << "LR ";
                     isIncreased = false;
                 }
             }
         }
-    } else if (compare(pointer->data, data)) {
+    } else if (!yearTreeCompare(pointer->data, data)) {
         AVLTreeAddNode(*&pointer->right, data);
         if (isIncreased) {
             if (pointer->balance < 0) {
@@ -131,14 +125,10 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode *data) {
                 isIncreased = true;
             } else {
                 if (pointer->right->balance > 0) {
-                    //cout << endl;
                     rightRightTurn(pointer);
-                    //cout << "RR ";
                     isIncreased = false;
                 } else {
-                    //cout << endl;
                     rightLeftTurn(pointer);
-                    //cout << "RL ";
                     isIncreased = false;
                 }
             }
@@ -146,22 +136,13 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode *data) {
     }
 }
 
-void traversal(Vertex* pointer, int type) {
+void traversalLtR(Vertex* pointer, vector<DatabaseNode*>& nodeArr) {
     if (pointer != nullptr) {
-        if (type == 1) {
-            cout << "(" << pointer->balance << ") " << endl;
-            pointer->data->nodePrint();
-        }
-        traversal(pointer->left, type);
-        if (type == 2) {
-            cout << "(" << pointer->balance << ") " << endl;
-            pointer->data->nodePrint();
-        }
-        traversal(pointer->right, type);
-        if (type == 3) {
-            cout << "(" << pointer->balance << ") " << endl;
-            pointer->data->nodePrint();
-        }
+        traversalLtR(pointer->left, nodeArr);
+        cout << "(" << pointer->balance << ") " << endl;
+        pointer->data->nodePrint();
+        nodeArr.push_back(pointer->data);
+        traversalLtR(pointer->right, nodeArr);
     }
 }
 
@@ -175,19 +156,6 @@ int amount(Vertex* pointer) {
 
 double treeHeightSum(Vertex* pointer, int level) {
     return pointer != nullptr ? level + treeHeightSum(pointer->left, level + 1) + treeHeightSum(pointer->right, level + 1) : 0;
-}
-
-void dispalyVertexInfo(Vertex* pointer, int traversalType) {
-    cout << endl << "-----------------------------------------------------" << endl << endl;
-    if (pointer == nullptr) {
-        cout << "Дерево пусто." << endl;
-        return;
-    }
-    cout << "Traversal type: " << traversalType << endl;
-    traversal(pointer, traversalType);
-    cout << endl << endl << "Number of vertexes: " << amount(pointer) + 1;
-    cout << endl << endl << "Tree height: " << height(pointer);
-    cout << endl << endl << "Average tree height: " << treeHeightSum(pointer, 1) / amount(pointer) << endl << endl << endl;
 }
 
 void addToStack(stack** head, DatabaseNode node) {
@@ -221,7 +189,7 @@ void printArrayData(DatabaseNode** nodeArray, int leftBorder, int rightBorder) {
 void digitalSort(stack*& S, int q_length = 32) {
     int* KDI = new int[q_length];
     for (int i = 0; i < q_length; ++i) { KDI[i] = i; }
-    
+
     int j = 0, i = 0, d = 0, k = 0;
     stack* p;
     queue Q[256];
@@ -248,21 +216,24 @@ void digitalSort(stack*& S, int q_length = 32) {
     delete[] KDI;
 }
 
-short int binarySearch(DatabaseNode** nodeArr, int key, size_t size) {
+short int binarySearch(DatabaseNode** nodeArr, int key, size_t size, bool type = false) {
+    string temp;
     int L = 1, m = 0;
     int R = (int)size - 1;
 
     while (L <= R) {
+        temp = "";
         m = (L + R) / 2;
-        if (nodeArr[m]->departmentNumber < key) {
+        if (!type ? nodeArr[m]->departmentNumber < key : (temp + nodeArr[m]->birthDate[6] + nodeArr[m]->birthDate[7]) < to_string(key)) {
             L = m + 1;
-        } else {
+        }
+        else {
             R = m - 1;
         }
     }
-    if (nodeArr[m]->departmentNumber == key)
+    if (!type ? nodeArr[m]->departmentNumber == key : (temp + nodeArr[m]->birthDate[6] + nodeArr[m]->birthDate[7]) == to_string(key))
         return m;
-    else if (nodeArr[m + 1]->departmentNumber == key)
+    else if (!type ? nodeArr[m + 1]->departmentNumber == key : (temp + nodeArr[m + 1]->birthDate[6] + nodeArr[m + 1]->birthDate[7]) == to_string(key))
         return m + 1;
     return 0;
 }
@@ -287,21 +258,23 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     bool isSearchActive = false;
     int searchResult = 0;
     int searchResultLast = 0;
-
     Vertex* pointer = nullptr;
+    vector<DatabaseNode*> treeElements;
+    DatabaseNode** treeElementsArray = nullptr;
 
-    DatabaseNode** nodesArray = new DatabaseNode*[size];
+
+    DatabaseNode** nodesArray = new DatabaseNode * [size];
     fillIndexArray(operatingStack, nodesArray);
 
     cout << "A Company Database." << endl << endl;
     while (true) {
         cout << "Enter the appropriate number:" << endl
-             << "\"1\" to print information about next 20 workers" << endl
-             << "\"2\" to print information about previous 20 workers" << endl
-             << "\"3\" to print information about all personal" << endl
-             << "\"4\" to search specific employees by their department" << endl
-             << "\"5\" to make a tree of employees (use only after search)" << endl
-             << "\"0\" to exit the program" << endl;
+            << "\"1\" to print information about next 20 workers" << endl
+            << "\"2\" to print information about previous 20 workers" << endl
+            << "\"3\" to print information about all personal" << endl
+            << "\"4\" to search specific employees by their department" << endl
+            << (isSearchActive ? "\"5\" to make a tree of employees\n" : "")
+            << "\"0\" to exit the program" << endl;
         char chooseNumber = _getch();
         system("CLS");
 
@@ -317,14 +290,16 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 if (first20) {
                     printArrayData(nodesArray, 0, 20);
                     first20 = false;
-                } else {
+                }
+                else {
                     leftBorder = rightBorder;
                     rightBorder += 20;
                     if (rightBorder > size) rightBorder = size;
 
                     printArrayData(nodesArray, leftBorder, rightBorder);
                 }
-            } else {
+            }
+            else {
                 cout << "Final range achived" << endl;
             }
             break;
@@ -332,17 +307,18 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             if (leftBorder > 0) {
                 cout << "\t" << "Full name: " << "\t\t" << "Dep. No: " << "\t"
                     << "Post: " << "\t\t\t" << "Date of birth: " << endl;
-                
+
                 rightBorder = leftBorder;
                 leftBorder -= 20;
                 if (leftBorder < 0) leftBorder = 0;
 
                 printArrayData(nodesArray, leftBorder, rightBorder);
-                
+
                 if (leftBorder == 0) {
                     first20 = true;
                 }
-            } else {
+            }
+            else {
                 cout << "Starting elements achived" << endl;
             }
             break;
@@ -374,9 +350,10 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                     ++searchResultLast;
                 }
                 cout << "Employee with department number of " << choosenDepNumber <<
-                    " are located at the " << searchResult << "th position." << endl << endl;
-                rightBorder = searchResult;
-            } else {
+                    " are located from the " << searchResult << "th up to " << searchResultLast << "th position." << endl << endl;
+                rightBorder = searchResult - 1;
+            }
+            else {
                 cout << "Invalid number." << endl << endl;
                 isSearchActive = !isSearchActive;
             }
@@ -384,17 +361,35 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             first20 = false;
             break;
         case '5':
-            if (!searchResultLast) {
-                cout << "Works only in search mode!\n\n";
-                break;
-            }
+            if (!searchResultLast) { break; }
+
+            treeElementsArray = new DatabaseNode * [(int)(searchResultLast - searchResult) + 1];
 
             for (int i = searchResult; i < searchResultLast; ++i) {
                 AVLTreeAddNode(pointer, nodesArray[i]);
             }
 
-            dispalyVertexInfo(pointer, 2);
+            cout << "Left to right traversal:" << endl;
+            traversalLtR(pointer, treeElements);
+            for (int i = 0; i < treeElements.size(); ++i) {
+                treeElementsArray[i] = treeElements[i];
+            }
+            cout << endl << endl << "Number of vertexes: " << amount(pointer) + 1;
+            cout << endl << endl << "Tree height: " << height(pointer);
+            cout << endl << endl << "Average tree height: " << treeHeightSum(pointer, 1) / amount(pointer) << endl << endl << endl;
+            {
+                int searchYear = 0;
+                string temp = "";
+                cout << "Enter the key: ";
+                cin >> searchYear;
 
+                int i = binarySearch(treeElementsArray, searchYear, searchResultLast - searchResult + 1, true);
+                while ((temp + treeElementsArray[i]->birthDate[6] + treeElementsArray[i]->birthDate[7]) < to_string(searchYear + 1)) {
+                    treeElementsArray[i]->nodePrint();
+                    ++i;
+                    temp = "";
+                }
+            }
             break;
         default:
             cout << "\n\nError: unsupported argument entered\n\n";
@@ -426,14 +421,14 @@ int main() {
         addToStack(&nodes, tempNode);
         addToStack(&nodesReference, tempNode);
     }
-    
+
     cout << "Choose a structure to work with:" << endl << endl
         << "\"1\" for default list" << endl
         << "\"2\" for a sorted list" << endl
         << "\"0\" for exiting program." << endl;
     char choosenStruct = _getch();
     system("CLS");
-    
+
     switch (choosenStruct) {
     case '1':
         ShowMenu(dbFile, &nodesReference, nodesNumber);
