@@ -6,6 +6,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <bitset>
 
 using namespace std;
 
@@ -57,7 +58,7 @@ string fixedVariable(int number) {
     string keywordFirst = get<0>(stob(power));
     string keywordSecond = "";
 
-    if (power) keywordSecond = binaryNumber.substr(binaryNumber.length() - (power - 1), power - 1);
+    if (power) keywordSecond = binaryNumber.substr(binaryNumber.length() - (static_cast<unsigned long long>(power) - 1), static_cast<unsigned long long>(power) - 1);
 
     return string(4 - keywordFirst.length(), '0') + keywordFirst + " " + keywordSecond;
 }
@@ -65,7 +66,7 @@ string fixedVariable(int number) {
 string gammaCode(int number) {
     if (number) {
         tuple<string, int> convertedNum = stob(number);
-        string keywordFirst = string(get<1>(convertedNum) - 1, '0');
+        string keywordFirst = string(static_cast<unsigned long long>(get<1>(convertedNum)) - 1, '0');
         string keywordSecond = get<0>(convertedNum);
         return keywordFirst + " " + keywordSecond;
     }
@@ -78,7 +79,7 @@ void omegaCodeRec(string& word, int number) {
     tuple<string, int> convertedNum = stob(number);
 
     word.insert(0, get<0>(convertedNum) + " ");
-    number = get<0>(convertedNum).length() - 1;
+    number = static_cast<int>(get<0>(convertedNum).length() - static_cast<size_t>(1));
 
     omegaCodeRec(word, number);
 }
@@ -102,13 +103,13 @@ string RLE(string number, Coding type) {
         switch (type)
         {
         case Coding::FpV:
-            outRLE += fixedVariable(ser.length());
+            outRLE += fixedVariable(static_cast<int>(ser.length()));
             break;
         case Coding::Gamma:
-            outRLE += gammaCode(ser.length() + 1);
+            outRLE += gammaCode(static_cast<int>(ser.length()) + 1);
             break;
         case Coding::Omega:
-            outRLE += omegaCode(ser.length() + 1);
+            outRLE += omegaCode(static_cast<int>(ser.length()) + 1);
             break;
         default:
             cerr << endl << "[RLE]: Unknown coding type!" << endl;
@@ -152,54 +153,84 @@ void CodingTable() {
     createTab(rows);
 }
 
+void writeBytesToFile(ofstream& file, const string& bitSequence) {
+    bitset<CHAR_BIT> byte("00000000");
+    size_t i = 0, b = 0;
+    while (i < bitSequence.size()) {
+        byte.reset();
+        for (b = 0; (i < bitSequence.size()) && (b < CHAR_BIT); i++, b++) byte.set(CHAR_BIT - 1 - b, (bitSequence[i] == '1'));
+        file << static_cast<uint_fast8_t>(byte.to_ulong());
+    }
+}
+
+void readBytesFromFile(ifstream& file, string& bitSequence) {
+    bitSequence.clear();
+    while (!file.eof()) bitSequence += bitset<CHAR_BIT>(file.get()).to_string();
+    bitSequence.resize(bitSequence.size() - 8);
+}
+
+void checkFileIsOpen(ofstream& file) {
+    if (!file.is_open()) {
+        cerr << "[FILE]: Failed to create / open file for reading.";
+        exit(-100);
+    }
+}
+
+void checkFileIsOpen(ifstream& file) {
+    if (!file.is_open()) {
+        cerr << "[FILE]: Failed to create / open file for reading.";
+        exit(-100);
+    }
+}
+
 void RLEFile() {
-    string toCode = "";
-
-    for (int i = 0; i < 2048; i++)
-        toCode += (rand() % 100 > 85 ? '1' : '0');
-
-    cout << toCode << endl;
-    cout << endl;
-
-    ofstream codedOut;
-
-    codedOut.open("Original.dat", ios::binary);
-    codedOut << toCode;
-    codedOut.close();
-
-    codedOut.open("FpV.dat", ios::binary);
-    codedOut << RLE(toCode, Coding::FpV);
-    codedOut.close();
-
-    codedOut.open("Gamma.dat", ios::binary);
-    codedOut << RLE(toCode, Coding::Gamma);
-    codedOut.close();
-
-    codedOut.open("Omega.dat", ios::binary);
-    codedOut << RLE(toCode, Coding::Omega);
-    codedOut.close();
-
     string Original = "";
     string codedFpV = "";
     string codedGamma = "";
     string codedOmega = "";
 
+    for (int i = 0; i < 8192; i++) Original += (rand() % 100 > 90 ? '1' : '0');
+
+    cout << Original << endl << endl;
+
+    ofstream codedOut;
+
+    codedOut.open("Original.dat", ios::out | ios::binary);
+    checkFileIsOpen(codedOut);
+    writeBytesToFile(codedOut, Original);
+    codedOut.close();
+
+    codedOut.open("FpV.dat", ios::out | ios::binary);
+    checkFileIsOpen(codedOut);
+    writeBytesToFile(codedOut, RLE(Original, Coding::FpV));
+    codedOut.close();
+
+    codedOut.open("Gamma.dat", ios::out | ios::binary);
+    checkFileIsOpen(codedOut);
+    writeBytesToFile(codedOut, RLE(Original, Coding::Gamma));
+    codedOut.close();
+
+    codedOut.open("Omega.dat", ios::out | ios::binary);
+    checkFileIsOpen(codedOut);
+    writeBytesToFile(codedOut, RLE(Original, Coding::Omega));
+    codedOut.close();
+
     ifstream codedIn;
 
-    codedIn.open("Original.dat");
-    getline(codedIn, Original);
+    codedIn.open("Original.dat", ios::in | ios::binary);
+    readBytesFromFile(codedIn, Original);
     codedIn.close();
 
-    codedIn.open("FpV.dat");
-    getline(codedIn, codedFpV);
+    codedIn.open("FpV.dat", ios::in | ios::binary);
+    readBytesFromFile(codedIn, codedFpV);
     codedIn.close();
 
-    codedIn.open("Gamma.dat");
-    getline(codedIn, codedGamma);
+    codedIn.open("Gamma.dat", ios::in | ios::binary);
+    readBytesFromFile(codedIn, codedGamma);
     codedIn.close();
 
-    codedIn.open("Omega.dat");
-    getline(codedIn, codedOmega);
+    codedIn.open("Omega.dat", ios::in | ios::binary);
+    readBytesFromFile(codedIn, codedOmega);
     codedIn.close();
 
     cout << setw(18) << "Fixed + Variable: " << codedFpV.size() / (double)Original.size() * 100 << "%" << endl;
@@ -212,7 +243,9 @@ int main() {
 
     //CodingTable();
 
-    //RLEFile();
+    RLEFile();
+
+    //system("pause");
 
     return 0;
 }
