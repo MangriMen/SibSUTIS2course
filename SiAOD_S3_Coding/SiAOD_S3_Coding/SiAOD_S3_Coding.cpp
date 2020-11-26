@@ -7,6 +7,7 @@
 #include <sstream>
 #include <fstream>
 #include <bitset>
+#include <algorithm>
 
 using namespace std;
 
@@ -25,7 +26,7 @@ string deleteSpaces(const string& s) {
     return nospace;
 }
 
-tuple<string, int> stob(int number) {
+tuple<string, int> itobs(int number) {
     string binaryNumber = "";
     int powerOfTwo = 0;
 
@@ -40,6 +41,25 @@ tuple<string, int> stob(int number) {
     return make_tuple(binaryNumber, powerOfTwo);
 }
 
+tuple<string, string> ftobs(float number) {
+    int intPart = (int)(number);
+    string intPartS = get<0>(itobs(intPart));
+    float floatPart = number - intPart;
+    string floatPartS = "";
+    for (int i = 0; i < CHAR_BIT; i++) {
+        floatPart = floatPart * 2;
+        if (floatPart >= 1) {
+            floatPartS += '1';
+            floatPart -= 1;
+        }
+        else {
+            floatPartS += '0';
+        }
+    }
+
+    return make_tuple(intPartS, floatPartS);
+}
+
 vector<string>& split(const string& s, char delim, vector<string>& elems) {
     stringstream ss(s);
     string item;
@@ -50,12 +70,12 @@ vector<string>& split(const string& s, char delim, vector<string>& elems) {
 }
 
 string fixedVariable(int number) {
-    tuple<string, int> convertedNum = stob(number);
+    tuple<string, int> convertedNum = itobs(number);
 
     string binaryNumber = get<0>(convertedNum);
     int power = get<1>(convertedNum);
 
-    string keywordFirst = get<0>(stob(power));
+    string keywordFirst = get<0>(itobs(power));
     string keywordSecond = "";
 
     if (power) keywordSecond = binaryNumber.substr(binaryNumber.length() - (static_cast<unsigned long long>(power) - 1), static_cast<unsigned long long>(power) - 1);
@@ -65,7 +85,7 @@ string fixedVariable(int number) {
 
 string gammaCode(int number) {
     if (number) {
-        tuple<string, int> convertedNum = stob(number);
+        tuple<string, int> convertedNum = itobs(number);
         string keywordFirst = string(static_cast<unsigned long long>(get<1>(convertedNum)) - 1, '0');
         string keywordSecond = get<0>(convertedNum);
         return keywordFirst + " " + keywordSecond;
@@ -76,7 +96,7 @@ string gammaCode(int number) {
 
 void omegaCodeRec(string& word, int number) {
     if (number == 1) return;
-    tuple<string, int> convertedNum = stob(number);
+    tuple<string, int> convertedNum = itobs(number);
 
     word.insert(0, get<0>(convertedNum) + " ");
     number = static_cast<int>(get<0>(convertedNum).length() - static_cast<size_t>(1));
@@ -121,7 +141,7 @@ string RLE(string number, Coding type) {
 }
 
 string RLE(int number, Coding type) {
-    return RLE(get<0>(stob(number)), type);
+    return RLE(get<0>(itobs(number)), type);
 }
 
 void createTab(int size) {
@@ -238,12 +258,91 @@ void RLEFile() {
     cout << setw(18) << "Omega: " << codedOmega.size() / (double)Original.size() * 100 << "%" << endl;
 }
 
+size_t search(vector<pair<char, float>>& pair, const char& el) {
+    for (size_t i = 0; i < pair.size(); i++) if (pair[i].first == el) return i;
+    return string::npos;
+}
+
+bool alphabetComp(pair<char, float> a, pair<char, float> b) {
+    return a.second > b.second;
+}
+
+void Shennon() {
+    // Ставим русскую локаль
+    setlocale(LC_ALL, "RUSSIAN");
+    // Создаём строку для входного текста
+    string text = "";
+    // Просим пользователя ввести текст
+    cout << "Enter text:" << endl;
+    // Считываем весь поток с пробелами
+    //getline(cin, text);
+    cout << endl;
+
+    // Тестовы пример, все мы помним где в ASCII "Ё", поэтому
+    // с моей домашкой не совпадает
+    text = "ЛЁВКИНИГОРЬАНДРЕЕВИЧ";
+
+    cout << text << endl;
+
+    // Создаём вектор пар для букв алфавита и их вероятностей
+    vector<pair<char, float>> alphabet;
+
+    // Заполняем уникальными буквами и частотой встречи её в тексте
+    for (size_t i = 0; i < text.size(); i++) {
+        size_t index = search(alphabet, text[i]);
+
+        if (index != string::npos) alphabet[index].second += 1.0f;
+        else alphabet.push_back(make_pair(text[i], 1.0f));
+    }
+
+    // Сортируем по не возрастанию алфавит
+    sort(alphabet.begin(), alphabet.end(), alphabetComp);
+
+    // Расчитываем вероятности
+    for (size_t i = 0; i < alphabet.size(); i++) alphabet[i].second /= text.size();
+
+    // Создаём вектор для комулятивных вероятностей
+    vector<float> Q(alphabet.size()+1, 0);
+
+    // Расчитываем комулятивные вероятности
+    for (int i = 1; i < Q.size(); i++) Q[i] = (alphabet[i-(size_t)1].second + Q[i-(size_t)1]);
+
+    // Создаём вектор для комулятивных вероятностей,
+    // содержащих дробную часть комулятивных вероятностей в двоичном виде
+    vector<string> Qbinary(alphabet.size(), "");
+
+    // Заполняем переводя дробную часть комулятивных вероятностей
+    // в двоичный вид
+    for (int i = 0; i < Qbinary.size(); i++) Qbinary[i] = get<1>(ftobs(Q[i]));
+    
+    // Создаём вектор длин кодовых слов
+    vector<int> L(alphabet.size(), 0);
+
+    // Вычисляем длинны кодовых слов по формуле L[i] = ceil(-log2(alphabet[i]))
+    for (int i = 0; i < alphabet.size(); i++) L[i] = ceil(-log2(alphabet[i].second));
+
+    // Создаём вектор кодовых слов
+    vector<string> keyword(alphabet.size(), "");
+
+    // Вычисляем кодовые слова как L[i] количество символов в векторе двоичных комулятивных
+    // вероятностей с начала строки
+    for (int i = 0; i < alphabet.size(); i++) keyword[i] = Qbinary[i].substr(0, L[i]);
+    
+    // Таблица
+    cout << setw(1) << "a" << " | " << setw(10) << "Pi" << " | " << setw(4) << " Qi " << " | " << setw(1) << "L" << " | " << setw(keyword.back().size()) << "Keyword" << endl << endl;
+    for (size_t i = 0; i < alphabet.size(); i++) {
+        cout << setw(1) << alphabet[i].first << " | " << setw(10) << alphabet[i].second << " | " << setw(4) << Q[i] << " | " << setw(1) << L[i] << " | " << setw(keyword.back().size()) << keyword[i] << endl;
+    }
+}
+
 int main() {
     srand((unsigned int)time(NULL));
 
     //CodingTable();
 
-    RLEFile();
+    //RLEFile();
+
+    Shennon();
 
     //system("pause");
 
