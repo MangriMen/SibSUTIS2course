@@ -137,8 +137,9 @@ void traversalLtR(Vertex* pointer, vector<DatabaseNode*>& nodeArr) {
     if (pointer != nullptr) {
         traversalLtR(pointer->left, nodeArr);
         cout << "(" << pointer->balance << ") " << endl;
-        pointer->data->nodePrint();
         nodeArr.push_back(pointer->data);
+        cout << "(" << nodeArr.size() << ")";
+        pointer->data->nodePrint();
         traversalLtR(pointer->right, nodeArr);
     }
 }
@@ -259,7 +260,6 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     vector<DatabaseNode*> treeElements;
     DatabaseNode** treeElementsArray = nullptr;
 
-
     DatabaseNode** nodesArray = new DatabaseNode * [size];
     fillIndexArray(operatingStack, nodesArray);
 
@@ -371,7 +371,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             for (int i = 0; i < treeElements.size(); ++i) {
                 treeElementsArray[i] = treeElements[i];
             }
-            cout << endl << endl << "Number of vertexes: " << amount(pointer) + 1;
+            cout << endl << endl << "Number of vertexes: " << amount(pointer);
             cout << endl << endl << "Tree height: " << height(pointer);
             cout << endl << endl << "Average tree height: " << treeHeightSum(pointer, 1) / amount(pointer) << endl << endl << endl;
             {
