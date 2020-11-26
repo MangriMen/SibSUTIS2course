@@ -64,14 +64,14 @@ namespace OOP_3S_Lab234
             Window.Title = "A Space Outside!";
 
             // Screen mode
-            _graphics.IsFullScreen = false;
+            _graphics.IsFullScreen = true;
 
             // Turn on the multisampling and set it level to 8
             _graphics.PreferMultiSampling = true;
             GraphicsDevice.PresentationParameters.MultiSampleCount = 8;
 
-            _graphics.SynchronizeWithVerticalRetrace = false; // vsync
-            IsFixedTimeStep = true; // Don't force equal timestep updates
+            _graphics.SynchronizeWithVerticalRetrace = true; // vsync
+            IsFixedTimeStep = false; // Don't force equal timestep updates
 
             // Auto resolution on fullscreen
             if (_graphics.IsFullScreen)
