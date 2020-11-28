@@ -27,11 +27,17 @@ Lab11::Lab11() :
     ShennonBM(boost::bimap<char, std::string>()),
     HuffmanBM(boost::bimap<char, std::string>()),
     FanoBM(boost::bimap<char, std::string>()),
-    GilbertMooreBM(boost::bimap<char, std::string>())
+    GilbertMooreBM(boost::bimap<char, std::string>()),
+    alphabet(std::vector<std::pair<char, double>>())
 {
 }
 
-Lab11::Lab11(std::string text)
+Lab11::Lab11(std::string text) :
+    ShennonBM(boost::bimap<char, std::string>()),
+    HuffmanBM(boost::bimap<char, std::string>()),
+    FanoBM(boost::bimap<char, std::string>()),
+    GilbertMooreBM(boost::bimap<char, std::string>()),
+    alphabet(std::vector<std::pair<char, double>>())
 {
     Init(text);
 }
