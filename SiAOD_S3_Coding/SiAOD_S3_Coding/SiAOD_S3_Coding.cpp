@@ -15,7 +15,7 @@
 
 using namespace std;
 
-enum class Coding
+enum class CodingT
 {
     FpV,
     Gamma,
@@ -66,7 +66,7 @@ string omegaCode(int number) {
     return keyword;
 }
 
-string RLE(string number, Coding type) {
+string RLE(string number, CodingT type) {
     vector<string> tmpSeries;
     string outRLE = "";
 
@@ -75,13 +75,13 @@ string RLE(string number, Coding type) {
     for (const string& ser : tmpSeries)
         switch (type)
         {
-        case Coding::FpV:
+        case CodingT::FpV:
             outRLE += fixedVariable(static_cast<int>(ser.length()));
             break;
-        case Coding::Gamma:
+        case CodingT::Gamma:
             outRLE += gammaCode(static_cast<int>(ser.length()) + 1);
             break;
-        case Coding::Omega:
+        case CodingT::Omega:
             outRLE += omegaCode(static_cast<int>(ser.length()) + 1);
             break;
         default:
@@ -93,7 +93,7 @@ string RLE(string number, Coding type) {
     return BinaryString::deleteSpaces(outRLE);
 }
 
-string RLE(int number, Coding type) {
+string RLE(int number, CodingT type) {
     return RLE(get<0>(BinaryString::itobs(number)), type);
 }
 
@@ -108,7 +108,7 @@ void createTab(int size) {
             "\t| " << setw(16) << fixedVariable(i) << " | "<<
             setw(16) << gammaCode(i) << " | " << 
             setw(16) << omegaCode(i) << " | " <<
-            setw(16) << RLE(i, Coding::Gamma) << 
+            setw(16) << RLE(i, CodingT::Gamma) <<
             endl;
     }
     cout << endl;
@@ -175,17 +175,17 @@ void RLEFile() {
 
     codedOut.open("FpV.dat", ios::out | ios::binary);
     checkFileIsOpen(codedOut);
-    writeBytesToFile(codedOut, RLE(Original, Coding::FpV));
+    writeBytesToFile(codedOut, RLE(Original, CodingT::FpV));
     codedOut.close();
 
     codedOut.open("Gamma.dat", ios::out | ios::binary);
     checkFileIsOpen(codedOut);
-    writeBytesToFile(codedOut, RLE(Original, Coding::Gamma));
+    writeBytesToFile(codedOut, RLE(Original, CodingT::Gamma));
     codedOut.close();
 
     codedOut.open("Omega.dat", ios::out | ios::binary);
     checkFileIsOpen(codedOut);
-    writeBytesToFile(codedOut, RLE(Original, Coding::Omega));
+    writeBytesToFile(codedOut, RLE(Original, CodingT::Omega));
     codedOut.close();
 
     ifstream codedIn;
@@ -332,8 +332,6 @@ void SFGm() {
 
 int main() {
     srand((unsigned int)time(NULL));
-    // Ставим русскую локаль
-    setlocale(LC_ALL, "RUSSIAN");
 
     //CodingTable();
 
