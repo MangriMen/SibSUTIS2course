@@ -9,8 +9,9 @@
 #include <bitset>
 #include <algorithm>
 #include <map>
-
-constexpr auto DOUBLE_PRECISION = 16;
+#include "const.h"
+#include "Lab11.h"
+#include "BinaryString.h"
 
 using namespace std;
 
@@ -21,61 +22,13 @@ enum class Coding
     Omega
 };
 
-string deleteSpaces(string& s) {
-    s.erase(remove_if(s.begin(), s.end(), isspace), s.end());
-    return s;
-}
-
-tuple<string, int> itobs(int number) {
-    string binaryNumber = "";
-    int powerOfTwo = 0;
-
-    if (number) {
-        do {
-            binaryNumber += to_string(number % 2);
-            powerOfTwo++;
-        } while (number /= 2);
-        reverse(binaryNumber.begin(), binaryNumber.end());
-    }
-
-    return make_tuple(binaryNumber, powerOfTwo);
-}
-
-tuple<string, string> ftobs(double number) {
-    int intPart = (int)(number);
-    string intPartS = get<0>(itobs(intPart));
-    double floatPart = number - intPart;
-    string floatPartS = "";
-    for (int i = 0; i < DOUBLE_PRECISION; i++) {
-        floatPart = floatPart * 2;
-        if (floatPart >= 1) {
-            floatPartS += '1';
-            floatPart -= 1;
-        }
-        else {
-            floatPartS += '0';
-        }
-    }
-
-    return make_tuple(intPartS, floatPartS);
-}
-
-vector<string>& split(const string& s, char delim, vector<string>& elems) {
-    stringstream ss(s);
-    string item;
-    while (getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
-    return elems;
-}
-
 string fixedVariable(int number) {
-    tuple<string, int> convertedNum = itobs(number);
+    tuple<string, int> convertedNum = BinaryString::itobs(number);
 
     string binaryNumber = get<0>(convertedNum);
     int power = get<1>(convertedNum);
 
-    string keywordFirst = get<0>(itobs(power));
+    string keywordFirst = get<0>(BinaryString::itobs(power));
     string keywordSecond = "";
 
     if (power) keywordSecond = binaryNumber.substr(binaryNumber.length() - (static_cast<unsigned long long>(power) - 1), static_cast<unsigned long long>(power) - 1);
@@ -85,7 +38,7 @@ string fixedVariable(int number) {
 
 string gammaCode(int number) {
     if (number) {
-        tuple<string, int> convertedNum = itobs(number);
+        tuple<string, int> convertedNum = BinaryString::itobs(number);
         string keywordFirst = string(static_cast<unsigned long long>(get<1>(convertedNum)) - 1, '0');
         string keywordSecond = get<0>(convertedNum);
         return keywordFirst + " " + keywordSecond;
@@ -96,7 +49,7 @@ string gammaCode(int number) {
 
 void omegaCodeRec(string& word, int number) {
     if (number == 1) return;
-    tuple<string, int> convertedNum = itobs(number);
+    tuple<string, int> convertedNum = BinaryString::itobs(number);
 
     word.insert(0, get<0>(convertedNum) + " ");
     number = static_cast<int>(get<0>(convertedNum).length() - static_cast<size_t>(1));
@@ -117,7 +70,7 @@ string RLE(string number, Coding type) {
     vector<string> tmpSeries;
     string outRLE = "";
 
-    split(number, '1', tmpSeries);
+    BinaryString::split(number, '1', tmpSeries);
 
     for (const string& ser : tmpSeries)
         switch (type)
@@ -137,11 +90,11 @@ string RLE(string number, Coding type) {
             break;
         }
 
-    return deleteSpaces(outRLE);
+    return BinaryString::deleteSpaces(outRLE);
 }
 
 string RLE(int number, Coding type) {
-    return RLE(get<0>(itobs(number)), type);
+    return RLE(get<0>(BinaryString::itobs(number)), type);
 }
 
 void createTab(int size) {
@@ -258,107 +211,6 @@ void RLEFile() {
     cout << setw(18) << "Omega: " << codedOmega.size() / (double)Original.size() * 100 << "%" << endl;
 }
 
-size_t search(vector<pair<char, double>>& pair, const char& el) {
-    for (size_t i = 0; i < pair.size(); i++) if (pair[i].first == el) return i;
-    return string::npos;
-}
-
-bool alphabetComp(pair<char, double> a, pair<char, double> b) {
-    return a.second > b.second;
-}
-
-void ShennonTable(const vector<int>& L, const vector<pair<char, double>>& alphabet, const vector<double>& Q, const vector<string>& keyword) {
-    cout << endl;
-
-    cout << "Shennon table" << endl << endl;
-
-    int numberWidth = 0;
-    int tmp = L.back();
-    for (numberWidth = 1; (tmp /= 10); numberWidth++);
-
-    stringstream tablecout;
-    tablecout.setf(ios::fixed);
-    tablecout << setprecision(DOUBLE_PRECISION);
-
-    // Таблица
-    tablecout << setw(1) << "a" << " | " << setw(DOUBLE_PRECISION + 2) << "Pi" + string(((DOUBLE_PRECISION + 2) >> 1) - 1, ' ') << " | " << setw(DOUBLE_PRECISION + 2) << "Qi" + string(((DOUBLE_PRECISION + 2) >> 1) - 1, ' ') << " | " << setw(numberWidth) << "L" << " | " << setw(keyword.back().size()) << "Keyword" << endl;
-    tablecout << string(72, '—') << endl;
-    for (size_t i = 0; i < alphabet.size(); i++) {
-        tablecout << setw(1) << alphabet[i].first << " | " << setw(DOUBLE_PRECISION + 2) << alphabet[i].second << " | " << setw(DOUBLE_PRECISION) << Q[i] << " | " << setw(numberWidth) << L[i] << " | " << setw(keyword.back().size()) << keyword[i] << endl;
-    }
-
-    cout << tablecout.str();
-}
-
-tuple<map<char, string>, map<string, char>> Shennon(string text) {
-    // Тестовый пример, все мы помним где в ASCII "Ё", поэтому
-    // с моей домашкой не совпадает
-    //text = "ЛЁВКИНИГОРЬАНДРЕЕВИЧ";
-
-    // Создаём вектор пар для букв алфавита и их вероятностей
-    vector<pair<char, double>> alphabet;
-
-    // Заполняем уникальными буквами и частотой встречи её в тексте
-    for (size_t i = 0; i < text.size(); i++) {
-        size_t index = search(alphabet, text[i]);
-
-        if (index != string::npos) alphabet[index].second += 1.0;
-        else alphabet.push_back(make_pair(text[i], 1.0));
-    }
-
-    // Сортируем по не возрастанию алфавит
-    sort(alphabet.begin(), alphabet.end(), alphabetComp);
-
-    // Расчитываем вероятности
-    for (size_t i = 0; i < alphabet.size(); i++) alphabet[i].second /= text.size();
-
-    // Создаём вектор для комулятивных вероятностей
-    vector<double> Q(alphabet.size()+1, 0);
-
-    // Расчитываем комулятивные вероятности
-    for (size_t i = 1; i < Q.size(); i++) Q[i] = (alphabet[i-(size_t)1].second + Q[i-(size_t)1]);
-
-    // Создаём вектор для комулятивных вероятностей,
-    // содержащих дробную часть комулятивных вероятностей в двоичном виде
-    vector<string> Qbinary(alphabet.size(), "");
-
-    // Заполняем переводя дробную часть комулятивных вероятностей
-    // в двоичный вид
-    for (size_t i = 0; i < Qbinary.size(); i++) Qbinary[i] = get<1>(ftobs(Q[i]));
-    
-    // Создаём вектор длин кодовых слов
-    vector<int> L(alphabet.size(), 0);
-
-    // Вычисляем длинны кодовых слов по формуле L[i] = ceil(-log2(alphabet[i]))
-    for (size_t i = 0; i < alphabet.size(); i++) L[i] = static_cast<int>(ceil(-log2(alphabet[i].second)));
-
-    // Создаём вектор кодовых слов
-    vector<string> keyword(alphabet.size(), "");
-
-    // Вычисляем кодовые слова как L[i] количество символов в векторе двоичных комулятивных
-    // вероятностей с начала строки
-    for (size_t i = 0; i < alphabet.size(); i++) keyword[i] = Qbinary[i].substr(0, L[i]);
-   
-    ShennonTable(L, alphabet, Q, keyword);
-
-    // Создаём словарь map для хранения пар 'Символ' : "Кодовое слово"
-    map<char, string> ChKeyword;
-    map<string, char> KeywordCh;
-
-    // Заполняем символами из алфавита и кодовыми словами
-    for (size_t i = 0; i < alphabet.size(); i++) {
-        ChKeyword.insert(make_pair(alphabet[i].first, keyword[i]));
-        KeywordCh.insert(make_pair(keyword[i], alphabet[i].first));
-    }
-
-    if (KeywordCh.size() != keyword.size()) {
-        cerr << endl << "[KEYWORD]: Keyword's are not unic!" << endl << endl;
-        exit(15);
-    }
-
-    return make_tuple(ChKeyword, KeywordCh);
-}
-
 string codeByMap(map<char, string>& codeMap, string text) {
     string out = "";
     for (const auto& ch : text)
@@ -399,71 +251,89 @@ streamsize getFileSize(ifstream& file) {
 }
 
 void SFGm() {
-    // Ставим русскую локаль
-    setlocale(LC_ALL, "RUSSIAN");
-
     // Создаём строку для входного текста
     string text = "";
+    string codedText = "";
     string tmp;
 
     streamsize englishTextLenght = 0;
 
     ifstream englishText;
-    englishText.open("EnglishANSI.txt", ios::in);
+
+    englishText.open("Lab11/EnglishANSI.txt", ios::in);
     checkFileIsOpen(englishText);
+    
     englishTextLenght = getFileSize(englishText);
+    
     while (getline(englishText, tmp)) text += tmp;
+    
     englishText.close();
+    tmp.clear();
 
-    cout << "Original text: " << endl << endl;
-    cout << text << endl;
-
-    tuple<map<char, string>, map<string, char>> ShennonCodeDecode = Shennon(text);
-
-    map<char, string> ShennonCode = get<0>(ShennonCodeDecode);
-    map<string, char> ShennonDecode = get<1>(ShennonCodeDecode);
+    Lab11 coding(text);
 
     ofstream englishCoded;
-    englishCoded.open("EnglishCodedANSI.txt", ios::out | ios::binary);
+    englishCoded.open("Lab11/EnglishCodedShennon.txt", ios::out | ios::binary);
     checkFileIsOpen(englishCoded);
-    writeBytesToFile(englishCoded, codeByMap(ShennonCode, text));
+    
+    writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::Shennon, text));
+    
     englishCoded.close();
 
-    string codedText = "";
+    englishCoded.open("Lab11/EnglishCodedGilbertMoore.txt", ios::out | ios::binary);
+    checkFileIsOpen(englishCoded);
 
-    streamsize englishToDecodeLenght = 0;
+    writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::GilbertMoore, text));
+
+    englishCoded.close();
 
     ifstream englishToDecode;
-    englishToDecode.open("EnglishCodedANSI.txt", ios::in | ios::binary);
+    englishToDecode.open("Lab11/EnglishCodedShennon.txt", ios::in | ios::binary);
     checkFileIsOpen(englishToDecode);
-    englishToDecodeLenght = getFileSize(englishToDecode);
+    
+    streamsize ShennonLenght = getFileSize(englishToDecode);
+    
     readBytesFromFile(englishToDecode, codedText);
     englishToDecode.close();
 
-    cout << endl << endl;
+    cout << "Coded text(Shennon): " << endl << endl << codedText << endl << endl;
 
-    cout << "Coded text: " << endl << endl;
-    cout << codedText;
+    string decodedShennon = coding.DecodeBy(Lab11::Code::Shennon, codedText);
 
-    cout << endl << endl;
+    englishToDecode.open("Lab11/EnglishCodedGilbertMoore.txt", ios::in | ios::binary);
+    checkFileIsOpen(englishToDecode);
 
-    string decodedText = decodedByMap(ShennonDecode, codedText);
+    streamsize GilbertMooreLenght = getFileSize(englishToDecode);
 
-    cout << "Decoded text: " << endl << endl;
-    cout << decodedText;
+    readBytesFromFile(englishToDecode, codedText);
+    englishToDecode.close();
 
-    cout << endl << endl;
+    cout << "Coded text(GilbertMoore): " << endl << endl << codedText << endl << endl;
 
-    cout << "Are original and transformed (encoded->decoded) text equal? Answer is: " << (decodedText == text ? "True" : "False") << endl << endl;
+    string decodedGilbertMoore = coding.DecodeBy(Lab11::Code::GilbertMoore, codedText);
+
+    cout << "Original text: " << endl << endl << text << endl << endl;
+    cout << "Decoded text(Shennon): " << endl << endl << decodedShennon << endl << endl;
+    cout << "Decoded text(GilbertMoore): " << endl << endl << decodedGilbertMoore << endl << endl;
+
+    cout << "Are original and transformed (encoded->decoded) text equal?" << endl;
+    cout << "Shennon: " << (decodedShennon == text ? "True" : "False") << endl;
+    cout << "GilbertMoore: " << (decodedGilbertMoore == text ? "True" : "False") << endl << endl;
 
     stringstream fixedcout;
-    fixedcout << setprecision(2) << fixed << englishToDecodeLenght / (double)englishTextLenght * 100;
+    fixedcout << setprecision(2) << fixed << ShennonLenght / (double)englishTextLenght * 100;
+    cout << "The file compression(Shennon) percentage is: " << fixedcout.str() << "%" << endl;
 
-    cout << "The file compression percentage is: " << fixedcout.str() << "%" << endl;
+    fixedcout.str("");
+    
+    fixedcout << setprecision(2) << fixed << GilbertMooreLenght / (double)englishTextLenght * 100;
+    cout << "The file compression(GilbertMoore) percentage is: " << fixedcout.str() << "%" << endl;
 }
 
 int main() {
     srand((unsigned int)time(NULL));
+    // Ставим русскую локаль
+    setlocale(LC_ALL, "RUSSIAN");
 
     //CodingTable();
 
