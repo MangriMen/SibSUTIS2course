@@ -83,6 +83,16 @@ std::string Lab11::CodeBy(Code type, std::string text)
         }
         return out;
     case Lab11::Code::Huffman:
+        for (const auto& ch : text) {
+            try {
+                out += HuffmanBM.left.at(ch);
+            }
+            catch (std::out_of_range)
+            {
+                std::cerr << "[CODING]: The coding alphabet does not match the text alphabet";
+                exit(-2);
+            }
+        }
         break;
     case Lab11::Code::Fano:
         break;
@@ -118,7 +128,7 @@ std::string Lab11::DecodeBy(Code type, std::string text)
         decodeMapType = &ShennonBM.right;
         break;
     case Lab11::Code::Huffman:
-        //decodeMapType = &HuffmanBM.right;
+        decodeMapType = &HuffmanBM.right;
         break;
     case Lab11::Code::Fano:
         //decodeMapType = &FanoBM.right;

@@ -3,10 +3,66 @@
 #include <iomanip>
 #include <tuple>
 #include <vector>
-#include <map>
+#include <set>
 #include <sstream>
 #include "BinaryString.h"
 #include "const.h"
+
+namespace HuffmanNs {
+    class Vertex
+    {
+    public:
+        char data = {};
+        double freq = 0;
+        Vertex* left = nullptr;
+        Vertex* right = nullptr;
+
+        Vertex(char data_, double freq_) {
+            data = data_;
+            freq = freq_;
+        }
+    };
+
+    struct vertexByFreqComp
+    {
+        bool operator() (Vertex* left, Vertex* right) const {
+            return left->freq > right->freq;
+        }
+    };
+
+    void Huffman(std::multiset<Vertex*, vertexByFreqComp>& alphabet) {
+        while (alphabet.size() > 1) {
+            Vertex* mergedNode = new Vertex(char(), (*alphabet.rbegin())->freq + (*(++alphabet.rbegin()))->freq);
+
+            mergedNode->right = *alphabet.rbegin();
+            mergedNode->left = *(++alphabet.rbegin());
+
+            alphabet.erase(--alphabet.end());
+            alphabet.erase(--alphabet.end());
+
+            alphabet.insert(mergedNode);
+        }
+    }
+
+    void buildKeywords(Vertex* p, boost::bimap<char, std::string>& keywordBM, std::string keyword, char bit) {
+        keyword.push_back(bit);
+
+        if (p->left != nullptr && p->right != nullptr) {
+            buildKeywords(p->left, keywordBM, keyword, '0');
+            buildKeywords(p->right, keywordBM, keyword, '1');
+        }
+        else keywordBM.insert({ p->data, keyword });
+    }
+
+    void KeywordBuildingSetup(Vertex* p, boost::bimap<char, std::string>& keywordBM) {
+        if (p != nullptr) {
+            if (p->left != nullptr && p->right != nullptr) {
+                buildKeywords(p->left, keywordBM, "", '0');
+                buildKeywords(p->right, keywordBM, "", '1');
+            }
+        }
+    }
+}
 
 bool Coding::alphabetCompValue(std::pair<char, double> a, std::pair<char, double> b) {
     return a.second > b.second;
@@ -72,99 +128,6 @@ void DisplayTable(const std::vector<std::pair<char, double>>& alphabet, const bo
     std::cout << tablecout.str() << std::endl;
 }
 
-double* P = nullptr;
-
-int* Len = nullptr;
-
-int** CH = new int* [100];
-
-int Up(int n, double q) {
-    int j = 0;
-    for (int i = (n - 1); i > 2; i--) {
-        if (P[i - 1] <= q) {
-            P[i] = P[i - 1];
-        }
-        else {
-            j = i;
-        }
-    }
-
-    P[j] = q;
-    return j;
-}
-
-void Down(int n, int j) {
-    int S = *CH[j];
-
-    int L = Len[j];
-    for (int i = j; i < n - 2; j--) {
-        CH[i] = CH[i + 1];
-        Len[i] = Len[i + 1];
-    }
-    CH[n - 1] = &S;
-    CH[n] = &S;
-    CH[n - 1][L + 1] = 0;
-    CH[n][L + 1] = 1;
-    Len[n - 1] = L + 1;
-    Len[n] = L + 1;
-
-}
-
-void buildHuffman(int n, double* P) {
-    if (n == 2) {
-        CH[1][1] = 0;
-        Len[1] = 1;
-        CH[2][1] = 1;
-        Len[2] = 1;
-    }
-    else {
-        double q = P[n - 1] + P[n];
-        int j = Up(n, q);
-        buildHuffman(n - 1, P);
-        Down(n, j);
-    }
-}
-
-std::vector<int> Lenght(100, 0);
-
-std::vector<std::vector<int>> C(1000, std::vector<int>(1000, 0));
-
-int getMedian(int L, int R) {
-    //double sL = 0;
-    //for (int i = 0; i < R - 1; i++) {
-    //    sL = sL + P[i];
-    //}
-    //double sR = P[R];
-    //int m = R;
-    //while (sL >= sR) {
-    //    m = m - 1;
-    //    sL = sL - P[m];
-    //    sR = sR + P[m];
-    //}
-
-    //return m;
-    return 0;
-}
-
-void buildFano(int L, int R, int k) {
-    //if (L < R) {
-    //    k = k+1;
-    //    int m = getMedian(L, R);
-    //    for (int i = L; i < R; i++) {
-    //        if (i <= m) { 
-    //            C[i][k] = 0;
-    //            Lenght[i] = Lenght[i] + 1;
-    //        }
-    //        else {
-    //            C[i][k] = 1;
-    //            Lenght[i] = Lenght[i] + 1;
-    //        }
-    //    }
-    //    buildFano(L, m, k);
-    //    buildFano(m+1, R, k);
-    //}
-}
-
 boost::bimap<char, std::string> Coding::CreateShennonBM(std::vector<std::pair<char, double>> alphabet)
 {
     // Сортируем по убыванию алфавит
@@ -196,7 +159,7 @@ boost::bimap<char, std::string> Coding::CreateShennonBM(std::vector<std::pair<ch
 
     // Проверка на уникальность кодовых слов
     if (keywordBM.size() != keyword.size()) {
-        std::cerr << std::endl << "[KEYWORD]: Keyword's are not unique!" << std::endl << std::endl;
+        std::cerr << std::endl << "[KEYWORD]: Keywords are not unique!" << std::endl << std::endl;
         exit(15);
     }
 
@@ -208,47 +171,31 @@ boost::bimap<char, std::string> Coding::CreateShennonBM(std::vector<std::pair<ch
 
 boost::bimap<char, std::string> Coding::CreateHuffmanBM(std::vector<std::pair<char, double>> alphabet)
 {
-    //// Сортируем по не возрастанию алфавит
-    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
-
-    //for (int i = 0; i < alphabet.size(); i++) {
-    //    std::cout << P[i] << std::endl;
-    //}
-
-    //for (int i = 0; i < 100; i++) {
-    //    CH[i] = new int[100];
-    //}
-
-    //for (int i = 0; i < 100; i++) {
-    //    for (int j = 0; j < 100; j++) {
-    //        CH[i][j] = 0;
-    //    }
-    //}
-
-    //buildHuffman(static_cast<int>(alphabet.size()), P);
-
-    //for (int i = 0; i < 100; i++) {
-    //    for (int j = 0; j < 100; j++) {
-    //        std::cout << CH[i][j] << " ";
-    //    }
-    //    std::cout << std::endl;
-    //}
 
     //// Создаём словарь map для хранения пар 'Символ' : "Кодовое слово"
+    boost::bimap<char, std::string> keywordBM;
+    
+    // Мультисет для хранения узлов дерева
+    std::multiset<HuffmanNs::Vertex*, HuffmanNs::vertexByFreqComp> alphabetTree;
 
-    //boost::bimap<char, std::string> keywordBM;
+    for (const auto& letter : alphabet) alphabetTree.insert(new HuffmanNs::Vertex(letter.first, letter.second));
 
-    //// Заполняем символами из алфавита и кодовыми словами
-    //for (size_t i = 0; i < alphabet.size(); i++) {
-    //    keywordBM.insert({ alphabet[i].first, keyword[i] });
-    //}
+    Huffman(alphabetTree);
 
-    //if (keywordBM.size() != keyword.size()) {
-    //    std::cerr << std::endl << "[KEYWORD]: Keyword's are not unic!" << std::endl << std::endl;
-    //    exit(15);
-    //}
+    KeywordBuildingSetup((*alphabetTree.begin()), keywordBM);
 
-    return boost::bimap<char, std::string>();
+    if (keywordBM.size() != alphabet.size()) {
+        std::cerr << std::endl << "[KEYWORD]: Keywords are not unique!" << std::endl << std::endl;
+        exit(15);
+    }
+
+    std::cout << "Huffman Table" << std::endl << std::endl;
+    std::cout << "a" << " | " << std::setw(DOUBLE_PRECISION + 2) << "Keyword" << " | " << std::endl;
+    std::cout << std::string(4 + DOUBLE_PRECISION + 2, '-') << std::endl;
+    for (const auto& elem : keywordBM.left)
+        std::cout << elem.first << " | " << std::setw(DOUBLE_PRECISION+2) << elem.second << " | " << std::endl;
+
+    return keywordBM;
 }
 
 boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char, double>> alphabet)
