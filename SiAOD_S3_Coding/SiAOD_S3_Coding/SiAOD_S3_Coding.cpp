@@ -332,7 +332,7 @@ void SFGm() {
 
 int main() {
     srand((unsigned int)time(NULL));
-
+    system("chcp 1251");
     //CodingTable();
 
     //RLEFile();

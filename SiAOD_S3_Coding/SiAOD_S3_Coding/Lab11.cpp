@@ -37,7 +37,8 @@ Lab11::Lab11(std::string text) :
     HuffmanBM(boost::bimap<char, std::string>()),
     FanoBM(boost::bimap<char, std::string>()),
     GilbertMooreBM(boost::bimap<char, std::string>()),
-    alphabet(std::vector<std::pair<char, double>>())
+    alphabet(std::vector<std::pair<char, double>>()),
+    originalText("")
 {
     Init(text);
 }
@@ -45,6 +46,7 @@ Lab11::Lab11(std::string text) :
 void Lab11::Init(std::string text)
 {
     alphabet = GetAlphabet(text);
+    originalText = text;
 
     //std::vector<std::pair<char, double>> test;
 

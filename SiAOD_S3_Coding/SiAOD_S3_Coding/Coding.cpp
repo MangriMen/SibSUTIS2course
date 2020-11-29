@@ -167,47 +167,40 @@ void buildFano(int L, int R, int k) {
 
 boost::bimap<char, std::string> Coding::CreateShennonBM(std::vector<std::pair<char, double>> alphabet)
 {
-    // Сортируем по не возрастанию алфавит
+    // Сортируем по убыванию алфавит
     sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
 
-    // Создаём вектор для комулятивных вероятностей
+    // Вектор комулятивных вероятностей
     std::vector<double> Q(alphabet.size() + 1, 0);
 
-    // Расчитываем комулятивные вероятности
-    for (size_t i = 1; i < Q.size(); i++) Q[i] = (alphabet[i - (size_t)1].second + Q[i - (size_t)1]);
-
-    // Создаём вектор для комулятивных вероятностей,
-    // содержащих дробную часть комулятивных вероятностей в двоичном виде
+    // Вектор комулятивных вероятностей в двоичном виде
     std::vector<std::string> Qbinary(alphabet.size(), "");
 
-    // Заполняем переводя дробную часть комулятивных вероятностей
-    // в двоичный вид
-    for (size_t i = 0; i < Qbinary.size(); i++) Qbinary[i] = std::get<1>(BinaryString::ftobs(Q[i]));
-
-    // Создаём вектор длин кодовых слов
-    std::vector<int> L(alphabet.size(), 0);
-
-    // Вычисляем длинны кодовых слов по формуле L[i] = ceil(-log2(alphabet[i]))
-    for (size_t i = 0; i < alphabet.size(); i++) L[i] = static_cast<int>(ceil(-log2(alphabet[i].second)));
-
-    // Создаём вектор кодовых слов
+    // Вектор кодовых слов
     std::vector<std::string> keyword(alphabet.size(), "");
 
-    // Вычисляем кодовые слова как L[i] количество символов в векторе двоичных комулятивных
-    // вероятностей с начала строки
-    for (size_t i = 0; i < alphabet.size(); i++) keyword[i] = Qbinary[i].substr(0, L[i]);
-
-    // Создаём словарь map для хранения пар 'Символ' : "Кодовое слово"
+    // Создаём словарь bimap для хранения пар 'Символ' : "Кодовое слово"
     boost::bimap<char, std::string> keywordBM;
 
-    // Заполняем символами из алфавита и кодовыми словами
-    for (size_t i = 0; i < alphabet.size(); i++) keywordBM.insert({ alphabet[i].first, keyword[i] });
+    // Расчитываем комулятивные вероятности
+    // Переводим их в двоичный вид
+    // Вычисляем кодовые слова как ceil(-log2(alphabet[i])) количество символов в массив
+    // кумулятивных вероятностей в двоичном виде после запятой
+    for (size_t i = 1; i < Q.size(); i++) {
+        Q[i] = (alphabet[i - (size_t)1].second + Q[i - (size_t)1]);
+        Qbinary[i-1] = std::get<1>(BinaryString::ftobs(Q[i-1]));
+        keyword[i-1] = Qbinary[i-1].substr(0, static_cast<int>(ceil(-log2(alphabet[i - 1].second))));
 
+        keywordBM.insert({ alphabet[i - 1].first, keyword[i - 1] });
+    }
+
+    // Проверка на уникальность кодовых слов
     if (keywordBM.size() != keyword.size()) {
-        std::cerr << std::endl << "[KEYWORD]: Keyword's are not unic!" << std::endl << std::endl;
+        std::cerr << std::endl << "[KEYWORD]: Keyword's are not unique!" << std::endl << std::endl;
         exit(15);
     }
 
+    // Выводим таблицу кодовых слов
     DisplayTable(alphabet, keywordBM, Q, Code::Shennon);
 
     return keywordBM;
