@@ -344,8 +344,11 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 searchResult = binarySearch(nodesArray, choosenDepNumber, size) + bool(choosenDepNumber);
                 searchResultLast = searchResult;
                 while (searchResultLast != 4000 && nodesArray[searchResultLast]->departmentNumber == nodesArray[searchResult]->departmentNumber) {
+                    nodesArray[searchResultLast]->nodePrint();
+                    cout << searchResultLast - searchResult;
                     ++searchResultLast;
                 }
+
                 cout << "Employee with department number of " << choosenDepNumber <<
                     " are located from the " << searchResult << "th up to " << searchResultLast << "th position." << endl << endl;
                 rightBorder = searchResult - 1;
