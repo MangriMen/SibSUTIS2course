@@ -7,6 +7,8 @@ class Coding
 protected:
 	static bool alphabetCompValue(std::pair<char, double> a, std::pair<char, double> b);
 
+	static bool alphabetCompKey(std::pair<char, double> a, std::pair<char, double> b);
+
 	static bool alphabetCompKeyR(std::pair<char, double> a, std::pair<char, double> b);
 public:
 	enum class Code

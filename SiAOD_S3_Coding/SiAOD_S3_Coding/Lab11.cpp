@@ -120,52 +120,80 @@ std::string Lab11::DecodeBy(Code type, std::string text)
     std::string out = "";
     std::string tmp = "";
 
-    boost::bimap<char, std::string>::right_map* decodeMapType = nullptr;
+    boost::bimap<char, std::string>::right_map* decodeMap = nullptr;
 
     switch (type)
     {
     case Lab11::Code::Shennon:
-        decodeMapType = &ShennonBM.right;
+        decodeMap = &ShennonBM.right;
         break;
     case Lab11::Code::Huffman:
-        decodeMapType = &HuffmanBM.right;
+        decodeMap = &HuffmanBM.right;
         break;
     case Lab11::Code::Fano:
         //decodeMapType = &FanoBM.right;
         break;
     case Lab11::Code::GilbertMoore:
-        decodeMapType = &GilbertMooreBM.right;
+        decodeMap = &GilbertMooreBM.right;
         break;
     default:
         return out;
         break;
     }
 
-    if (decodeMapType == nullptr) exit(-1000);
+    if (decodeMap == nullptr) exit(-1000);
 
-    boost::bimap<char, std::string>::right_map &decodeMap = *decodeMapType;
-
-    decodeMapType = nullptr;
-
-    auto found = decodeMap.end();
+    auto found = decodeMap->end();
 
     size_t i = 0;
     while (i < text.size()) {
         tmp.clear();
-        found = decodeMap.end();
+        found = decodeMap->end();
 
         do {
             tmp += text[i++];
-            found = decodeMap.find(tmp);
-        } while (i < text.size() && found == decodeMap.end());
+            found = decodeMap->find(tmp);
+        } while (i < text.size() && found == decodeMap->end());
 
-        if (found != decodeMap.end()) out += found->second;
+        if (found != decodeMap->end()) out += found->second;
     }
 
     for (int i = static_cast<int>(out.size()) - 1; i >= 0; i--)
         if (out[i] != ' ') { out.resize(out.size() - (out.size() - i - 1)); break; }
 
     return out;
+}
+
+double Lab11::GetAverageKeywordLenght(Code type)
+{
+    double averageLenght = 0;
+
+    boost::bimap<char, std::string>::left_map* mapType = nullptr;
+
+    switch (type)
+    {
+    case Coding::Code::Shennon:
+        mapType = &ShennonBM.left;
+        break;
+    case Coding::Code::Huffman:
+        mapType = &HuffmanBM.left;
+        break;
+    case Coding::Code::Fano:
+        mapType = &FanoBM.left;
+        break;
+    case Coding::Code::GilbertMoore:
+        mapType = &GilbertMooreBM.left;
+        break;
+    default:
+        break;
+    }
+
+    if (mapType == nullptr) exit(-1000);
+
+    for (int i = 0; i < alphabet.size(); i++)
+        averageLenght += alphabet[i].second * mapType->at(alphabet[i].first).size();
+    
+    return averageLenght;
 }
 
 std::vector<std::pair<char, double>> Lab11::GetAlphabet(std::string text)
@@ -188,6 +216,16 @@ std::vector<std::pair<char, double>> Lab11::GetAlphabet(std::string text)
     sort(alphabet.begin(), alphabet.end(), Coding::alphabetCompValue);
 
     return alphabet;
+}
+
+double Lab11::GetAlphabetEntropy()
+{
+    double entropy = 0;
+
+    for (int i = 0; i < alphabet.size(); i++)
+        entropy += -alphabet[i].second * log2(alphabet[i].second);
+
+    return entropy;
 }
 
 const std::string& Lab11::GetText()

@@ -68,31 +68,16 @@ bool Coding::alphabetCompValue(std::pair<char, double> a, std::pair<char, double
     return a.second > b.second;
 }
 
-bool Coding::alphabetCompKeyR(std::pair<char, double> a, std::pair<char, double> b) {
+bool Coding::alphabetCompKey(std::pair<char, double> a, std::pair<char, double> b) {
     return a.first < b.first;
 }
 
-void DisplayTable(const std::vector<std::pair<char, double>>& alphabet, const boost::bimap<char, std::string>& keywordBM, const std::vector<double>& Q, Coding::Code type) {
-    std::cout << std::endl;
+bool Coding::alphabetCompKeyR(std::pair<char, double> a, std::pair<char, double> b) {
+    return a.first > b.first;
+}
 
-    switch (type)
-    {
-    case Coding::Code::Shennon:
-        std::cout << "Shennon";
-        break;
-    case Coding::Code::Huffman:
-        std::cout << "Huffman";
-        break;
-    case Coding::Code::Fano:
-        std::cout << "Fano";
-        break;
-    case Coding::Code::GilbertMoore:
-        std::cout << "GilbertMoore";
-        break;
-    default:
-        break;
-    }
-    std::cout << " Table" << std::endl << std::endl;
+void DisplayTable(const std::vector<std::pair<char, double>>& alphabet, const boost::bimap<char, std::string>& keywordBM) {
+    std::cout << std::endl;
 
     int maxKeywordLenght = 0;
     for (auto& el : keywordBM.left)
@@ -102,25 +87,30 @@ void DisplayTable(const std::vector<std::pair<char, double>>& alphabet, const bo
     int tmp = maxKeywordLenght;
     for (numberWidth = 1; (tmp /= 10); numberWidth++);
 
+
     std::stringstream tablecout;
     tablecout.setf(std::ios::fixed);
     tablecout << std::setprecision(DOUBLE_PRECISION);
+
 
     // Таблица
     tablecout <<
         std::setw(1) << "a" << " | " <<
         std::setw(DOUBLE_PRECISION + 2) << "Pi" + std::string(((DOUBLE_PRECISION + 2) >> 1) - 1, ' ') << " | " <<
-        std::setw(DOUBLE_PRECISION + 2) << "Qi" + std::string(((DOUBLE_PRECISION + 2) >> 1) - 1, ' ') << " | " <<
         std::setw(numberWidth) << "L" << " | " <<
         std::setw(maxKeywordLenght) << "Keyword" << std::endl;
 
-    tablecout << std::string((DOUBLE_PRECISION + 2) * 2 + numberWidth + maxKeywordLenght + (3 * 4) + 1, '-') << std::endl;
+    tablecout << std::string(
+        static_cast<long long>(DOUBLE_PRECISION + 2) + 
+        static_cast<long long>(numberWidth) +
+        static_cast<long long>(maxKeywordLenght) +
+        static_cast<long long>(3 * 4) +
+        static_cast < long long>(1), '-') << std::endl;
 
     for (size_t i = 0; i < alphabet.size(); i++) {
         tablecout <<
             std::setw(1) << alphabet[i].first << " | " <<
             std::setw(DOUBLE_PRECISION + 2) << alphabet[i].second << " | " <<
-            std::setw(DOUBLE_PRECISION) << Q[i + (type == Coding::Code::GilbertMoore)] << " | " <<
             std::setw(numberWidth) << keywordBM.left.at(alphabet[i].first).size() << " | " <<
             std::setw(maxKeywordLenght) << keywordBM.left.at(alphabet[i].first) << std::endl;
     }
@@ -163,8 +153,12 @@ boost::bimap<char, std::string> Coding::CreateShennonBM(std::vector<std::pair<ch
         exit(15);
     }
 
+    sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+
     // Выводим таблицу кодовых слов
-    DisplayTable(alphabet, keywordBM, Q, Code::Shennon);
+    std::cout << "Shennon Table" << std::endl;
+    DisplayTable(alphabet, keywordBM);
 
     return keywordBM;
 }
@@ -172,7 +166,7 @@ boost::bimap<char, std::string> Coding::CreateShennonBM(std::vector<std::pair<ch
 boost::bimap<char, std::string> Coding::CreateHuffmanBM(std::vector<std::pair<char, double>> alphabet)
 {
 
-    //// Создаём словарь map для хранения пар 'Символ' : "Кодовое слово"
+    // Создаём словарь bimap для хранения пар 'Символ' : "Кодовое слово"
     boost::bimap<char, std::string> keywordBM;
     
     // Мультисет для хранения узлов дерева
@@ -184,16 +178,17 @@ boost::bimap<char, std::string> Coding::CreateHuffmanBM(std::vector<std::pair<ch
 
     KeywordBuildingSetup((*alphabetTree.begin()), keywordBM);
 
+    // Проверка на уникальность кодовых слов
     if (keywordBM.size() != alphabet.size()) {
         std::cerr << std::endl << "[KEYWORD]: Keywords are not unique!" << std::endl << std::endl;
         exit(15);
     }
 
-    std::cout << "Huffman Table" << std::endl << std::endl;
-    std::cout << "a" << " | " << std::setw(DOUBLE_PRECISION + 2) << "Keyword" << " | " << std::endl;
-    std::cout << std::string(4 + DOUBLE_PRECISION + 2, '-') << std::endl;
-    for (const auto& elem : keywordBM.left)
-        std::cout << elem.first << " | " << std::setw(DOUBLE_PRECISION+2) << elem.second << " | " << std::endl;
+    sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+
+    std::cout << "Huffman Table" << std::endl;
+    DisplayTable(alphabet, keywordBM);
 
     return keywordBM;
 }
@@ -228,8 +223,8 @@ boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char,
 
 boost::bimap<char, std::string> Coding::CreateGilbertMooreBM(std::vector<std::pair<char, double>> alphabet)
 {
-    // Сортируем по не возрастанию алфавит
-    sort(alphabet.begin(), alphabet.end(), alphabetCompKeyR);
+    // Сортируем по убыванию алфавит
+    sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
 
     // Создаём вектор для комулятивных вероятностей
     std::vector<double> Q(alphabet.size() + 1, 0);
@@ -264,19 +259,24 @@ boost::bimap<char, std::string> Coding::CreateGilbertMooreBM(std::vector<std::pa
     // вероятностей с начала строки
     for (size_t i = 1; i < alphabet.size() + 1; i++) keyword[i - 1] = Qbinary[i].substr(0, L[i - 1]);
 
-    // Создаём словарь map для хранения пар 'Символ' : "Кодовое слово"
+    // Создаём словарь bimap для хранения пар 'Символ' : "Кодовое слово"
 
     boost::bimap<char, std::string> keywordBM;
 
     // Заполняем символами из алфавита и кодовыми словами
     for (size_t i = 0; i < alphabet.size(); i++) keywordBM.insert({ alphabet[i].first, keyword[i] });
 
+    // Проверка на уникальность кодовых слов
     if (keywordBM.size() != keyword.size()) {
         std::cerr << std::endl << "[KEYWORD]: Keyword's are not unic!" << std::endl << std::endl;
         exit(15);
     }
 
-    DisplayTable(alphabet, keywordBM, Q, Code::GilbertMoore);
+    sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+
+    std::cout << "GilbertMoore Table" << std::endl;
+    DisplayTable(alphabet, keywordBM);
 
     return keywordBM;
 }

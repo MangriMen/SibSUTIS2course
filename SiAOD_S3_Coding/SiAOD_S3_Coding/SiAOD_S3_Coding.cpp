@@ -211,37 +211,6 @@ void RLEFile() {
     cout << setw(18) << "Omega: " << codedOmega.size() / (double)Original.size() * 100 << "%" << endl;
 }
 
-string codeByMap(map<char, string>& codeMap, string text) {
-    string out = "";
-    for (const auto& ch : text)
-        out += codeMap.at(ch);
-    return out;
-}
-
-string decodedByMap(map<string, char>& decodeMap, string text) {
-    string out = "";
-    string tmp = "";
-    map<string, char>::iterator found = decodeMap.end();
-    size_t i = 0;
-
-    while (i < text.size()) {
-        tmp.clear();
-        found = decodeMap.end();
-        
-        do {
-            tmp += text[i++];
-            found = decodeMap.find(tmp);
-        } while (i < text.size() && found == decodeMap.end());
-
-        if (found != decodeMap.end()) out += found->second;
-    }
-
-    for (int i = static_cast<int>(out.size()) - 1; i >= 0; i--)
-        if (out[i] != ' ') { out.resize(out.size() - (out.size() - i - 1)); break; }
-
-    return out;
-}
-
 streamsize getFileSize(ifstream& file) {
     file.ignore(numeric_limits<streamsize>::max());
     streamsize length = file.gcount();
@@ -251,24 +220,25 @@ streamsize getFileSize(ifstream& file) {
 }
 
 void SFGm() {
-    // Создаём строку для входного текста
-    string text = "";
-    string codedText = "";
-    string tmp;
 
-    streamsize englishTextLenght = 0;
+    // Строка для входного текста
+    string text = "";
+    string getlineBuffer;
+    
+    // Строка для закодированного текста
+    string codedText = "";
+
+
+
 
     ifstream englishText;
 
     englishText.open("Lab11/EnglishANSI.txt", ios::in);
     checkFileIsOpen(englishText);
-    
-    englishTextLenght = getFileSize(englishText);
-    
-    while (getline(englishText, tmp)) text += tmp;
-    
+    streamsize englishTextLenght = getFileSize(englishText);
+    while (getline(englishText, getlineBuffer)) text += getlineBuffer;
     englishText.close();
-    tmp.clear();
+    getlineBuffer.clear();
 
 
 
@@ -280,28 +250,21 @@ void SFGm() {
 
     englishCoded.open("Lab11/EnglishCodedShennon.txt", ios::out | ios::binary);
     checkFileIsOpen(englishCoded);
-    
     writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::Shennon, text));
-    
     englishCoded.close();
-
 
 
     englishCoded.open("Lab11/EnglishCodedHuffman.txt", ios::out | ios::binary);
     checkFileIsOpen(englishCoded);
-
     writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::Huffman, text));
-
     englishCoded.close();
-
 
 
     englishCoded.open("Lab11/EnglishCodedGilbertMoore.txt", ios::out | ios::binary);
     checkFileIsOpen(englishCoded);
-
     writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::GilbertMoore, text));
-
     englishCoded.close();
+
 
 
 
@@ -309,74 +272,94 @@ void SFGm() {
 
     englishToDecode.open("Lab11/EnglishCodedShennon.txt", ios::in | ios::binary);
     checkFileIsOpen(englishToDecode);
-    
     streamsize ShennonLenght = getFileSize(englishToDecode);
-    
     readBytesFromFile(englishToDecode, codedText);
-    englishToDecode.close();
-
-    cout << "Coded text(Shennon): " << endl << endl << codedText << endl << endl;
-
     string decodedShennon = coding.DecodeBy(Lab11::Code::Shennon, codedText);
-
+    englishToDecode.close();
 
 
     englishToDecode.open("Lab11/EnglishCodedHuffman.txt", ios::in | ios::binary);
     checkFileIsOpen(englishToDecode);
-
     streamsize HuffmanLenght = getFileSize(englishToDecode);
-
     readBytesFromFile(englishToDecode, codedText);
+    string decodedHuffman = coding.DecodeBy(Lab11::Code::Huffman, codedText);
     englishToDecode.close();
 
-    cout << "Coded text(Huffman): " << endl << endl << codedText << endl << endl << endl;
-
-    string decodedHuffman = coding.DecodeBy(Lab11::Code::Huffman, codedText);
-
-
-
+    
     englishToDecode.open("Lab11/EnglishCodedGilbertMoore.txt", ios::in | ios::binary);
     checkFileIsOpen(englishToDecode);
-
     streamsize GilbertMooreLenght = getFileSize(englishToDecode);
-
     readBytesFromFile(englishToDecode, codedText);
+    string decodedGilbertMoore = coding.DecodeBy(Lab11::Code::GilbertMoore, codedText);
     englishToDecode.close();
 
-    cout << "Coded text(GilbertMoore): " << endl << endl << codedText << endl << endl;
-
-    string decodedGilbertMoore = coding.DecodeBy(Lab11::Code::GilbertMoore, codedText);
 
 
 
-    cout << "Original text: " << endl << endl << text << endl << endl;
-    cout << "Decoded text(Shennon): " << endl << endl << decodedShennon << endl << endl;
-    cout << "Decoded text(Huffman): " << endl << endl << decodedHuffman << endl << endl;
-    cout << "Decoded text(GilbertMoore): " << endl << endl << decodedGilbertMoore << endl << endl;
+    //cout << "Coded text(Shennon): " << endl << endl << codedText << endl << endl;
+    //cout << "Coded text(Huffman): " << endl << endl << codedText << endl << endl << endl;
+    //cout << "Coded text(GilbertMoore): " << endl << endl << codedText << endl << endl;
 
 
-    cout << "Are original and transformed (encoded->decoded) text equal?" << endl;
-    cout << "Shennon: " << (decodedShennon == text ? "True" : "False") << endl;
-    cout << "Huffman: " << (decodedHuffman == text ? "True" : "False") << endl;
-    cout << "GilbertMoore: " << (decodedGilbertMoore == text ? "True" : "False") << endl << endl;
+    //cout << "Original text: " << endl << endl << text << endl << endl;
+    //cout << "Decoded text(Shennon): " << endl << endl << decodedShennon << endl << endl;
+    //cout << "Decoded text(Huffman): " << endl << endl << decodedHuffman << endl << endl;
+    //cout << "Decoded text(GilbertMoore): " << endl << endl << decodedGilbertMoore << endl << endl;
+
 
 
 
     stringstream fixedcout;
-    fixedcout << setprecision(2) << fixed << ShennonLenght / (double)englishTextLenght * 100;
-    cout << "The file compression(Shennon) percentage is: " << fixedcout.str() << "%" << endl;
 
+    cout << "Are original and transformed (encoded->decoded) text equal?" << endl << endl;
+
+    cout << string(74, '-') << endl;
+    cout <<
+        setw(12) << "Method  " << " | " <<
+        setw(12) << "Shennon  " << setw(3) << " | " <<
+        setw(12) << "Fano    " << setw(3) << " | " <<
+        setw(12) << "Huffman  " << setw(3) << " | " <<
+        setw(12) << "GilbertMoore" << setw(3) << " | " << endl;
+    cout << string(74, '-') << endl;
+    cout <<
+        setw(12) << "Is equal ?" << " | " <<
+        setw(12) << (decodedShennon == text ? "True" : "False") + string(4, ' ') << setw(3) << " | " <<
+        setw(12) << "False" + string(4, ' ') << setw(3) << " | " <<
+        setw(12) << (decodedHuffman == text ? "True" : "False") + string(4, ' ') << setw(3) << " | " <<
+        setw(12) << (decodedGilbertMoore == text ? "True" : "False") + string(4, ' ') << setw(3) << " | " << endl;
+    cout << string(74, '-') << endl;
+    fixedcout << setprecision(2) << fixed;
+    fixedcout <<
+        setw(12) << "Compression" << " | " <<
+        setw(12) << to_string(ShennonLenght / (double)englishTextLenght * 100) + '%' + ' ' << setw(3) << " | " <<
+        setw(12) << to_string(100) + '%' + ' ' << setw(3) << " | " <<
+        setw(12) << to_string(HuffmanLenght / (double)englishTextLenght * 100) + '%' + ' ' << setw(3) << " | " <<
+        setw(12) << to_string(GilbertMooreLenght / (double)englishTextLenght * 100) + '%' + ' ' << setw(3) << " | " << endl;
+    cout << fixedcout.str();
     fixedcout.str("");
-
-
-    fixedcout << setprecision(2) << fixed << HuffmanLenght / (double)englishTextLenght * 100;
-    cout << "The file compression(Huffman) percentage is: " << fixedcout.str() << "%" << endl;
-
-    fixedcout.str("");
-
+    cout << string(74, '-') << endl;
     
-    fixedcout << setprecision(2) << fixed << GilbertMooreLenght / (double)englishTextLenght * 100;
-    cout << "The file compression(GilbertMoore) percentage is: " << fixedcout.str() << "%" << endl;
+
+
+
+
+    cout << endl << endl;
+    cout << string(69, '-') << endl;
+    cout << setw(22) << "Alphabet entropy  " << " | " << setw(42) << "Average keyword lenght          " << " | " << endl;
+    cout <<setw(24) << " |" << string(44, '-') << "| " << endl;
+    cout <<
+        setw(25) << " | " <<
+        setw(12) << "Shennon   " << " | " <<
+        setw(12) << "Huffman   " << " | " <<
+        setw(12) << "GilbertMoore" << " | " << endl;
+    cout << string(69, '-') << endl;
+    cout <<
+        setw(22) << coding.GetAlphabetEntropy()<< " | " <<
+        setw(9) << coding.GetAverageKeywordLenght(Coding::Code::Shennon) << string(3, ' ') << " | " <<
+        setw(9) << coding.GetAverageKeywordLenght(Coding::Code::Huffman) << string(3, ' ') << " | " <<
+        setw(9) << coding.GetAverageKeywordLenght(Coding::Code::GilbertMoore) << string(3, ' ') << " | " << endl;
+    cout << string(69, '-') << endl;
+
 }
 
 int main() {

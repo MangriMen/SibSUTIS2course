@@ -21,8 +21,10 @@ public:
 
 	std::string CodeBy(Code type, std::string text);
 	std::string DecodeBy(Code type, std::string text);
+	double GetAverageKeywordLenght(Code type);
 
 	static std::vector<std::pair<char, double>> GetAlphabet(std::string text);
+	double GetAlphabetEntropy();
 	const std::string& GetText();
 };
 
