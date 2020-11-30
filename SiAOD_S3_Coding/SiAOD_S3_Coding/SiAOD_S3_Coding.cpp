@@ -239,6 +239,7 @@ void SFGm() {
     ifstream englishText;
 
     englishText.open("Lab11/EnglishANSI.txt", ios::in);
+    //englishText.open("testBase2.dat", ios::in | ios::binary);
     checkFileIsOpen(englishText);
     streamsize englishTextLenght = getFileSize(englishText);
     while (getline(englishText, getlineBuffer)) text += getlineBuffer;
@@ -246,6 +247,7 @@ void SFGm() {
     getlineBuffer.clear();
 
 
+    cout << "Original text: " << endl << endl << text << endl << endl;
 
     Lab11 coding(text);
 
@@ -253,25 +255,25 @@ void SFGm() {
 
     ofstream englishCoded;
 
-    englishCoded.open("Lab11/EnglishCodedShennon.dat", ios::out | ios::binary);
+    englishCoded.open("Lab11/EnglishCodedShennon.bin", ios::out | ios::binary);
     checkFileIsOpen(englishCoded);
     writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::Shennon, text));
     englishCoded.close();
 
 
-    englishCoded.open("Lab11/EnglishCodedFano.dat", ios::out | ios::binary);
+    englishCoded.open("Lab11/EnglishCodedFano.bin", ios::out | ios::binary);
     checkFileIsOpen(englishCoded);
     writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::Fano, text));
     englishCoded.close();
 
 
-    englishCoded.open("Lab11/EnglishCodedHuffman.dat", ios::out | ios::binary);
+    englishCoded.open("Lab11/EnglishCodedHuffman.bin", ios::out | ios::binary);
     checkFileIsOpen(englishCoded);
     writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::Huffman, text));
     englishCoded.close();
 
 
-    englishCoded.open("Lab11/EnglishCodedGilbertMoore.dat", ios::out | ios::binary);
+    englishCoded.open("Lab11/EnglishCodedGilbertMoore.bin", ios::out | ios::binary);
     checkFileIsOpen(englishCoded);
     writeBytesToFile(englishCoded, coding.CodeBy(Lab11::Code::GilbertMoore, text));
     englishCoded.close();
@@ -281,45 +283,44 @@ void SFGm() {
 
     ifstream englishToDecode;
 
-    englishToDecode.open("Lab11/EnglishCodedShennon.dat", ios::in | ios::binary);
+    englishToDecode.open("Lab11/EnglishCodedShennon.bin", ios::in | ios::binary);
     checkFileIsOpen(englishToDecode);
     streamsize ShennonLenght = getFileSize(englishToDecode);
     readBytesFromFile(englishToDecode, codedText);
-    cout << "Coded text(Shennon): " << endl << endl << codedText << endl << endl;
+    //cout << "Coded text(Shennon): " << endl << endl << codedText << endl << endl;
     string decodedShennon = coding.DecodeBy(Lab11::Code::Shennon, codedText);
     englishToDecode.close();
 
 
-    englishToDecode.open("Lab11/EnglishCodedFano.dat", ios::in | ios::binary);
+    englishToDecode.open("Lab11/EnglishCodedFano.bin", ios::in | ios::binary);
     checkFileIsOpen(englishToDecode);
     streamsize FanoLenght = getFileSize(englishToDecode);
     readBytesFromFile(englishToDecode, codedText);
-    cout << "Coded text(Fano): " << endl << endl << codedText << endl << endl;
+    //cout << "Coded text(Fano): " << endl << endl << codedText << endl << endl;
     string decodedFano = coding.DecodeBy(Lab11::Code::Fano, codedText);
     englishToDecode.close();
 
 
-    englishToDecode.open("Lab11/EnglishCodedHuffman.dat", ios::in | ios::binary);
+    englishToDecode.open("Lab11/EnglishCodedHuffman.bin", ios::in | ios::binary);
     checkFileIsOpen(englishToDecode);
     streamsize HuffmanLenght = getFileSize(englishToDecode);
     readBytesFromFile(englishToDecode, codedText);
-    cout << "Coded text(Huffman): " << endl << endl << codedText << endl << endl;
+    //cout << "Coded text(Huffman): " << endl << endl << codedText << endl << endl;
     string decodedHuffman = coding.DecodeBy(Lab11::Code::Huffman, codedText);
     englishToDecode.close();
 
     
-    englishToDecode.open("Lab11/EnglishCodedGilbertMoore.dat", ios::in | ios::binary);
+    englishToDecode.open("Lab11/EnglishCodedGilbertMoore.bin", ios::in | ios::binary);
     checkFileIsOpen(englishToDecode);
     streamsize GilbertMooreLenght = getFileSize(englishToDecode);
     readBytesFromFile(englishToDecode, codedText);
-    cout << "Coded text(GilbertMoore): " << endl << endl << codedText << endl << endl;
+    //cout << "Coded text(GilbertMoore): " << endl << endl << codedText << endl << endl;
     string decodedGilbertMoore = coding.DecodeBy(Lab11::Code::GilbertMoore, codedText);
     englishToDecode.close();
 
 
 
 
-    cout << "Original text: " << endl << endl << text << endl << endl;
     cout << "Decoded text(Shennon): " << endl << endl << decodedShennon << endl << endl;
     cout << "Decoded text(Fano): " << endl << endl << decodedFano << endl << endl;
     cout << "Decoded text(Huffman): " << endl << endl << decodedHuffman << endl << endl;
@@ -385,7 +386,7 @@ void SFGm() {
 
 int main() {
     srand((unsigned int)time(NULL));
-    system("chcp 1251");
+    //system("chcp 1251");
     //CodingTable();
 
     //RLEFile();
