@@ -95,6 +95,16 @@ std::string Lab11::CodeBy(Code type, std::string text)
         }
         break;
     case Lab11::Code::Fano:
+        for (const auto& ch : text) {
+            try {
+                out += FanoBM.left.at(ch);
+            }
+            catch (std::out_of_range)
+            {
+                std::cerr << "[CODING]: The coding alphabet does not match the text alphabet";
+                exit(-2);
+            }
+        }
         break;
     case Lab11::Code::GilbertMoore:
         for (const auto& ch : text) {
@@ -131,7 +141,7 @@ std::string Lab11::DecodeBy(Code type, std::string text)
         decodeMap = &HuffmanBM.right;
         break;
     case Lab11::Code::Fano:
-        //decodeMapType = &FanoBM.right;
+        decodeMap = &FanoBM.right;
         break;
     case Lab11::Code::GilbertMoore:
         decodeMap = &GilbertMooreBM.right;
@@ -158,8 +168,8 @@ std::string Lab11::DecodeBy(Code type, std::string text)
         if (found != decodeMap->end()) out += found->second;
     }
 
-    for (int i = static_cast<int>(out.size()) - 1; i >= 0; i--)
-        if (out[i] != ' ') { out.resize(out.size() - (out.size() - i - 1)); break; }
+    //for (int i = static_cast<int>(out.size()) - 1; i >= 0; i--)
+    //    if (out[i] != ' ') { out.resize(out.size() - (out.size() - i - 1)); break; }
 
     return out;
 }

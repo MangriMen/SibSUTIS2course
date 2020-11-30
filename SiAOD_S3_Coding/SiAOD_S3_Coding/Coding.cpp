@@ -4,7 +4,9 @@
 #include <tuple>
 #include <vector>
 #include <set>
+#include <map>
 #include <sstream>
+#include <boost/bimap/support/lambda.hpp>
 #include "BinaryString.h"
 #include "const.h"
 
@@ -60,6 +62,35 @@ namespace HuffmanNs {
                 buildKeywords(p->left, keywordBM, "", '0');
                 buildKeywords(p->right, keywordBM, "", '1');
             }
+        }
+    }
+}
+
+namespace FanoNs {
+    int getMedian(int L, int R, const std::vector<std::pair<char, double>>& alphabet) {
+        double Sl = 0;
+        double Sr = alphabet[R].second;
+        int m = R;
+
+        for (int i = L; i < R; i++) Sl += alphabet[i].second;
+
+        while (Sl >= Sr) {
+            Sl -= alphabet[--m].second;
+            Sr += alphabet[m].second;
+        }
+
+        return m;
+    }
+
+    void Fano(int L, int R, const std::vector<std::pair<char, double>>& alphabet, std::map<char, std::string>& keywordM) {
+        if (L < R) {
+            int m = getMedian(L, R, alphabet);
+            for (int i = L; i <= R; i++) {
+                if (i <= m) keywordM[alphabet[i].first] += '0';
+                else keywordM[alphabet[i].first] += '1';
+            }
+            Fano(L, m, alphabet, keywordM);
+            Fano(m + 1, R, alphabet, keywordM);
         }
     }
 }
@@ -153,8 +184,8 @@ boost::bimap<char, std::string> Coding::CreateShennonBM(std::vector<std::pair<ch
         exit(15);
     }
 
-    sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
-    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
+    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
 
     // Выводим таблицу кодовых слов
     std::cout << "Shennon Table" << std::endl;
@@ -174,9 +205,9 @@ boost::bimap<char, std::string> Coding::CreateHuffmanBM(std::vector<std::pair<ch
 
     for (const auto& letter : alphabet) alphabetTree.insert(new HuffmanNs::Vertex(letter.first, letter.second));
 
-    Huffman(alphabetTree);
+    HuffmanNs::Huffman(alphabetTree);
 
-    KeywordBuildingSetup((*alphabetTree.begin()), keywordBM);
+    HuffmanNs::KeywordBuildingSetup((*alphabetTree.begin()), keywordBM);
 
     // Проверка на уникальность кодовых слов
     if (keywordBM.size() != alphabet.size()) {
@@ -184,8 +215,8 @@ boost::bimap<char, std::string> Coding::CreateHuffmanBM(std::vector<std::pair<ch
         exit(15);
     }
 
-    sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
-    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
+    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
 
     std::cout << "Huffman Table" << std::endl;
     DisplayTable(alphabet, keywordBM);
@@ -195,30 +226,49 @@ boost::bimap<char, std::string> Coding::CreateHuffmanBM(std::vector<std::pair<ch
 
 boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char, double>> alphabet)
 {
-    //// Сортируем по не возрастанию алфавит
-    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+    // Создаём словарь bimap для хранения пар 'Символ' : "Кодовое слово"
+    boost::bimap<char, std::string> keywordBM;
 
-    // Расчитываем вероятности
-    //for (size_t i = 0; i < alphabet.size(); i++) {
-    //    alphabet[i].second /= text.size();
-    //    P.push_back(alphabet[i].second);
-    //}
+    //alphabet.clear();
 
-    //for (int i = 0; i < P.size(); i++) {
-    //    std::cout << P[i] << std::endl;
-    //}
+    //alphabet.push_back(std::make_pair('a', 0.36));
+    //alphabet.push_back(std::make_pair('b', 0.18));
+    //alphabet.push_back(std::make_pair('c', 0.18));
+    //alphabet.push_back(std::make_pair('d', 0.12));
+    //alphabet.push_back(std::make_pair('e', 0.09));
+    //alphabet.push_back(std::make_pair('f', 0.07));
 
-    //buildFano(0, P.size()-1, 0);
+    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
 
+    std::map<char, std::string> keywordM;
 
-    //for (int i = 0; i < 100; i++) {
-    //    for (int j = 0; j < 100; j++) {
-    //        std::cout << C[i][j] << " ";
-    //    }
-    //    std::cout << std::endl;
-    //}
+    for (auto& el : alphabet)
+        keywordM.insert({ el.first, "" });
 
-    return boost::bimap<char, std::string>();
+    //std::cout << std::endl << std::endl << std::endl;
+
+    //for (auto& el : alphabet)
+    //    std::cout << el.first << "  " << el.second << std::endl;
+    //
+    //std::cout << std::endl << std::endl << std::endl;
+
+    FanoNs::Fano(0, alphabet.size() - 1, alphabet, keywordM);
+
+    for (auto& el : alphabet)
+        keywordBM.insert({ el.first, keywordM.at(el.first)});
+
+    // Проверка на уникальность кодовых слов
+    if (keywordBM.size() != alphabet.size()) {
+        std::cerr << std::endl << "[KEYWORD]: Keywords are not unique!" << std::endl << std::endl;
+        exit(15);
+    }
+
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
+    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+    std::cout << "Fano Table" << std::endl;
+    DisplayTable(alphabet, keywordBM);
+
+    return keywordBM;
 }
 
 boost::bimap<char, std::string> Coding::CreateGilbertMooreBM(std::vector<std::pair<char, double>> alphabet)
@@ -272,8 +322,8 @@ boost::bimap<char, std::string> Coding::CreateGilbertMooreBM(std::vector<std::pa
         exit(15);
     }
 
-    sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
-    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
+    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
 
     std::cout << "GilbertMoore Table" << std::endl;
     DisplayTable(alphabet, keywordBM);
