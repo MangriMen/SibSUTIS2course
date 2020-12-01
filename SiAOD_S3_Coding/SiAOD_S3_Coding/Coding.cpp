@@ -67,7 +67,7 @@ namespace HuffmanNs {
 }
 
 namespace FanoNs {
-    int getMedian(int L, int R, const std::vector<std::pair<char, double>>& alphabet) {
+    int getMedian(int L, int R, const std::vector<std::pair<char, double>>& alphabet, bool isRight) {
         double Sl = 0;
         double Sr = alphabet[R].second;
         int m = R;
@@ -79,31 +79,31 @@ namespace FanoNs {
             Sr += alphabet[m].second;
         }
 
-        return m;
+        return ((isRight && ((R - L) > 1)) ? (m - 1) : m);
     }
 
-    void Fano(int L, int R, const std::vector<std::pair<char, double>>& alphabet, std::map<char, std::string>& keywordM) {
+    void Fano(int L, int R, const std::vector<std::pair<char, double>>& alphabet, std::map<char, std::string>& keywordM, bool isRight) {
         if (L < R) {
-            int m = getMedian(L, R, alphabet);
+            int m = getMedian(L, R, alphabet, isRight);
             for (int i = L; i <= R; i++) {
                 if (i <= m) keywordM[alphabet[i].first] += '0';
                 else keywordM[alphabet[i].first] += '1';
             }
-            Fano(L, m, alphabet, keywordM);
-            Fano(m + 1, R, alphabet, keywordM);
+            Fano(L, m, alphabet, keywordM, false);
+            Fano(m + 1, R, alphabet, keywordM, true);
         }
     }
 }
 
-bool Coding::alphabetCompValue(std::pair<char, double> a, std::pair<char, double> b) {
+bool Coding::alphabetCompValue(const std::pair<char, double>& a, const std::pair<char, double>& b) {
     return a.second > b.second;
 }
 
-bool Coding::alphabetCompKey(std::pair<char, double> a, std::pair<char, double> b) {
-    return a.first < b.first;
+bool Coding::alphabetCompKey(const std::pair<char, double>& a, const std::pair<char, double>& b) {
+    return a.first <= b.first;
 }
 
-bool Coding::alphabetCompKeyR(std::pair<char, double> a, std::pair<char, double> b) {
+bool Coding::alphabetCompKeyR(const std::pair<char, double>& a, const std::pair<char, double>& b) {
     return a.first > b.first;
 }
 
@@ -122,7 +122,6 @@ void DisplayTable(const std::vector<std::pair<char, double>>& alphabet, const bo
     std::stringstream tablecout;
     tablecout.setf(std::ios::fixed);
     tablecout << std::setprecision(DOUBLE_PRECISION);
-
 
     // Таблица
     tablecout <<
@@ -145,6 +144,14 @@ void DisplayTable(const std::vector<std::pair<char, double>>& alphabet, const bo
             std::setw(numberWidth) << keywordBM.left.at(alphabet[i].first).size() << " | " <<
             std::setw(maxKeywordLenght) << keywordBM.left.at(alphabet[i].first) << std::endl;
     }
+
+    //for (auto it = keywordBM.left.begin(); it != keywordBM.left.end(); it++) {
+    //    tablecout <<
+    //        std::setw(1) << (*it).first << " | " <<
+    //        std::setw(DOUBLE_PRECISION + 2) << (*it).second << " | " <<
+    //        std::setw(numberWidth) << keywordBM.left.at((*it).first).size() << " | " <<
+    //        std::setw(maxKeywordLenght) << keywordBM.left.at((*it).first) << std::endl;
+    //}
 
     std::cout << tablecout.str() << std::endl;
 }
@@ -185,7 +192,7 @@ boost::bimap<char, std::string> Coding::CreateShennonBM(std::vector<std::pair<ch
     }
 
     //sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
-    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
 
     // Выводим таблицу кодовых слов
     std::cout << "Shennon Table" << std::endl;
@@ -226,6 +233,9 @@ boost::bimap<char, std::string> Coding::CreateHuffmanBM(std::vector<std::pair<ch
 
 boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char, double>> alphabet)
 {
+    // Сортируем по убыванию алфавит
+    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+
     // Создаём словарь bimap для хранения пар 'Символ' : "Кодовое слово"
     boost::bimap<char, std::string> keywordBM;
 
@@ -238,7 +248,7 @@ boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char,
     //alphabet.push_back(std::make_pair('e', 0.09));
     //alphabet.push_back(std::make_pair('f', 0.07));
 
-    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
 
     std::map<char, std::string> keywordM;
 
@@ -252,10 +262,9 @@ boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char,
     //
     //std::cout << std::endl << std::endl << std::endl;
 
-    FanoNs::Fano(0, alphabet.size() - 1, alphabet, keywordM);
+    FanoNs::Fano(0, static_cast<int>(alphabet.size() - 1), alphabet, keywordM, false);
 
-    for (auto& el : alphabet)
-        keywordBM.insert({ el.first, keywordM.at(el.first)});
+    for (auto& el : alphabet) keywordBM.insert({ el.first, keywordM.at(el.first)});
 
     // Проверка на уникальность кодовых слов
     if (keywordBM.size() != alphabet.size()) {
@@ -264,7 +273,7 @@ boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char,
     }
 
     //sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
-    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
     std::cout << "Fano Table" << std::endl;
     DisplayTable(alphabet, keywordBM);
 
@@ -273,44 +282,27 @@ boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char,
 
 boost::bimap<char, std::string> Coding::CreateGilbertMooreBM(std::vector<std::pair<char, double>> alphabet)
 {
-    // Сортируем по убыванию алфавит
+    // Сортируем по не возрастанию алфавит
     sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
 
-    // Создаём вектор для комулятивных вероятностей
-    std::vector<double> Q(alphabet.size() + 1, 0);
+    // Вектор комулятивных вероятностей
+    std::vector<double> Q(alphabet.size(), 0);
 
-    // Расчитываем комулятивные вероятности
-    for (size_t i = 1; i < Q.size(); i++) {
-        Q[i] = 0;
-        for (size_t j = 0; j < i; j++) {
-            if (j != (i - 1)) Q[i] += alphabet[j].second;
-            else Q[i] += alphabet[j].second * 0.5f;
-        }
-    }
+    // Вектор комулятивных вероятностей в двоичном виде
+    std::vector<std::string> Qbinary(alphabet.size(), "");
 
-    // Создаём вектор для комулятивных вероятностей,
-    // содержащих дробную часть комулятивных вероятностей в двоичном виде
-    std::vector<std::string> Qbinary(alphabet.size() + 1, "");
-
-    // Заполняем переводя дробную часть комулятивных вероятностей
-    // в двоичный вид
-    for (size_t i = 0; i < Qbinary.size(); i++) Qbinary[i] = std::get<1>(BinaryString::ftobs(Q[i]));
-
-    // Создаём вектор длин кодовых слов
-    std::vector<int> L(alphabet.size(), 0);
-
-    // Вычисляем длинны кодовых слов по формуле L[i] = ceil(-log2(alphabet[i]))
-    for (size_t i = 0; i < alphabet.size(); i++) L[i] = static_cast<int>(ceil(-log2(alphabet[i].second))) + 1;
-
-    // Создаём вектор кодовых слов
+    // Вектор кодовых слов
     std::vector<std::string> keyword(alphabet.size(), "");
 
-    // Вычисляем кодовые слова как L[i] количество символов в векторе двоичных комулятивных
-    // вероятностей с начала строки
-    for (size_t i = 1; i < alphabet.size() + 1; i++) keyword[i - 1] = Qbinary[i].substr(0, L[i - 1]);
+    // Расчитываем комулятивные вероятности
+    for (size_t i = 0; i < Q.size(); i++) {
+        for (size_t j = 0; j < i; j++) Q[i] += alphabet[j].second;
+        Q[i] += alphabet[i].second * 0.5f;
+        Qbinary[i] = std::get<1>(BinaryString::ftobs(Q[i]));
+        keyword[i] = Qbinary[i].substr(0, static_cast<size_t>((ceil(-log2(alphabet[i].second))) + 1));
+    }
 
     // Создаём словарь bimap для хранения пар 'Символ' : "Кодовое слово"
-
     boost::bimap<char, std::string> keywordBM;
 
     // Заполняем символами из алфавита и кодовыми словами
@@ -323,8 +315,7 @@ boost::bimap<char, std::string> Coding::CreateGilbertMooreBM(std::vector<std::pa
     }
 
     //sort(alphabet.begin(), alphabet.end(), alphabetCompKey);
-    sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
-
+    //sort(alphabet.begin(), alphabet.end(), alphabetCompValue);
     std::cout << "GilbertMoore Table" << std::endl;
     DisplayTable(alphabet, keywordBM);
 

@@ -144,7 +144,7 @@ void readBytesFromFile(ifstream& file, string& bitSequence) {
     file.read((char*)&bitsToRead, sizeof(uint_fast32_t));
     uint_fast32_t bytesToRead = static_cast<uint_fast32_t>(ceil(bitsToRead / (double)CHAR_BIT));
     for (uint_fast32_t bit = 0; bit < bytesToRead; bit++) bitSequence += bitset<CHAR_BIT>(file.get()).to_string();
-    bitSequence.resize(bitSequence.size() - (CHAR_BIT - (bitsToRead % CHAR_BIT)), '#');
+    bitSequence.resize(bitSequence.size() - (bitSequence.size() - bitsToRead), '#');
 }
 
 void checkFileIsOpen(ofstream& file) {
@@ -170,6 +170,7 @@ void RLEFile() {
     for (int i = 0; i < 8192; i++) Original += (rand() % 100 > 90 ? '1' : '0');
 
     cout << Original << endl << endl;
+
 
     ofstream codedOut;
 
@@ -232,7 +233,6 @@ void SFGm() {
     
     // Строка для закодированного текста
     string codedText = "";
-
 
 
 
@@ -386,14 +386,14 @@ void SFGm() {
 
 int main() {
     srand((unsigned int)time(NULL));
-    //system("chcp 1251");
+    system("chcp 1251");
     //CodingTable();
 
     //RLEFile();
 
     SFGm();
 
-    //system("pause");
+    system("pause");
 
     return 0;
 }
