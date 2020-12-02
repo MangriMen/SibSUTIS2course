@@ -13,16 +13,6 @@ static size_t search(std::vector<std::pair<char, double>>& pair, const char& el)
     return std::string::npos;
 }
 
-template< class MapType >
-static void print_map(const MapType& m)
-{
-    typedef typename MapType::const_iterator const_iterator;
-    for (const_iterator iter = m.begin(), iend = m.end(); iter != iend; ++iter)
-    {
-        std::cout << iter->first << "-->" << iter->second << std::endl;
-    }
-}
-
 Lab11::Lab11() :
     ShennonBM(boost::bimap<char, std::string>()),
     HuffmanBM(boost::bimap<char, std::string>()),
@@ -45,6 +35,7 @@ Lab11::Lab11(std::string text) :
 
 void Lab11::Init(std::string text)
 {
+    // Создаём алфавит для текста
     alphabet = GetAlphabet(text);
     originalText = text;
 
@@ -57,8 +48,6 @@ void Lab11::Init(std::string text)
     //test.push_back(std::make_pair('5', 0.09));
     //test.push_back(std::make_pair('6', 0.12));
 
-    //CreateGilbertMooreBM(test);
-
     ShennonBM = CreateShennonBM(alphabet);
     HuffmanBM = CreateHuffmanBM(alphabet);
     FanoBM = CreateFanoBM(alphabet);
@@ -68,58 +57,42 @@ void Lab11::Init(std::string text)
 std::string Lab11::CodeBy(Code type, std::string text)
 {
     std::string out = "";
+
+    // Указатель на нужный map
+    boost::bimap<char, std::string>::left_map* codeMap = nullptr;
+
     switch (type)
     {
     case Lab11::Code::Shennon:
-        for (const auto& ch : text) {
-            try {
-                out += ShennonBM.left.at(ch);
-            }
-            catch (std::out_of_range)
-            {
-                std::cerr << "[CODING]: The coding alphabet does not match the text alphabet";
-                exit(-2);
-            }
-        }
-        return out;
+        codeMap = &ShennonBM.left;
+        break;
     case Lab11::Code::Huffman:
-        for (const auto& ch : text) {
-            try {
-                out += HuffmanBM.left.at(ch);
-            }
-            catch (std::out_of_range)
-            {
-                std::cerr << "[CODING]: The coding alphabet does not match the text alphabet";
-                exit(-2);
-            }
-        }
+        codeMap = &HuffmanBM.left;
         break;
     case Lab11::Code::Fano:
-        for (const auto& ch : text) {
-            try {
-                out += FanoBM.left.at(ch);
-            }
-            catch (std::out_of_range)
-            {
-                std::cerr << "[CODING]: The coding alphabet does not match the text alphabet";
-                exit(-2);
-            }
-        }
+        codeMap = &FanoBM.left;
         break;
     case Lab11::Code::GilbertMoore:
-        for (const auto& ch : text) {
-            try {
-                out += GilbertMooreBM.left.at(ch);
-            }
-            catch (std::out_of_range)
-            {
-                std::cerr << "[CODING]: The coding alphabet does not match the text alphabet";
-                exit(-2);
-            }
-        }
+        codeMap = &GilbertMooreBM.left;
         break;
     default:
+        return out;
         break;
+    }
+
+    // Если указатель пуст
+    if (codeMap == nullptr) exit(-1000);
+
+    // Кодируем
+    for (const auto& ch : text) {
+        try {
+            out += codeMap->at(ch);
+        }
+        catch (std::out_of_range)
+        {
+            std::cerr << "[CODING]: The coding alphabet does not match the text alphabet";
+            exit(-2);
+        }
     }
 
     return out;
@@ -130,6 +103,7 @@ std::string Lab11::DecodeBy(Code type, std::string text)
     std::string out = "";
     std::string tmp = "";
 
+    // Указатель на нужный map
     boost::bimap<char, std::string>::right_map* decodeMap = nullptr;
 
     switch (type)
@@ -151,10 +125,12 @@ std::string Lab11::DecodeBy(Code type, std::string text)
         break;
     }
 
+    // Если указатель пуст
     if (decodeMap == nullptr) exit(-1000);
 
     auto found = decodeMap->end();
 
+    // Декодируем
     size_t i = 0;
     while (i < text.size()) {
         tmp.clear();
@@ -168,9 +144,6 @@ std::string Lab11::DecodeBy(Code type, std::string text)
         if (found != decodeMap->end()) out += found->second;
     }
 
-    //for (int i = static_cast<int>(out.size()) - 1; i >= 0; i--)
-    //    if (out[i] != ' ') { out.resize(out.size() - (out.size() - i - 1)); break; }
-
     return out;
 }
 
@@ -178,6 +151,7 @@ double Lab11::GetAverageKeywordLenght(Code type)
 {
     double averageLenght = 0;
 
+    // Указатель на нужный map
     boost::bimap<char, std::string>::left_map* mapType = nullptr;
 
     switch (type)
@@ -198,8 +172,10 @@ double Lab11::GetAverageKeywordLenght(Code type)
         break;
     }
 
+    // Если указатель пуст
     if (mapType == nullptr) exit(-1000);
 
+    // Получение средней длины кодовых слов
     for (int i = 0; i < alphabet.size(); i++)
         averageLenght += alphabet[i].second * mapType->at(alphabet[i].first).size();
     
@@ -220,7 +196,7 @@ std::vector<std::pair<char, double>> Lab11::GetAlphabet(std::string text)
     }
 
     // Расчитываем вероятности
-    for (size_t i = 0; i < alphabet.size(); i++) alphabet[i].second /= text.size();
+    for (size_t i = 0; i < alphabet.size(); i++) alphabet[i].second /= (double)text.size();
 
     // Сортируем по не возрастанию алфавит
     sort(alphabet.begin(), alphabet.end(), Coding::alphabetCompValue);
@@ -232,6 +208,7 @@ double Lab11::GetAlphabetEntropy()
 {
     double entropy = 0;
 
+    // Получение энтропии алфавита
     for (int i = 0; i < alphabet.size(); i++)
         entropy += -alphabet[i].second * log2(alphabet[i].second);
 
