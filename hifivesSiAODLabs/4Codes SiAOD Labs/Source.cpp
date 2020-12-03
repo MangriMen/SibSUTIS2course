@@ -11,11 +11,11 @@
 using namespace std;
 
 namespace Comparator {
-    bool alphabetCompValue(const pair<char, double>& a, const pair<char, double>& b) {
+    bool charByValue(const pair<char, double>& a, const pair<char, double>& b) {
         return a.second > b.second;
     }
 
-    bool alphabetCompKey(const pair<char, double>& a, const pair<char, double>& b) {
+    bool charByKey(const pair<char, double>& a, const pair<char, double>& b) {
         return a.first <= b.first;
     }
 
@@ -99,7 +99,7 @@ namespace Encoding {
         vector<string> keyword(alphabet.size(), "");
         map<char, string> keywordM;
 
-        sort(alphabet.begin(), alphabet.end(), Comparator::alphabetCompValue);
+        sort(alphabet.begin(), alphabet.end(), Comparator::charByValue);
         
         for (int i = 1; i < Q.size(); i++) {
             Q[i] = (alphabet[i - 1].second + Q[i - 1]);
@@ -123,7 +123,7 @@ namespace Encoding {
         vector<string> keyword(alphabet.size(), "");
         map<char, string> keywordM;
 
-        sort(alphabet.begin(), alphabet.end(), Comparator::alphabetCompKey);
+        sort(alphabet.begin(), alphabet.end(), Comparator::charByKey);
         
         for (int i = 0; i < Q.size(); i++) {
             for (int j = 0; j < i; j++)
@@ -172,7 +172,7 @@ int main() {
 
     for (int i = 0; i < textAlphabet.size(); i++) textAlphabet[i].second /= text.size();
 
-    sort(textAlphabet.begin(), textAlphabet.end(), Comparator::alphabetCompValue);
+    sort(textAlphabet.begin(), textAlphabet.end(), Comparator::charByValue);
 
     GilbertMooreM = Encoding::createGilbertMooreBM(textAlphabet);
     ShennonM = Encoding::createShennonBM(textAlphabet);

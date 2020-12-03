@@ -66,18 +66,15 @@ string wCodeStart(int number) {
 
 void createTab(size_t size) {
     cout << "Number\t| Fixed + Variable | y-code Alias | w-code Alias" << endl;
-    for (int i = 0; i < (int)size; ++i) {
+    for (int i = 0; i < (int)size; ++i)
         cout << setw(2) << i << "\t| " << setw(16) << fixedVariable(i) 
                << " | " << setw(12) << yCode(i) << " | " << setw(12) << wCodeStart(i) << endl;
-    }
 }
 
 vector<string>& split(const string& s, char delim, vector<string>& elems) {
     stringstream ss(s);
     string item;
-    while (getline(ss, item, delim)) {
-        elems.push_back(item);
-    }
+    while (getline(ss, item, delim)) elems.push_back(item);
     return elems;
 }
 
@@ -91,28 +88,28 @@ string deleteSpaces(const string& s) {
 
 string encodeTyped(string number, int type) {
     vector<string> tmpSeries;
-    string outRLE = "";
+    string result = "";
 
     split(number, '1', tmpSeries);
 
     for (auto ser : tmpSeries)
         switch (type) {
         case 1:
-            outRLE += fixedVariable(ser.length() + 1);
+            result += fixedVariable(ser.length() + 1);
             break;
         case 2:
-            outRLE += yCode(ser.length() + 1);
+            result += yCode(ser.length() + 1);
             break;
         case 3:
-            outRLE += wCodeStart(ser.length() + 1);
+            result += wCodeStart(ser.length() + 1);
             break;
         default:
             return "";
         }
 
-    outRLE = deleteSpaces(outRLE);
+    result = deleteSpaces(result);
 
-    return outRLE;
+    return result;
 }
 
 int main() {
