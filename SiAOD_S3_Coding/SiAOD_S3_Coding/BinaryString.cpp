@@ -27,7 +27,7 @@ std::tuple<std::string, std::string> BinaryString::ftobs(double number) {
     std::string intPartS = std::get<0>(itobs(intPart));
     double floatPart = number - intPart;
     std::string floatPartS = "";
-    for (int i = 0; i <= DOUBLE_PRECISION; i++) {
+    for (int i = 0; i < DOUBLE_PRECISION; i++) {
         floatPart = floatPart * 2;
         if (floatPart >= 1) {
             floatPartS += '1';

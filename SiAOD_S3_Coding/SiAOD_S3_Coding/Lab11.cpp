@@ -195,8 +195,14 @@ std::vector<std::pair<char, double>> Lab11::GetAlphabet(std::string text)
         else alphabet.push_back(std::make_pair(text[i], 1.0));
     }
 
+    double ver = 0;
     // Расчитываем вероятности
-    for (size_t i = 0; i < alphabet.size(); i++) alphabet[i].second /= (double)text.size();
+    for (size_t i = 0; i < alphabet.size(); i++) {
+        alphabet[i].second /= (double)text.size();
+        ver += alphabet[i].second;
+    }
+
+    std::cout << std::endl << "Sum of per. = " << ver << std::endl;
 
     // Сортируем по не возрастанию алфавит
     sort(alphabet.begin(), alphabet.end(), Coding::alphabetCompValue);
