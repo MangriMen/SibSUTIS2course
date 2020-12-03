@@ -94,6 +94,9 @@ bool yearCompareDb(DatabaseNode* first, DatabaseNode* second) {
     temp2 = temp2 + second->birthDate[6] + second->birthDate[7] + second->birthDate[3] + second->birthDate[4] + second->birthDate[0] + second->birthDate[1];
 
     return temp1 > temp2 ? true : false;
+    //if (temp1 > temp2) { return 1; }
+    //if (temp1 < temp2) { return 0; }
+    //return 505;
 }
 
 void AVLTreeAddNode(Vertex*& pointer, DatabaseNode* data) {
@@ -104,7 +107,7 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode* data) {
         pointer->left = nullptr;
         pointer->right = nullptr;
         isIncreased = true;
-    } else if (yearCompareDb(pointer->data, data)) {
+    } else if (yearCompareDb(pointer->data, data) == 1) {
         AVLTreeAddNode(*&pointer->left, data);
         if (isIncreased) {
             if (pointer->balance > 0) {
@@ -123,7 +126,7 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode* data) {
                 }
             }
         }
-    } else if (!yearCompareDb(pointer->data, data)) {
+    } else if (yearCompareDb(pointer->data, data) == 0) {
         AVLTreeAddNode(*&pointer->right, data);
         if (isIncreased) {
             if (pointer->balance < 0) {
@@ -248,10 +251,7 @@ short int binarySearch(DatabaseNode** nodeArr, int key, size_t size) {
 }
 
 void treeSearch(Vertex* pointer, string searchedWord) {
-    if (pointer == nullptr) { 
-        cout << endl << "Element was not found." << endl << endl;
-        return;
-    }
+    if (pointer == nullptr) { return; }
 
     if (yearCompareStr(pointer->data, searchedWord) == 1) {
         treeSearch(pointer->left, searchedWord);
@@ -259,6 +259,10 @@ void treeSearch(Vertex* pointer, string searchedWord) {
         treeSearch(pointer->right, searchedWord);
     } else {
         pointer->data->nodePrint();
+        treeSearch(pointer->left, searchedWord);
+        treeSearch(pointer->right, searchedWord);
+        //if (yearCompareStr(pointer->left->data, searchedWord)) pointer->left->data->nodePrint();
+        //if (yearCompareStr(pointer->right->data, searchedWord)) pointer->right->data->nodePrint();
     }
 }
 
@@ -367,7 +371,8 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             cin >> choosenDepNumber;
             if (!bool(choosenDepNumber % 10) && choosenDepNumber < 250) {
                 searchResult = binarySearch(nodesArray, choosenDepNumber, size) + bool(choosenDepNumber);
-                for (searchResultLast = searchResult - 1; searchResultLast != 4000 && nodesArray[searchResultLast]->departmentNumber == nodesArray[searchResult]->departmentNumber; ++searchResultLast) {
+                cout << endl << searchResult << endl;
+                for (searchResultLast = searchResult - 1; searchResultLast != 4001 && nodesArray[searchResultLast]->departmentNumber == nodesArray[searchResult]->departmentNumber; ++searchResultLast) {
                     cout << searchResultLast + 2 - searchResult;
                     nodesArray[searchResultLast]->nodePrint();
                 }
@@ -384,7 +389,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
         case '5':
             if (!searchResultLast) { break; }
 
-            for (int i = searchResult; i <= searchResultLast; ++i) {
+            for (int i = searchResult-1; i < searchResultLast; ++i) {
                 AVLTreeAddNode(pointer, nodesArray[i]);
             }
 
@@ -398,6 +403,7 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 cout << "Enter the key: ";
                 cin >> searchYear;
                 treeSearch(pointer, searchYear);
+                if (pointer == nullptr) cout << endl << "Element was not found." << endl << endl;
             }
             break;
         default:
