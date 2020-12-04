@@ -1,3 +1,4 @@
+#pragma comment(linker, "/STACK:1000000000")
 #include "Coding.h"
 #include <iostream>
 #include <iomanip>
@@ -75,20 +76,33 @@ namespace FanoNs {
         for (int i = L; i < R; i++) Sl += alphabet[i].second;
 
         while (Sl >= Sr) {
-            Sl -= alphabet[--m].second;
+            m -= 1;
+            Sl -= alphabet[m].second;
             Sr += alphabet[m].second;
         }
 
         return ((isRight && ((R - L) > 1)) ? (m - 1) : m);
     }
 
+    int getMedianA2(int L, int R, const std::vector<std::pair<char, double>>& alphabet, bool isRight) {
+        double probability = 0;
+        double sum = 0;
+        for (int i = L; i <= R; ++i) probability += alphabet[i].second;
+
+        int i = 0;
+        for (i = L; i < R; ++i) {
+            if ((sum <= (probability / 2) && (sum + alphabet[i].second >= (probability / 2)))) {
+                break;
+            }
+            sum += alphabet[i].second;
+        }
+        return i;
+    }
+
     void Fano(int L, int R, const std::vector<std::pair<char, double>>& alphabet, std::map<char, std::string>& keywordM, bool isRight) {
         if (L < R) {
-            int m = getMedian(L, R, alphabet, isRight);
-            for (int i = L; i <= R; i++) {
-                if (i <= m) keywordM[alphabet[i].first] += '0';
-                else keywordM[alphabet[i].first] += '1';
-            }
+            int m = getMedianA2(L, R, alphabet, isRight);
+            for (int i = L; i <= R; i++) (i <= m ? keywordM[alphabet[i].first] += '0' : keywordM[alphabet[i].first] += '1');
             Fano(L, m, alphabet, keywordM, false);
             Fano(m + 1, R, alphabet, keywordM, true);
         }
@@ -239,7 +253,7 @@ boost::bimap<char, std::string> Coding::CreateFanoBM(std::vector<std::pair<char,
 
     FanoNs::Fano(0, static_cast<int>(alphabet.size() - 1), alphabet, keywordM, false);
 
-    for (auto& el : alphabet) keywordBM.insert({ el.first, keywordM.at(el.first)});
+    for (auto& el : alphabet) { keywordBM.insert({ el.first, keywordM.at(el.first) }); }
 
     // ѕроверка на уникальность кодовых слов
     if (keywordBM.size() != alphabet.size()) {

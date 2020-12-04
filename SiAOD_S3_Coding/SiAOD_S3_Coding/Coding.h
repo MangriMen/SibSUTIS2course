@@ -11,12 +11,12 @@ protected:
 
 	static bool alphabetCompKeyR(const std::pair<char, double>& a, const std::pair<char, double>& b);
 public:
-	enum class Code
+	enum Code
 	{
-		Shennon,
-		Huffman,
-		Fano,
-		GilbertMoore
+		Shennon = 1,
+		Huffman = 2,
+		Fano = 4,
+		GilbertMoore = 8
 	};
 
 	static boost::bimap<char, std::string> CreateShennonBM(std::vector<std::pair<char, double>> alphabet);

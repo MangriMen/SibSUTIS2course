@@ -13,16 +13,7 @@ static size_t search(std::vector<std::pair<char, double>>& pair, const char& el)
     return std::string::npos;
 }
 
-Lab11::Lab11() :
-    ShennonBM(boost::bimap<char, std::string>()),
-    HuffmanBM(boost::bimap<char, std::string>()),
-    FanoBM(boost::bimap<char, std::string>()),
-    GilbertMooreBM(boost::bimap<char, std::string>()),
-    alphabet(std::vector<std::pair<char, double>>())
-{
-}
-
-Lab11::Lab11(std::string text) :
+Lab11::Lab11(std::string text, int type) :
     ShennonBM(boost::bimap<char, std::string>()),
     HuffmanBM(boost::bimap<char, std::string>()),
     FanoBM(boost::bimap<char, std::string>()),
@@ -30,10 +21,10 @@ Lab11::Lab11(std::string text) :
     alphabet(std::vector<std::pair<char, double>>()),
     originalText("")
 {
-    Init(text);
+    Init(text, type);
 }
 
-void Lab11::Init(std::string text)
+void Lab11::Init(std::string text, int type)
 {
     // Создаём алфавит для текста
     alphabet = GetAlphabet(text);
@@ -48,10 +39,19 @@ void Lab11::Init(std::string text)
     //test.push_back(std::make_pair('5', 0.09));
     //test.push_back(std::make_pair('6', 0.12));
 
-    ShennonBM = CreateShennonBM(alphabet);
-    HuffmanBM = CreateHuffmanBM(alphabet);
-    FanoBM = CreateFanoBM(alphabet);
-    GilbertMooreBM = CreateGilbertMooreBM(alphabet);
+    if ((int)type & (int)Code::Shennon) {
+        ShennonBM = CreateShennonBM(alphabet);
+    }
+    if ((int)type & (int)Code::Fano) {
+        FanoBM = CreateFanoBM(alphabet);
+    }
+    if ((int)type & (int)Code::Huffman) {
+        HuffmanBM = CreateHuffmanBM(alphabet);
+    }
+    if ((int)type & (int)Code::GilbertMoore) {
+        GilbertMooreBM = CreateGilbertMooreBM(alphabet);
+    }
+
 }
 
 std::string Lab11::CodeBy(Code type, std::string text)
@@ -202,7 +202,7 @@ std::vector<std::pair<char, double>> Lab11::GetAlphabet(std::string text)
         ver += alphabet[i].second;
     }
 
-    std::cout << std::endl << "Sum of per. = " << ver << std::endl;
+    std::cout << std::endl << std::endl << "Sum of probability = " << ver << std::endl << std::endl;
 
     // Сортируем по не возрастанию алфавит
     sort(alphabet.begin(), alphabet.end(), Coding::alphabetCompValue);

@@ -14,10 +14,9 @@ class Lab11: public Coding
 	boost::bimap<char, std::string> GilbertMooreBM;
 
 public:
-	Lab11();
-	Lab11(std::string text);
+	Lab11(std::string text, int type);
 
-	void Init(std::string text);
+	void Init(std::string text, int type);
 
 	std::string CodeBy(Code type, std::string text);
 	std::string DecodeBy(Code type, std::string text);
