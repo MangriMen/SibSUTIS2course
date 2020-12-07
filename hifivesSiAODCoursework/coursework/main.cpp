@@ -249,9 +249,11 @@ short int binarySearch(DatabaseNode** nodeArr, int key, size_t size) {
         return m + 1;
     return 0;
 }
+// ƒл€ проверки левый\правый
+//Vertex* foundPointer = nullptr;
 
-void treeSearch(Vertex* pointer, string searchedWord) {
-    if (pointer == nullptr) { return; }
+Vertex* treeSearch(Vertex* pointer, string searchedWord) {
+    if (pointer == nullptr) { return nullptr; }
 
     if (yearCompareStr(pointer->data, searchedWord) == 1) {
         treeSearch(pointer->left, searchedWord);
@@ -259,10 +261,12 @@ void treeSearch(Vertex* pointer, string searchedWord) {
         treeSearch(pointer->right, searchedWord);
     } else {
         pointer->data->nodePrint();
+        // ƒл€ проверки левый\правый
+        //foundPointer = pointer;
+        // » закомментить две строчки ниже
         treeSearch(pointer->left, searchedWord);
         treeSearch(pointer->right, searchedWord);
-        //if (yearCompareStr(pointer->left->data, searchedWord)) pointer->left->data->nodePrint();
-        //if (yearCompareStr(pointer->right->data, searchedWord)) pointer->right->data->nodePrint();
+        return pointer;
     }
 }
 
@@ -397,13 +401,20 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             traversalLtR(pointer, treeElements);
             cout << endl << endl << "Number of vertexes: " << amount(pointer);
             cout << endl << endl << "Tree height: " << height(pointer);
-            cout << endl << endl << "Average tree height: " << treeHeightSum(pointer, 1) / amount(pointer) << endl << endl << endl;
+            cout << endl << endl << "Average tree height: " << treeHeightSum(pointer, 1) / amount(pointer) << endl << endl;
             {
                 string searchYear = "";
+                Vertex* searchPointer;
                 cout << "Enter the key: ";
                 cin >> searchYear;
-                treeSearch(pointer, searchYear);
-                if (pointer == nullptr) cout << endl << "Element was not found." << endl << endl;
+                searchPointer = treeSearch(pointer, searchYear);
+                // Ёлемент слева от первого найденного
+                //foundPointer->left->data->nodePrint();
+                // Ёлемент справа от первого найденного
+                //foundPointer->right->data->nodePrint();
+                if (searchPointer == nullptr) {
+                    cout << endl << "Element was not found." << endl << endl;
+                }
             }
             break;
         default:
