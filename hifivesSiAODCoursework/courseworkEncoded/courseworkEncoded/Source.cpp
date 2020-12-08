@@ -120,7 +120,7 @@ map<char, string> createGilbertMooreBM(vector<pair<char, double>> alphabet) {
 }
 
 int main() {
-    ifstream dbFile("testBase4.dat", ios::in | ios::binary);
+    ifstream dbFile("testBase2.dat", ios::in | ios::binary);
     if (!dbFile) {
         dbFile.clear();
         cout << "Error: database file was not found";
@@ -131,7 +131,6 @@ int main() {
     dbFile.clear();
     dbFile.seekg(0, ios_base::beg);
     int nodesNumber = length / sizeof(DatabaseNode);
-    dbFile.close();
 
     string textToEncode = "";
     for (int i = 0; i < nodesNumber; ++i) {
@@ -148,7 +147,8 @@ int main() {
 
         if (letter != NOT_FOUND) {
             textAlphabet[letter].second += 1.0;
-        } else {
+        }
+        else {
             textAlphabet.push_back(make_pair(textToEncode[i], 1.0));
         }
     }
@@ -166,4 +166,6 @@ int main() {
     cout << string(55, '=') << endl;
     cout << "Gilbert-Moore average code length:\t" << averageKeywordLenght(GilbertMooreM, textAlphabet) << endl;
     cout << string(55, '=') << endl;
+
+    dbFile.close();
 }
