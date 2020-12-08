@@ -6,9 +6,23 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <set>
 
 #define NOT_FOUND string::npos
 using namespace std;
+
+class Vertex {
+public:
+    Vertex* left = nullptr;
+    Vertex* right = nullptr;
+    char data = {};
+    double freq = 0;
+
+    Vertex(char data_, double freq_) {
+        data = data_;
+        freq = freq_;
+    }
+};
 
 namespace Comparator {
     bool charByValue(const pair<char, double>& a, const pair<char, double>& b) {
@@ -19,6 +33,11 @@ namespace Comparator {
         return a.first <= b.first;
     }
 
+    struct vertexByFreq {
+        bool operator() (Vertex* left, Vertex* right) const {
+            return left->freq > right->freq;
+        }
+    };
 }
 
 pair<string, int> intToBinaryStr(int number) {
@@ -93,7 +112,7 @@ double averageKeywordLenght(const map<char, string> & keywordM, vector<pair<char
 }
 
 namespace Encoding {
-    map<char, string> createShennonBM(vector<pair<char, double>> alphabet) {
+    map<char, string> createShennonM(vector<pair<char, double>> alphabet) {
         vector<double> Q(alphabet.size() + 1, 0);
         vector<string> Qbinary(alphabet.size(), "");
         vector<string> keyword(alphabet.size(), "");
@@ -110,14 +129,14 @@ namespace Encoding {
         }
 
         cout << string(55, '=') << endl;
-        cout << "Shennon Table" << endl;
+        cout << "Shannon Table" << endl;
         cout << string(55, '=');
         printTab(alphabet, keywordM);
 
         return keywordM;
     }
 
-    map<char, string> createGilbertMooreBM(vector<pair<char, double>> alphabet) {
+    map<char, string> createGilbertMooreM(vector<pair<char, double>> alphabet) {
         vector<double> Q(alphabet.size(), 0);
         vector<string> Qbinary(alphabet.size(), "");
         vector<string> keyword(alphabet.size(), "");
@@ -142,6 +161,57 @@ namespace Encoding {
 
         return keywordM;
     }
+
+    int fanoGetMedian(int L, int R, const std::vector<std::pair<char, double>>& alphabet) {
+        double probability = 0;
+        double sum = 0;
+        for (int i = L; i <= R; ++i) probability += alphabet[i].second;
+
+        int i = 0;
+        for (i = L; i < R; ++i) {
+            if ((sum <= (probability / 2) && (sum + alphabet[i].second >= (probability / 2)))) {
+                break;
+            }
+            sum += alphabet[i].second;
+        }
+
+        return i;
+    }
+
+    void createFano(int L, int R, const vector<pair<char, double>>& alphabet, map<char, string>& keywordM) {
+        if (L >= R) { return; }
+
+        int medianIndex = Encoding::fanoGetMedian(L, R, alphabet);
+        for (int i = L; i <= R; i++) { keywordM[alphabet[i].first] += to_string(int(i > medianIndex)); }
+
+        createFano(L, medianIndex, alphabet, keywordM);
+        createFano(medianIndex + 1, R, alphabet, keywordM);
+    }
+
+    void huffmanBuildKeywords(Vertex* p, map<char, string>& keywordM, string keyword, char bit) {
+        keyword.push_back(bit);
+
+        if (p->left != nullptr && p->right != nullptr) {
+            huffmanBuildKeywords(p->left, keywordM, keyword, '0');
+            huffmanBuildKeywords(p->right, keywordM, keyword, '1');
+        }
+        else
+            keywordM[p->data] = keyword;
+    }
+
+    void createHuffman(multiset<Vertex*, Comparator::vertexByFreq>& alphabet) {
+        while (alphabet.size() > 1) {
+            Vertex* mergedNode = new Vertex(char(), (*alphabet.rbegin())->freq + (*(++alphabet.rbegin()))->freq);
+            
+            mergedNode->right = *alphabet.rbegin();
+            mergedNode->left = *(++alphabet.rbegin());
+
+            alphabet.erase(--alphabet.end());
+            alphabet.erase(--alphabet.end());
+
+            alphabet.insert(mergedNode);
+        }
+    }
 }
 
 int main() {
@@ -153,8 +223,11 @@ int main() {
     ifstream openedText;
     vector<pair<char, double>> textAlphabet;
 
-    map<char, string> ShennonM;
+    map<char, string> ShannonM;
     map<char, string> GilbertMooreM;
+    map<char, string> HuffmanM;
+    map<char, string> FanoM;
+    multiset<Vertex*, Comparator::vertexByFreq> alphabetTree;
 
     openedText.open("textToWorkWith.txt", ios::in);
     while (getline(openedText, getlineBuffer)) text += getlineBuffer;
@@ -170,24 +243,57 @@ int main() {
         }
     }
 
-    for (int i = 0; i < textAlphabet.size(); i++) textAlphabet[i].second /= text.size();
+    for (int i = 0; i < textAlphabet.size(); i++)
+        textAlphabet[i].second /= text.size();
+    for (const auto& letter : textAlphabet)
+        alphabetTree.insert(new Vertex(letter.first, letter.second));
 
     sort(textAlphabet.begin(), textAlphabet.end(), Comparator::charByValue);
 
-    GilbertMooreM = Encoding::createGilbertMooreBM(textAlphabet);
-    ShennonM = Encoding::createShennonBM(textAlphabet);
+    //Гилберт-Мур
+    GilbertMooreM = Encoding::createGilbertMooreM(textAlphabet);
+    // Шеннон
+    ShannonM = Encoding::createShennonM(textAlphabet);
+    // Хаффман
+    Encoding::createHuffman(alphabetTree);
+    if ((*alphabetTree.begin()) != nullptr) {
+        if ((*alphabetTree.begin())->left != nullptr && (*alphabetTree.begin())->right != nullptr) {
+            Encoding::huffmanBuildKeywords((*alphabetTree.begin())->left, HuffmanM, "", '0');
+            Encoding::huffmanBuildKeywords((*alphabetTree.begin())->right, HuffmanM, "", '1');
+        }
+    }
+    //KeywordBuildingSetup(, HuffmanM);
+        // Pi порядок
+    cout << string(55, '=') << endl;
+    cout << "Huffman Table" << endl;
+    cout << string(55, '=');
+    printTab(textAlphabet, HuffmanM);
+        // Лексикографический порядок
+    //for (auto el = HuffmanM.begin(); el != HuffmanM.end(); el++)
+        //cout << el->first << "\t" << el->second << endl;
+    // Фано
+    for (auto& el : textAlphabet) FanoM.insert({ el.first, "" });
+    Encoding::createFano(0, textAlphabet.size() - 1, textAlphabet, FanoM);
+    cout << string(55, '=') << endl;
+    cout << "Fano Table" << endl;
+    cout << string(55, '=');
+        // Pi порядок
+    printTab(textAlphabet, FanoM);
+        // Лексикографический порядок
+    //for (auto& el : textAlphabet)
+        //cout << el.first << " " << FanoM.at(el.first) << endl;
 
-    // Entrophy to code length
+    // Таблица сравнения энтропии алфавита и средней длины слова
     cout << endl << endl;
     cout << string(55, '=') << endl;
     cout << "Alphabet entrophy:\t\t\t" << alphabetEntropy(textAlphabet) << endl;
     cout << string(55, '=') << endl;
     cout << "Gilbert-Moore average code length:\t" << averageKeywordLenght(GilbertMooreM, textAlphabet) << endl;
     cout << string(55, '=') << endl;
-    cout << "Shennon average code length:\t\t" << averageKeywordLenght(ShennonM, textAlphabet) << endl;
+    cout << "Shannon average code length:\t\t" << averageKeywordLenght(ShannonM, textAlphabet) << endl;
     cout << string(55, '=') << endl;
-    cout << "Huffman average code length:\t\t" << "coming soon!" << endl;
+    cout << "Huffman average code length:\t\t" << averageKeywordLenght(HuffmanM, textAlphabet) << endl;
     cout << string(55, '=') << endl;
-    cout << "Fano average code length:\t\t" << "coming soon!" << endl;
+    cout << "Fano average code length:\t\t" << averageKeywordLenght(FanoM, textAlphabet) << endl;
     cout << string(55, '=') << endl;
 }
