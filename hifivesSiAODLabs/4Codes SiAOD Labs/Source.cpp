@@ -112,7 +112,7 @@ double averageKeywordLenght(const map<char, string> & keywordM, vector<pair<char
 }
 
 namespace Encoding {
-    map<char, string> createShennonM(vector<pair<char, double>> alphabet) {
+    map<char, string> createShannonM(vector<pair<char, double>> alphabet) {
         vector<double> Q(alphabet.size() + 1, 0);
         vector<string> Qbinary(alphabet.size(), "");
         vector<string> keyword(alphabet.size(), "");
@@ -252,8 +252,10 @@ int main() {
 
     //Гилберт-Мур
     GilbertMooreM = Encoding::createGilbertMooreM(textAlphabet);
+
     // Шеннон
-    ShannonM = Encoding::createShennonM(textAlphabet);
+    ShannonM = Encoding::createShannonM(textAlphabet);
+
     // Хаффман
     Encoding::createHuffman(alphabetTree);
     if ((*alphabetTree.begin()) != nullptr) {
@@ -262,27 +264,19 @@ int main() {
             Encoding::huffmanBuildKeywords((*alphabetTree.begin())->right, HuffmanM, "", '1');
         }
     }
-    //KeywordBuildingSetup(, HuffmanM);
-        // Pi порядок
     cout << string(55, '=') << endl;
     cout << "Huffman Table" << endl;
     cout << string(55, '=');
     printTab(textAlphabet, HuffmanM);
-        // Лексикографический порядок
-    //for (auto el = HuffmanM.begin(); el != HuffmanM.end(); el++)
-        //cout << el->first << "\t" << el->second << endl;
+
     // Фано
     for (auto& el : textAlphabet) FanoM.insert({ el.first, "" });
     Encoding::createFano(0, textAlphabet.size() - 1, textAlphabet, FanoM);
     cout << string(55, '=') << endl;
     cout << "Fano Table" << endl;
     cout << string(55, '=');
-        // Pi порядок
     printTab(textAlphabet, FanoM);
-        // Лексикографический порядок
-    //for (auto& el : textAlphabet)
-        //cout << el.first << " " << FanoM.at(el.first) << endl;
-
+    
     // Таблица сравнения энтропии алфавита и средней длины слова
     cout << endl << endl;
     cout << string(55, '=') << endl;
