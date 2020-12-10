@@ -12,12 +12,10 @@
 #include <map>
 #include <cstdlib>
 #include <experimental/filesystem>
-#include "Employee2.h"
 #include "const.h"
 #include "Lab11.h"
 #include "BinaryString.h"
 #include <set>
-#include "Employee4.h"
 
 using namespace std;
 namespace fs = std::experimental::filesystem;
@@ -307,7 +305,6 @@ void Coding(int argc, char* argv[]) {
 
     string directory = "";
 
-    unsigned char charText = unsigned char();
 
     ifstream fileIn;
     if (pathToFile.substr(pathToFile.size() - 3, 3) == "txt") {
@@ -324,6 +321,7 @@ void Coding(int argc, char* argv[]) {
         fileIn.open(pathToFile, ios::in | ios::binary);
         checkFileIsOpen(fileIn);
         baseLenght = getFileSize(fileIn);
+        unsigned char charText = unsigned char();
         while (fileIn.read((char*)&charText, sizeof(charText))) text += charText;
         fileIn.close();
         getlineBuffer.clear();
