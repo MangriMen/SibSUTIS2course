@@ -61,7 +61,6 @@ pair<string, string> floatToBinaryStr(float number) {
     string beforePoint = intToBinaryStr(intPart).first;
     string afterPoint = "";
     
-    // 16 - number of simbols after point
     for (int i = 0; i < 16; i++) {
         floatPart = floatPart * 2;
         if (floatPart >= 1) {
@@ -76,6 +75,7 @@ pair<string, string> floatToBinaryStr(float number) {
 }
 
 void printTab(const vector<pair<char, double>>& alphabet, const map<char, string>& symbolAndKey) {
+    cout << string(55, '=');
     cout << endl << "A  " << "Pi\t\t" << "L\t" << "Keyword" << endl;
     cout << string(55, '=') << endl;
     for (int i = 0; i < alphabet.size(); i++) {
@@ -240,28 +240,24 @@ int main() {
     Encoding::createGilbertMooreM(textAlphabet, GilbertMooreM);
     cout << string(55, '=') << endl;
     cout << "GilbertMoore Table" << endl;
-    cout << string(55, '=');
     printTab(textAlphabet, GilbertMooreM);
 
     // Шеннон
     Encoding::createShannonM(textAlphabet, ShannonM);
     cout << string(55, '=') << endl;
     cout << "Shannon Table" << endl;
-    cout << string(55, '=');
     printTab(textAlphabet, ShannonM);
 
     // Хаффман
     Encoding::createHuffman(alphabetTree, HuffmanM);
     cout << string(55, '=') << endl;
     cout << "Huffman Table" << endl;
-    cout << string(55, '=');
     printTab(textAlphabet, HuffmanM);
 
     // Фано
     Encoding::createFano(textAlphabet, FanoM, 0, textAlphabet.size() - 1);
     cout << string(55, '=') << endl;
     cout << "Fano Table" << endl;
-    cout << string(55, '=');
     printTab(textAlphabet, FanoM);
     
     // Таблица сравнения энтропии алфавита и средней длины слова
