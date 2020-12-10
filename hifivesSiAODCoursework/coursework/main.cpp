@@ -250,7 +250,7 @@ short int binarySearch(DatabaseNode** nodeArr, int key, size_t size) {
     return 0;
 }
 // ƒл€ проверки левый\правый
-//Vertex* foundPointer = nullptr;
+Vertex* foundPointer = nullptr;
 
 Vertex* treeSearch(Vertex* pointer, string searchedWord) {
     if (pointer == nullptr) { return nullptr; }
@@ -262,10 +262,10 @@ Vertex* treeSearch(Vertex* pointer, string searchedWord) {
     } else {
         pointer->data->nodePrint();
         // ƒл€ проверки левый\правый
-        //foundPointer = pointer;
+        foundPointer = pointer;
         // » закомментить две строчки ниже
-        treeSearch(pointer->left, searchedWord);
-        treeSearch(pointer->right, searchedWord);
+        //treeSearch(pointer->left, searchedWord);
+        //treeSearch(pointer->right, searchedWord);
         return pointer;
     }
 }
@@ -409,9 +409,11 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 cin >> searchYear;
                 searchPointer = treeSearch(pointer, searchYear);
                 // Ёлемент слева от первого найденного
-                //foundPointer->left->data->nodePrint();
+                cout << endl << "Left: " << endl;
+                foundPointer->left->data->nodePrint();
                 // Ёлемент справа от первого найденного
-                //foundPointer->right->data->nodePrint();
+                cout << endl << "Right: " << endl;
+                foundPointer->right->data->nodePrint();
                 if (searchPointer == nullptr) {
                     cout << endl << "Element was not found." << endl << endl;
                 }
