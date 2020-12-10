@@ -42,7 +42,6 @@ pair<string, string> floatToBinaryStr(float number) {
     string beforePoint = intToBinaryStr(intPart).first;
     string afterPoint = "";
 
-    // 16 - number of simbols after point
     for (int i = 0; i < 16; i++) {
         floatPart = floatPart * 2;
         if (floatPart >= 1) {
@@ -58,12 +57,12 @@ pair<string, string> floatToBinaryStr(float number) {
 }
 
 void printTab(const vector<pair<char, double>>& alphabet, const map<char, string>& keywordM) {
-    cout << endl << "A  " << "Pi\t\t" << "L\t" << "Keyword" << endl;
+    cout << endl << "#  " << "A  " << "Pi\t\t\t" << "L\t\t" << "Keyword" << endl;
     cout << string(55, '=') << endl;
     for (int i = 0; i < alphabet.size(); i++) {
-        cout << alphabet[i].first << "  " << alphabet[i].second
-            << "\t" << keywordM.at(alphabet[i].first).size()
-            << "\t" << keywordM.at(alphabet[i].first) << endl;
+        cout << i+1 << ") " << alphabet[i].first << "  " << alphabet[i].second
+            << "\t\t" << keywordM.at(alphabet[i].first).size()
+            << "\t\t" << keywordM.at(alphabet[i].first) << endl;
     }
     cout << string(55, '=') << endl << endl << endl;
 }
@@ -133,10 +132,10 @@ int main() {
     int nodesNumber = length / sizeof(DatabaseNode);
 
     string textToEncode = "";
-    for (int i = 0; i < nodesNumber; ++i) {
-        DatabaseNode tempNode;
-        tempNode.nodeFill(dbFile);
-        textToEncode += (string)tempNode.employeeFullName + to_string(tempNode.departmentNumber) + (string)tempNode.post + (string)tempNode.birthDate;
+    char* textToEncodeChar = new char[length];
+    dbFile.read(textToEncodeChar, length);
+    for (int i = 0; i < length; ++i) {
+        textToEncode += textToEncodeChar[i];
     }
     
     vector<pair<char, double>> textAlphabet;
