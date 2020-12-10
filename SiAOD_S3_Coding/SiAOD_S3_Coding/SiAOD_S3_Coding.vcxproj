@@ -141,7 +141,6 @@
   <ItemGroup>
     <ClCompile Include="BinaryString.cpp" />
     <ClCompile Include="Coding.cpp" />
-    <ClCompile Include="Employee.cpp" />
     <ClCompile Include="Lab11.cpp" />
     <ClCompile Include="SiAOD_S3_Coding.cpp" />
   </ItemGroup>
@@ -149,7 +148,6 @@
     <ClInclude Include="BinaryString.h" />
     <ClInclude Include="Coding.h" />
     <ClInclude Include="const.h" />
-    <ClInclude Include="Employee.h" />
     <ClInclude Include="Lab11.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

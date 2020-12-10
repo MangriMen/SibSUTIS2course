@@ -121,6 +121,79 @@ bool Coding::alphabetCompKeyR(const std::pair<char, double>& a, const std::pair<
     return a.first > b.first;
 }
 
+std::string charOutput(char ch) {
+    switch ((int)ch)
+    {
+    case 0:
+        return "NUL";
+    case 1:
+        return "SOH";
+    case 2:
+        return "STX";
+    case 3:
+        return "ETX";
+    case 4:
+        return "EOT";
+    case 5:
+        return "ENQ";
+    case 6:
+        return "ACK";
+    case 7:
+        return "BEL";
+    case 8:
+        return "BS ";
+    case 9:
+        return "HT ";
+    case 10:
+        return "LF ";
+    case 11:
+        return "VT ";
+    case 12:
+        return "FF ";
+    case 13:
+        return "CR ";
+    case 14:
+        return "SO ";
+    case 15:
+        return "SI ";
+    case 16:
+        return "DLE";
+    case 17:
+        return "DC1";
+    case 18:
+        return "DC2";
+    case 19:
+        return "DC3";
+    case 20:
+        return "DC4";
+    case 21:
+        return "NAK";
+    case 22:
+        return "SYN";
+    case 23:
+        return "ETB";
+    case 24:
+        return "CAN";
+    case 25:
+        return "EM ";
+    case 26:
+        return "SUB";
+    case 27:
+        return "ESC";
+    case 28:
+        return "FS ";
+    case 29:
+        return "GS ";
+    case 30:
+        return "RS ";
+    case 31:
+        return "US ";
+    default:
+        break;
+    }
+    return (std::string(1, ch) + "  ");
+}
+
 void DisplayTable(const std::vector<std::pair<char, double>>& alphabet, const boost::bimap<char, std::string>& keywordBM) {
     std::cout << std::endl;
 
@@ -138,29 +211,29 @@ void DisplayTable(const std::vector<std::pair<char, double>>& alphabet, const bo
     tablecout.setf(std::ios::fixed);
     tablecout << std::setprecision(DOUBLE_PRECISION);
 
-    tablecout << std::string(static_cast<long long>(DOUBLE_PRECISION + 2) + static_cast<long long>(numberWidth) +
+    tablecout << std::string(2 + static_cast<long long>(DOUBLE_PRECISION + 2) + static_cast<long long>(numberWidth) +
         static_cast<long long>(maxKeywordLenght) + static_cast<long long>(3 * 4) + 2, '-') << std::endl;
 
     tablecout <<
         "| " <<
-        std::setw(1) << "a" << " | " <<
+        std::setw(3) << "a" << " | " <<
         std::setw(DOUBLE_PRECISION + 2) << "Pi" + std::string(((DOUBLE_PRECISION + 2) >> 1) - 1, ' ') << " | " <<
         std::setw(numberWidth) << "L" << " | " <<
         std::setw(maxKeywordLenght) << "Keyword" << " | " << std::endl;
 
-    tablecout << std::string(static_cast<long long>(DOUBLE_PRECISION + 2) + static_cast<long long>(numberWidth) +
+    tablecout << std::string(2 + static_cast<long long>(DOUBLE_PRECISION + 2) + static_cast<long long>(numberWidth) +
         static_cast<long long>(maxKeywordLenght) + static_cast<long long>(3 * 4) + 2, '-') << std::endl;
 
     for (size_t i = 0; i < alphabet.size(); i++) {
         tablecout <<
             "| " <<
-            std::setw(1) << alphabet[i].first << " | " <<
+            std::setw(3) << charOutput(alphabet[i].first) << " | " <<
             std::setw(DOUBLE_PRECISION + 2) << alphabet[i].second << " | " <<
             std::setw(numberWidth) << keywordBM.left.at(alphabet[i].first).size() << " | " <<
-            std::setw(maxKeywordLenght) << keywordBM.left.at(alphabet[i].first) << " | " << std::endl;
+            std::setw(maxKeywordLenght) << keywordBM.left.at(alphabet[i].first) + std::string(maxKeywordLenght - keywordBM.left.at(alphabet[i].first).size(), ' ') << " | " << std::endl;
     }
 
-    tablecout << std::string(static_cast<long long>(DOUBLE_PRECISION + 2) + static_cast<long long>(numberWidth) +
+    tablecout << std::string(2 + static_cast<long long>(DOUBLE_PRECISION + 2) + static_cast<long long>(numberWidth) +
         static_cast<long long>(maxKeywordLenght) + static_cast<long long>(3 * 4) + 2, '-') << std::endl;
 
     std::cout << tablecout.str() << std::endl;

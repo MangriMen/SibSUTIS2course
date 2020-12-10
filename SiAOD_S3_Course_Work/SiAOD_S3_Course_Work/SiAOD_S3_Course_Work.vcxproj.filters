@@ -75,11 +75,11 @@
     <ClCompile Include="TreeColor.cpp">
       <Filter>Source Files\Tree</Filter>
     </ClCompile>
-    <ClCompile Include="TreeVertex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InfoCard.cpp">
       <Filter>Source Files\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeVertex.cpp">
+      <Filter>Source Files\Tree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

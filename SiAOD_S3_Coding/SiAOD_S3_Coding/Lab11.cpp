@@ -195,6 +195,8 @@ std::vector<std::pair<char, double>> Lab11::GetAlphabet(std::string text)
         else alphabet.push_back(std::make_pair(text[i], 1.0));
     }
 
+    std::cout << alphabet.size() << std::endl;
+
     double ver = 0;
     // Расчитываем вероятности
     for (size_t i = 0; i < alphabet.size(); i++) {
@@ -216,7 +218,7 @@ double Lab11::GetAlphabetEntropy()
 
     // Получение энтропии алфавита
     for (int i = 0; i < alphabet.size(); i++)
-        entropy += -alphabet[i].second * log2(alphabet[i].second);
+        entropy += -(alphabet[i].second * log2(alphabet[i].second));
 
     return entropy;
 }
