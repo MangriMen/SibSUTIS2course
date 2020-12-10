@@ -56,6 +56,7 @@ public:
 	}
 
 	~Reader() {
+		windowsAreClosed = 2;
 		FreeReader();
 	}
 
