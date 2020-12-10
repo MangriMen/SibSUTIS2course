@@ -76,6 +76,5 @@ public:
 		window.draw(tPlace.getText());
 		window.draw(tBirthDate.getText());
 		window.draw(close.getButton());
-		//window.draw(close.getText());
 	}
 };
