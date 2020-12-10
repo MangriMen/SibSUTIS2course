@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-static class TreeColor {
+class TreeColor {
 public:
 	static sf::Color Root;
 	static sf::Color Left;

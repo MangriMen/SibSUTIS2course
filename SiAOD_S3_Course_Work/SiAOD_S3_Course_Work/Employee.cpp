@@ -56,7 +56,8 @@ bool Employee::Compare(Employee first, Employee second, Sort type)
 		}
 		break;
 	default:
-		break;
+		cerr << "Unavailable type";
+		exit(-100);
 	}
 }
 

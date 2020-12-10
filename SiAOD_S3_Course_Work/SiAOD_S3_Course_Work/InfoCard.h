@@ -26,7 +26,7 @@ public:
 		background.setSize(Vector2f(500, 300));
 		background.setOutlineThickness(-6);
 		background.setOrigin(0, background.getLocalBounds().height);
-		
+
 		Vector2f top = background.getPosition() + Vector2f(0, -background.getLocalBounds().height);
 
 		tFIO.Initialize(L"‘»Œ: ", top + Vector2f(10, 10), 24, 0);
@@ -42,17 +42,17 @@ public:
 		close.setPosition(background.getPosition() + Vector2f(background.getLocalBounds().width, -background.getLocalBounds().height) + Vector2f(-3.5f, 3.5f));
 	}
 
-	void SetEmployee(const char *FIO_, const short int departmentNumber_, const char *place_, const char *birthDate) {
+	void SetEmployee(const char* FIO_, const short int departmentNumber_, const char* place_, const char* birthDate) {
 		String out;
 
 		cp866_to_utf8(out, FIO_, sizeof(Employee::FIO));
 		tFIO.setText(placeholder[0] + out);
 
 		tDepartmentNumber.setText(placeholder[1] + std::to_string(departmentNumber_));
-		
+
 		cp866_to_utf8(out, place_, sizeof(Employee::place));
 		tPlace.setText(placeholder[2] + out);
-		
+
 		tBirthDate.setText(placeholder[3] + birthDate);
 	}
 
@@ -79,4 +79,3 @@ public:
 		//window.draw(close.getText());
 	}
 };
-

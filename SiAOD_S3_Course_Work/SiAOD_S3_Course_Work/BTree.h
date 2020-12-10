@@ -110,7 +110,7 @@ public:
 			if (isCollision) {
 				for (int j = 0; j < vertices.size(); j++) {
 					if (p->circle.getGlobalBounds().intersects(vertices[j]->circle.getGlobalBounds())) {
-						p->circle.move((p->circle.getPosition().x > 0 ? 0.01 : (p->circle.getPosition().x < 0 ? -0.01 : 0)), 0);
+						p->circle.move((p->circle.getPosition().x > 0.0f ? 0.01f : (p->circle.getPosition().x < 0.0f ? -0.01f : 0.0f)), 0.0f);
 						is.push_back(true);
 					}
 				}
@@ -131,7 +131,7 @@ public:
 			p->Right[0].position = pos;
 
 			if (p->left != nullptr) {
-				p->Left[1].position = pos + Vector2f(-OFFSET_X * level, OFFSET_Y);
+				p->Left[1].position = pos + Vector2f(static_cast<float>(-OFFSET_X * level), static_cast<float>(OFFSET_Y));
 			}
 			else {
 				p->Left[1].position = p->Left[0].position;
@@ -139,10 +139,10 @@ public:
 
 			if (p->right != nullptr) {
 				if (p->balance == 1) {
-					p->Right[1].position = pos + Vector2f(OFFSET_X * (level + 1), 0);
+					p->Right[1].position = pos + Vector2f(static_cast<float>(OFFSET_X * (level + 1)), 0);
 				}
 				else {
-					p->Right[1].position = pos + Vector2f(OFFSET_X * level, OFFSET_Y);
+					p->Right[1].position = pos + Vector2f(static_cast<float>(OFFSET_X * level), static_cast<float>(OFFSET_Y));
 				}
 			}
 			else {
@@ -155,14 +155,14 @@ public:
 			p->Left[1].color = TreeColor::Left;
 			p->Right[1].color = TreeColor::Right;
 
-			rebuild(p->left, p->circle.getPosition() + Vector2f(-OFFSET_X * level, OFFSET_Y), level);
+			rebuild(p->left, p->circle.getPosition() + Vector2f(static_cast<float>(-OFFSET_X * level), static_cast<float>(OFFSET_Y)), level);
 			if (p->balance == 1) {
 				p->Right[0].color = Color::Red;
 				p->Right[1].color = Color::Red;
-				rebuild(p->right, p->circle.getPosition() + Vector2f(OFFSET_X * ++level, 0), level);
+				rebuild(p->right, p->circle.getPosition() + Vector2f(static_cast<float>(OFFSET_X * ++level), 0), level);
 			}
 			else {
-				rebuild(p->right, p->circle.getPosition() + Vector2f(OFFSET_X * level, OFFSET_Y), level);
+				rebuild(p->right, p->circle.getPosition() + Vector2f(static_cast<float>(OFFSET_X * level), static_cast<float>(OFFSET_Y)), level);
 			}
 		}
 	}

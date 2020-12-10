@@ -12,7 +12,7 @@ public:
 	char place[22];
 	char birthDate[10];
 
-	static enum class Sort {
+	enum class Sort {
 		Null,
 		Merge,
 		Tree,

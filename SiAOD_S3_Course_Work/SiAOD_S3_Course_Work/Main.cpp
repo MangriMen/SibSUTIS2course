@@ -1,6 +1,6 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
-#include "Program.h";
+#include "Program.h"
 
 using namespace std;
 

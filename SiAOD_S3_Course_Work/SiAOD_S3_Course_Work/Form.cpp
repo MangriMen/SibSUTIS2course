@@ -16,7 +16,7 @@ form::Label::Label(String text_, Vector2f pos_, size_t size, int align_, String 
 	text.setFont(font);
 	text.setString(text_);
 	text.setFillColor(Color::White);
-	text.setCharacterSize(size);
+	text.setCharacterSize(static_cast<unsigned>(size));
 	switch (align_)
 	{
 	case form::Left:
@@ -39,7 +39,7 @@ void form::Label::Initialize(String text_, Vector2f pos_, size_t size, int align
 	text.setFont(font);
 	text.setString(text_);
 	text.setFillColor(Color::White);
-	text.setCharacterSize(size);
+	text.setCharacterSize(static_cast<unsigned>(size));
 	switch (align_)
 	{
 	case form::Left:
@@ -120,7 +120,7 @@ void form::Button::setPosition(Vector2f pos_)
 }
 
 void form::Button::setOutlineThickness(int width_) {
-	rec.setOutlineThickness(width_);
+	rec.setOutlineThickness(static_cast<float>(width_));
 }
 
 void form::Button::setOutlineColor(Color color_) {
@@ -156,11 +156,11 @@ Vector2f form::Button::getSize()
 
 int form::Button::getOutlineThickness()
 {
-	return rec.getOutlineThickness();
+	return static_cast<int>(rec.getOutlineThickness());
 }
 
 form::Table::Table(size_t cols_, size_t rows_) {
-	proportions = Vector2i(cols_, rows_);
+	proportions = Vector2i(static_cast<int>(cols_), static_cast<int>(rows_));
 	size = Vector2f(0, 0);
 	cells = new Button*[cols_];
 	for (int col = 0; col < cols_; col++) {
@@ -211,12 +211,12 @@ void form::Table::update()
 
 int form::Table::width()
 {
-	return size.x;
+	return static_cast<int>(size.x);
 }
 
 int form::Table::height()
 {
-	return size.y;
+	return static_cast<int>(size.y);
 }
 
 Vector2f form::Table::getPosition() {

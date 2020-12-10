@@ -2,7 +2,7 @@
 
 int BinarySearch(Employee** employersI, short int key, size_t size)
 {
-	int L = 0, R = size - 1, m = 0;
+	int L = 0, R = static_cast<int>(size)- 1, m = 0;
 	while (L < R)
 	{
 		m = (L + R) / 2;

@@ -29,8 +29,8 @@ void switchFullScreen(RenderWindow& window) {
 	isFullscreen = !isFullscreen;
 }
 
-FloatRect rectL = FloatRect(INT_MAX, INT_MAX, -INT_MAX, -INT_MAX);
-FloatRect rectR = FloatRect(INT_MAX, INT_MAX, -INT_MAX, -INT_MAX);
+FloatRect rectL = FloatRect(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+FloatRect rectR = FloatRect(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
 
 void VisualTree::findSides(TreeVertex* p, FloatRect& rect) {
 	if (p != nullptr) {
@@ -72,16 +72,16 @@ void VisualTree::align(TreeVertex* p, string side, float delta) {
 	if (p != nullptr) {
 		align(p->left, "L", delta);
 		align(p->right, "R", delta);
-		rectL = FloatRect(INT_MAX, INT_MAX, -INT_MAX, -INT_MAX);
-		rectR = FloatRect(INT_MAX, INT_MAX, -INT_MAX, -INT_MAX);
+		rectL = FloatRect(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
+		rectR = FloatRect(std::numeric_limits<float>::max(), std::numeric_limits<float>::max(), -std::numeric_limits<float>::max(), -std::numeric_limits<float>::max());
 		createRect(p->left, "L");
 		createRect(p->right, "R");
 		float offset = rectL.width - rectR.left;
 		if (offset >= 0) {
 			if (p->left != nullptr)
-				p->left->circle.move(-offset * 0.5 - 80, 0);
+				p->left->circle.move(-offset * 0.5f - 80, 0);
 			if (p->right != nullptr)
-				p->right->circle.move(offset * 0.5 + 80, 0);
+				p->right->circle.move(offset * 0.5f + 80, 0);
 			reader->btree.rebuild(p->left, p->left->circle.getPosition(), reader->btree.treeHeight(p->left));
 			reader->btree.rebuild(p->right, p->right->circle.getPosition(), reader->btree.treeHeight(p->right));
 			p->Left[1].position = p->left->circle.getPosition();
@@ -183,6 +183,7 @@ void VisualTree::Run()
 			{
 			case Event::Closed:
 				window.close();
+				reader->FreeReader();
 				break;
 			case Event::MouseButtonPressed:
 				if (event.mouseButton.button == Mouse::Button::Left) {

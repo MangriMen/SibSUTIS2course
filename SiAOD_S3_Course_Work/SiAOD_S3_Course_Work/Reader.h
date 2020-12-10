@@ -17,6 +17,8 @@ public:
 
 	BTree btree;
 
+	int windowsAreClosed = 0;
+
 	Reader() {
 		ifstream databaseFile("testBase2.dat", ios::in | ios::binary);
 
@@ -40,16 +42,29 @@ public:
 
 		databaseFile.close();
 
-		MergeSort(&employersQ.head, numOfEmployers, Employee::Sort::Merge);
+		MergeSort(&employersQ.head, static_cast<int>(numOfEmployers), Employee::Sort::Merge);
 
 		fillIndexArray(employersQ, employersI);
 
-		numOfFounded = queueFromKey(employersI, employersFoundedQ, 0, numOfEmployers);
+		numOfFounded = queueFromKey(employersI, employersFoundedQ, 0, static_cast<int>(numOfEmployers));
 
 		btree.From(employersFoundedQ);
 
 		employersFoundedI = new Employee * [numOfFounded];
 
 		fillIndexArray(employersFoundedQ, employersFoundedI);
+	}
+
+	~Reader() {
+		FreeReader();
+	}
+
+	void FreeReader() {
+		windowsAreClosed++;
+		if (windowsAreClosed < 2) return;
+		Delete(&employersQ.head);
+		Delete(&employersFoundedQ.head);
+		delete[] employersI;
+		delete[] employersFoundedI;
 	}
 };

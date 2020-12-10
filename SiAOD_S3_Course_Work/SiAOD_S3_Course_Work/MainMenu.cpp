@@ -23,36 +23,36 @@ void printTable(form::Table table, Employee** employers, int n, int start, int e
 		for (int i = start; i < end; i++) {
 			if (i < n) {
 				table.getCells()[0][row].setText(to_string(i + 1));
-				table.getCells()[0][row].setSize(Vector2f(60, cellH));
+				table.getCells()[0][row].setSize(Vector2f(60, static_cast<float>(cellH)));
 
 				cp866_to_utf8(name, employers[i]->FIO, sizeof(employers[i]->FIO));
 				table.getCells()[1][row].setText(name);
-				table.getCells()[1][row].setSize(Vector2f(300, cellH));
+				table.getCells()[1][row].setSize(Vector2f(300, static_cast<float>(cellH)));
 
 				table.getCells()[2][row].setText(to_string(employers[i]->departmentNumber));
-				table.getCells()[2][row].setSize(Vector2f(100, cellH));
+				table.getCells()[2][row].setSize(Vector2f(100, static_cast<float>(cellH)));
 
 				cp866_to_utf8(place, employers[i]->place, sizeof(employers[i]->place));
 				table.getCells()[3][row].setText(place);
-				table.getCells()[3][row].setSize(Vector2f(300, cellH));
+				table.getCells()[3][row].setSize(Vector2f(300, static_cast<float>(cellH)));
 
 				table.getCells()[4][row].setText(employers[i]->birthDate);
-				table.getCells()[4][row].setSize(Vector2f(100, cellH));
+				table.getCells()[4][row].setSize(Vector2f(100, static_cast<float>(cellH)));
 			} else {
 				table.getCells()[0][row].setText(to_string(i + 1));
-				table.getCells()[0][row].setSize(Vector2f(60, cellH));
+				table.getCells()[0][row].setSize(Vector2f(60, static_cast<float>(cellH)));
 
 				table.getCells()[1][row].setText(" ");
-				table.getCells()[1][row].setSize(Vector2f(300, cellH));
+				table.getCells()[1][row].setSize(Vector2f(300, static_cast<float>(cellH)));
 
 				table.getCells()[2][row].setText(" ");
-				table.getCells()[2][row].setSize(Vector2f(100, cellH));
+				table.getCells()[2][row].setSize(Vector2f(100, static_cast<float>(cellH)));
 
 				table.getCells()[3][row].setText(" ");
-				table.getCells()[3][row].setSize(Vector2f(300, cellH));
+				table.getCells()[3][row].setSize(Vector2f(300, static_cast<float>(cellH)));
 
 				table.getCells()[4][row].setText(" ");
-				table.getCells()[4][row].setSize(Vector2f(100, cellH));
+				table.getCells()[4][row].setSize(Vector2f(100, static_cast<float>(cellH)));
 			}
 
 			row++;
@@ -89,12 +89,12 @@ void MainMenu::Run()
 	form::Table table(5, 20);
 	
 	mode = Mode::All;
-	printTable(table, *&reader->employersI, reader->numOfEmployers, start, end);
+	printTable(table, *&reader->employersI, static_cast<int>(reader->numOfEmployers), static_cast<int>(start), static_cast<int>(end));
 
 	table.update();
 	Vector2f defaultPosition = Vector2f(
-		(window.getSize().x / 2) - (table.width() / 2),
-		(window.getSize().y * 0.08)
+		(static_cast<float>(window.getSize().x) * 0.5f) - (table.width() * 0.5f),
+		(static_cast<float>(window.getSize().y) * 0.08f)
 	);
 
 	table.setPosition(defaultPosition);
@@ -112,11 +112,8 @@ void MainMenu::Run()
 			switch (event.type)
 			{
 			case Event::Closed:
-				Delete(&reader->employersQ.head);
-				Delete(&reader->employersFoundedQ.head);
-				delete[] reader->employersI;
-				delete[] reader->employersFoundedI;
 				window.close();
+				reader->FreeReader();
 				return;
 				break;
 			case Event::MouseWheelScrolled:
@@ -128,7 +125,7 @@ void MainMenu::Run()
 				}
 				break;
 			case Event::Resized:
-				view.reset(FloatRect(0.f, 0.f, event.size.width, event.size.height));
+				view.reset(FloatRect(0.f, 0.f, static_cast<float>(event.size.width), static_cast<float>(event.size.height)));
 				view.zoom(1.0f);
 				window.setView(view);
 				break;
@@ -143,18 +140,18 @@ void MainMenu::Run()
 					switch (mode)
 					{
 					case Mode::All:
-						if (start < reader->numOfEmployers - 20 && end < reader->numOfEmployers) {
+						if (start < static_cast<int>(reader->numOfEmployers) - 20 && end < static_cast<int>(reader->numOfEmployers)) {
 							start = end;
 							end += 20;
 						}
-						printTable(table, *&reader->employersI, reader->numOfEmployers, start, end);
+						printTable(table, *&reader->employersI, static_cast<int>(reader->numOfEmployers), static_cast<int>(start), static_cast<int>(end));
 						break;
 					case Mode::Founded:
-						if (startFounded < reader->numOfFounded - (long)20 && endFounded < reader->numOfFounded) {
+						if (startFounded < static_cast<int>(reader->numOfFounded) - (long)20 && endFounded < static_cast<int>(reader->numOfFounded)) {
 							startFounded = endFounded;
 							endFounded += 20;
 						}
-						printTable(table, *&reader->employersFoundedI, reader->numOfFounded, startFounded, endFounded);
+						printTable(table, *&reader->employersFoundedI, static_cast<int>(reader->numOfFounded), static_cast<int>(startFounded), static_cast<int>(endFounded));
 						break;
 					default:
 						break;
@@ -170,14 +167,14 @@ void MainMenu::Run()
 							end = start;
 							start -= 20;
 						}
-						printTable(table, *&reader->employersI, reader->numOfEmployers, start, end);
+						printTable(table, *&reader->employersI, static_cast<int>(reader->numOfEmployers), static_cast<int>(start), static_cast<int>(end));
 						break;
 					case Mode::Founded:
 						if (startFounded >= 20) {
 							endFounded = startFounded;
 							startFounded -= 20;
 						}
-						printTable(table, *&reader->employersFoundedI, reader->numOfFounded, startFounded, endFounded);
+						printTable(table, *&reader->employersFoundedI, static_cast<int>(reader->numOfFounded), static_cast<int>(startFounded), static_cast<int>(endFounded));
 						break;
 					default:
 						break;
@@ -189,11 +186,11 @@ void MainMenu::Run()
 					switch (mode)
 					{
 					case Mode::All:
-						printTable(table, *&reader->employersFoundedI, reader->numOfFounded, startFounded, endFounded);
+						printTable(table, *&reader->employersFoundedI, static_cast<int>(reader->numOfFounded), static_cast<int>(startFounded), static_cast<int>(endFounded));
 						mode = Mode::Founded;
 						break;
 					case Mode::Founded:
-						printTable(table, *&reader->employersI, reader->numOfEmployers, start, end);
+						printTable(table, *&reader->employersI, static_cast<int>(reader->numOfEmployers), static_cast<int>(start), static_cast<int>(end));
 						mode = Mode::All;
 						break;
 					default:
@@ -211,11 +208,11 @@ void MainMenu::Run()
 					Delete(&reader->employersFoundedQ.head);
 					delete[] reader->employersFoundedI;
 					
-					reader->numOfFounded = queueFromKey(reader->employersI, reader->employersFoundedQ, key, reader->numOfEmployers);
-					reader->employersFoundedI = new Employee * [reader->numOfFounded];
+					reader->numOfFounded = queueFromKey(reader->employersI, reader->employersFoundedQ, key, static_cast<int>(static_cast<int>(reader->numOfEmployers)));
+					reader->employersFoundedI = new Employee * [static_cast<int>(reader->numOfFounded)];
 					fillIndexArray(reader->employersFoundedQ, reader->employersFoundedI);
 
-					for (int i = 0; i < reader->numOfFounded; i++)
+					for (int i = 0; i < static_cast<int>(reader->numOfFounded); i++)
 					{
 						reader->btree.deleteSDP(reader->employersFoundedI[i], reader->btree.root);
 					}
@@ -234,7 +231,7 @@ void MainMenu::Run()
 					case Mode::Founded:
 						startFounded = 0;
 						endFounded = 20;
-						printTable(table, *&reader->employersFoundedI, reader->numOfFounded, startFounded, endFounded);
+						printTable(table, *&reader->employersFoundedI, static_cast<int>(static_cast<int>(reader->numOfFounded)), static_cast<int>(startFounded), static_cast<int>(endFounded));
 						break;
 					default:
 						break;
