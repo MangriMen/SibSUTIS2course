@@ -94,9 +94,6 @@ bool yearCompareDb(DatabaseNode* first, DatabaseNode* second) {
     temp2 = temp2 + second->birthDate[6] + second->birthDate[7] + second->birthDate[3] + second->birthDate[4] + second->birthDate[0] + second->birthDate[1];
 
     return temp1 > temp2 ? true : false;
-    //if (temp1 > temp2) { return 1; }
-    //if (temp1 < temp2) { return 0; }
-    //return 505;
 }
 
 void AVLTreeAddNode(Vertex*& pointer, DatabaseNode* data) {
@@ -148,14 +145,13 @@ void AVLTreeAddNode(Vertex*& pointer, DatabaseNode* data) {
     }
 }
 
-void traversalLtR(Vertex* pointer, vector<DatabaseNode*>& nodeArr) {
+void traversalLtR(Vertex* pointer, int& counter) {
     if (pointer != nullptr) {
-        traversalLtR(pointer->left, nodeArr);
+        traversalLtR(pointer->left, counter);
         cout << "Weight(" << pointer->balance << ")\t";
-        nodeArr.push_back(pointer->data);
-        cout << "#" << nodeArr.size();
+        cout << "#" << counter++;
         pointer->data->nodePrint();
-        traversalLtR(pointer->right, nodeArr);
+        traversalLtR(pointer->right, counter);
     }
 }
 
@@ -176,20 +172,6 @@ void addToStack(stack** head, DatabaseNode node) {
     temp->data = node;
     temp->next = *head;
     *head = temp;
-}
-
-void printStackData(stack** head, int leftBorder, int rightborder) {
-    stack* current = *head;
-    int i = 0;
-    while (current != nullptr && i < leftBorder) {
-        current = current->next;
-        ++i;
-    }
-    while (current != nullptr && i < rightborder) {
-        current->data.nodePrint();
-        current = current->next;
-        ++i;
-    }
 }
 
 void printArrayData(DatabaseNode** nodeArray, int leftBorder, int rightBorder) {
@@ -286,7 +268,6 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
     int searchResult = 0;
     int searchResultLast = 0;
     Vertex* pointer = nullptr;
-    vector<DatabaseNode*> treeElements;
 
     DatabaseNode** nodesArray = new DatabaseNode * [size];
     fillIndexArray(operatingStack, nodesArray);
@@ -370,7 +351,6 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
             cin >> choosenDepNumber;
             if (!bool(choosenDepNumber % 10) && choosenDepNumber < 250) {
                 searchResult = binarySearch(nodesArray, choosenDepNumber, size) + bool(choosenDepNumber);
-                cout << endl << searchResult << endl;
                 for (searchResultLast = searchResult - 1; searchResultLast != 4001 && nodesArray[searchResultLast]->departmentNumber == nodesArray[searchResult]->departmentNumber; ++searchResultLast) {
                     cout << searchResultLast + 2 - searchResult;
                     nodesArray[searchResultLast]->nodePrint();
@@ -392,12 +372,13 @@ void ShowMenu(ifstream& opendFileStream, stack** operatingStack, size_t size) {
                 AVLTreeAddNode(pointer, nodesArray[i]);
             }
 
-            cout << "Left to right traversal:" << endl << endl;
-            traversalLtR(pointer, treeElements);
-            cout << endl << endl << "Number of vertexes: " << amount(pointer);
-            cout << endl << endl << "Tree height: " << height(pointer);
-            cout << endl << endl << "Average tree height: " << treeHeightSum(pointer, 1) / amount(pointer) << endl << endl;
             {
+                int counter = 1;
+                cout << "Left to right traversal:" << endl << endl;
+                traversalLtR(pointer, counter);
+                cout << endl << endl << "Number of vertexes: " << amount(pointer);
+                cout << endl << endl << "Tree height: " << height(pointer);
+                cout << endl << endl << "Average tree height: " << treeHeightSum(pointer, 1) / amount(pointer) << endl << endl;
                 string searchYear = "";
                 Vertex* searchPointer;
                 cout << "Enter the key: ";
@@ -430,13 +411,11 @@ int main() {
     dbFile.seekg(0, ios_base::beg);
     int nodesNumber = length / sizeof(DatabaseNode);
     stack* nodes = nullptr;
-    stack* nodesReference = nullptr;
 
     for (int i = 0; i < nodesNumber; ++i) {
         DatabaseNode tempNode;
         tempNode.nodeFill(dbFile);
         addToStack(&nodes, tempNode);
-        addToStack(&nodesReference, tempNode);
     }
 
     cout << "Choose a structure to work with:" << endl << endl
@@ -447,11 +426,9 @@ int main() {
     system("CLS");
 
     switch (choosenStruct) {
-    case '1':
-        ShowMenu(dbFile, &nodesReference, nodesNumber);
-        break;
     case '2':
         digitalSort(nodes);
+    case '1':
         ShowMenu(dbFile, &nodes, nodesNumber);
         break;
     case '0':
@@ -460,4 +437,5 @@ int main() {
     }
 
     dbFile.close();
+    return 0;
 }

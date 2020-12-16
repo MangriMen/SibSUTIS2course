@@ -146,8 +146,7 @@ int main() {
 
         if (letter != NOT_FOUND) {
             textAlphabet[letter].second += 1.0;
-        }
-        else {
+        } else {
             textAlphabet.push_back(make_pair(textToEncode[i], 1.0));
         }
     }
