@@ -42,6 +42,8 @@ public:
 
 		databaseFile.close();
 
+		//out(employersQ);
+
 		MergeSort(&employersQ.head, static_cast<int>(numOfEmployers), Employee::Sort::Merge);
 
 		fillIndexArray(employersQ, employersI);

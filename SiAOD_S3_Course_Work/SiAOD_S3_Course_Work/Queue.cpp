@@ -21,7 +21,7 @@ void addToQueue(queue& queue, Employee employee)
 void out(queue& queue)
 {
 	stack* current = queue.head;
-	int i = 0;
+	int i = 1;
 	while (current != nullptr) {
 		cout << "\t" << i;
 		current->data.Print();

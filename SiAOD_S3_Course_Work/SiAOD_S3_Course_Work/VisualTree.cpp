@@ -241,8 +241,8 @@ void VisualTree::Run()
 
 					if (founded == nullptr) cout << endl << "Node not found" << endl;
 					else hightlightNode(founded);
-					view.setCenter(founded->circle.getPosition());
-					window.setView(view);
+					//view.setCenter(founded->circle.getPosition());
+					//window.setView(view);
 					break;
 				case Keyboard::B:
 					reader->btree.Print(reader->btree.root);
