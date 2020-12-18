@@ -37,13 +37,12 @@ pair<string, string> floatToBinaryStr(long double number) {
     string beforePoint = intToBinaryStr(intPart).first;
     string afterPoint = "";
 
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 64; i++) {
         floatPart = floatPart * 2;
         if (floatPart >= 1) {
             afterPoint += '1';
             floatPart -= 1;
-        }
-        else {
+        } else {
             afterPoint += '0';
         }
     }
@@ -52,21 +51,21 @@ pair<string, string> floatToBinaryStr(long double number) {
 }
 
 string arithmetic(vector<pair<char, long double>> textAlphabet, const string& text) {
-    vector<long double> Q(textAlphabet.size() + 1, 0);              // Кумулятивные вероятности вектор
-    vector<long double> r(text.size() + 1, 1);                      // Длины интервалов на каждый символ
-    vector<pair<long double, long double>> border(text.size() + 1); // Границы интервала
+    vector<long double> Q(textAlphabet.size() + 1, 0);  
+    vector<long double> r(text.size() + 1, 1);                        
+    vector<pair<long double, long double>> border(text.size() + 1);     
     
     border[0].second = 1;
 
-    for (int i = 0; i < textAlphabet.size(); i++) { // Заполняем просто вероятности кумулятивные 
+    for (int i = 0; i < textAlphabet.size(); i++) {                     
         Q[i + 1] = textAlphabet[i].second + Q[i]; 
     }
 
     for (int i = 1; i <= text.size(); i++) {
-        int m = letterSearch(textAlphabet, text[i - 1]) + 1;            // индекс элемента в массиве
-        border[i].first = border[i - 1].first + r[i - 1] * Q[m - 1];    // по формулам это
-        border[i].second = border[i - 1].first + r[i - 1] * Q[m];       // по формулам это
-        r[i] = border[i].second - border[i].first;                      //
+        int m = letterSearch(textAlphabet, text[i - 1]) + 1;            
+        border[i].first = border[i - 1].first + r[i - 1] * Q[m - 1];   
+        border[i].second = border[i - 1].first + r[i - 1] * Q[m];       
+        r[i] = border[i].second - border[i].first;                     
     }
 
     int count = (int)ceil(-log2(r.back()));
@@ -75,17 +74,33 @@ string arithmetic(vector<pair<char, long double>> textAlphabet, const string& te
     return temp.substr(0, count);
 }
 
+void createTable(vector<pair<char, long double>>& textAlphabet, long double textSize, long double& probability) {
+    for (int i = 0; i < textAlphabet.size(); i++) {
+        textAlphabet[i].second /= (long double)textSize;
+        cout << textAlphabet[i].first << " " << textAlphabet[i].second << endl;
+        probability += textAlphabet[i].second;
+    }
+    cout << endl;
+}
+
 int main() {
     system("CHCP 1251");
     system("CLS");
 
+    string out = "";
+    string tmp = "";
     string text = "";
     string getlineBuffer = "";
     ifstream openedText;
     vector<pair<char, long double>> textAlphabet;
-    const int blockSize = 32;
+    const int blockSize = 8;
 
     openedText.open("textToWorkWith.txt", ios::in);
+    openedText.ignore(numeric_limits<streamsize>::max());
+    streamsize length = openedText.gcount();
+    openedText.clear();
+    openedText.seekg(0, ios_base::beg);
+
     while (getline(openedText, getlineBuffer)) text += getlineBuffer;
     openedText.close();
 
@@ -98,21 +113,20 @@ int main() {
             textAlphabet[letter].second += 1.0;
         }
     }
-    
-    // вынести отдельно
-    long double probability = 0;
-    for (int i = 0; i < textAlphabet.size(); i++) {
-        textAlphabet[i].second /= (long double)text.size();
-        cout << textAlphabet[i].first << " " << textAlphabet[i].second << endl;
-        probability += textAlphabet[i].second;
-    }
-    //
 
-    for (int i = 0; i < (int)text.size(); i += blockSize)
-        cout << arithmetic(textAlphabet, text.substr(i, blockSize)) << endl;
+    long double prob = 0;
+    createTable(textAlphabet, text.size(), prob);
+
+    for (int i = 0; i < (int)text.size(); i += blockSize) {
+        tmp = arithmetic(textAlphabet, text.substr(i, blockSize));
+        out += tmp;
+        cout << tmp;
+        cout << endl;
+    }
     
-    cout << endl << probability << " - сумма вероятностей." << endl << endl;
+    cout << endl << prob << " - сумма вероятностей." << endl << endl;
     cout << ceil(text.size() / (double)blockSize) << " - кол-во блоков" << endl << endl;
+    cout << ((double(out.size()) / 8) / length) << " - степень сжатия" << endl << endl;
     
     return 0;
 }
